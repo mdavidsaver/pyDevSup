@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+*~
+O.*
+bin
+include
+lib
+db
+dbd

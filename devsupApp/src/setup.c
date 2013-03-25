@@ -127,31 +127,34 @@ static void pyhook(initHookState state)
         PyObject *list = PyDict_GetItem(hooktable, key);
         Py_DECREF(key);
 
-        list = PyObject_GetIter(list);
-        if(!list) {
-            fprintf(stderr, "hook sequence not iterable!");
+        if(list) {
 
-        } else {
+            list = PyObject_GetIter(list);
+            if(!list) {
+                fprintf(stderr, "hook sequence not iterable!");
 
-            while((next=PyIter_Next(list))!=NULL) {
-                PyObject *obj;
-                if(!PyCallable_Check(next))
-                    continue;
-                obj = PyObject_CallFunction(next, "O", key);
-                Py_DECREF(next);
-                if(obj)
-                    Py_DECREF(obj);
-                else {
+            } else {
+
+                while((next=PyIter_Next(list))!=NULL) {
+                    PyObject *obj;
+                    if(!PyCallable_Check(next))
+                        continue;
+                    obj = PyObject_CallFunction(next, "");
+                    Py_DECREF(next);
+                    if(obj)
+                        Py_DECREF(obj);
+                    else {
+                        PyErr_Print();
+                        PyErr_Clear();
+                    }
+                }
+                if(!PyErr_Occurred()) {
                     PyErr_Print();
                     PyErr_Clear();
                 }
-            }
-            if(!PyErr_Occurred()) {
-                PyErr_Print();
-                PyErr_Clear();
-            }
 
-            Py_DECREF(list);
+                Py_DECREF(list);
+            }
         }
     }
 
@@ -181,8 +184,11 @@ void pyRecord_setup(PyObject *module);
 /* initialize "magic" builtin module */
 static void init_dbapi(void)
 {
-    PyObject *mod;
+    PyObject *mod, *hookdict;
     pystate *st;
+    PyGILState_STATE state;
+
+    state = PyGILState_Ensure();
 
     hooktable = PyDict_New();
     if(!hooktable)
@@ -195,14 +201,21 @@ static void init_dbapi(void)
 
     mod = Py_InitModule("_dbapi", devsup_methods);
 
+    hookdict = PyDict_New();
+    if(!hookdict)
+        return;
+    PyModule_AddObject(mod, "_hooks", hookdict);
+
     for(st = statenames; st->name; st++) {
-        PyModule_AddIntConstant(mod, st->name, (long)st->state);
+        PyDict_SetItemString(hookdict, st->name, PyInt_FromLong((long)st->state));
     }
     Py_INCREF(hooktable); /* an extra ref */
     PyModule_AddObject(mod, "_hooktable", hooktable);
 
     pyField_setup(mod);
     pyRecord_setup(mod);
+
+    PyGILState_Release(state);
 }
 
 #include <iocsh.h>

@@ -1,6 +1,13 @@
 #!./bin/linux-x86-debug/devsup
+
+epicsEnvSet("PYTHONPATH", "${PWD}/python")
+
 dbLoadDatabase("dbd/devsup.dbd")
 devsup_registerRecordDeviceDriver(pdbbase)
 
-evalPy "print 1"
-evalPy "print 2"
+evalPy "import sys"
+evalPy "print sys.path"
+evalPy "import devsup.hooks"
+evalPy "devsup.hooks.debugHooks()"
+
+iocInit

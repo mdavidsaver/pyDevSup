@@ -1,4 +1,7 @@
-
+try:
+    import _dbapi
+except ImportError:
+    import _nullapi as _dbapi
 from _dbapi import _hooks, _hooktable
 
 __all__ = [

@@ -20,7 +20,7 @@ static int pyField_Init(pyField *self, PyObject *args, PyObject *kws)
 {
     const char *pvname;
 
-    if(PyArg_ParseTuple(args, "s", &pvname))
+    if(!PyArg_ParseTuple(args, "s", &pvname))
         return -1;
 
     if(dbNameToAddr(pvname, &self->addr)) {
@@ -157,7 +157,7 @@ static PyMethodDef pyField_methods[] = {
      "Return Names (\"record\",\"field\")"},
     {"fieldinfo", (PyCFunction)pyField_fldinfo, METH_NOARGS,
      "Field type info\nReturn (type, size, #elements"},
-    {"getval", (PyCFunction)pyField_getval, METH_VARARGS,
+    {"getval", (PyCFunction)pyField_getval, METH_NOARGS,
      "Returns scalar version of field value"},
     {"putval", (PyCFunction)pyField_putval, METH_VARARGS,
      "Sets field value from a scalar"},
@@ -168,13 +168,13 @@ static PyMethodDef pyField_methods[] = {
 static PyTypeObject pyField_type = {
     PyObject_HEAD_INIT(NULL)
     0,
-    "_dbapi.Field",
+    "_dbapi._Field",
     sizeof(pyField),
 };
 
 int pyField_prepare(void)
 {
-    pyField_type.tp_flags = Py_TPFLAGS_DEFAULT;
+    pyField_type.tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE;
     pyField_type.tp_methods = pyField_methods;
     pyField_type.tp_init = (initproc)pyField_Init;
 
@@ -188,5 +188,5 @@ void pyField_setup(PyObject *module)
 {
     PyObject *typeobj=(PyObject*)&pyField_type;
     Py_INCREF(typeobj);
-    PyModule_AddObject(module, "Field", (PyObject*)&pyField_type);
+    PyModule_AddObject(module, "_Field", (PyObject*)&pyField_type);
 }

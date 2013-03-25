@@ -20,7 +20,6 @@ typedef struct {
 static int pyRecord_Init(pyRecord *self, PyObject *args, PyObject *kws)
 {
     const char *recname;
-
     if(!PyArg_ParseTuple(args, "s", &recname))
         return -1;
 
@@ -136,14 +135,14 @@ static PyMethodDef pyRecord_methods[] = {
 static PyTypeObject pyRecord_type = {
     PyObject_HEAD_INIT(NULL)
     0,
-    "_dbapi.Record",
+    "_dbapi._Record",
     sizeof(pyRecord),
 };
 
 
 int pyRecord_prepare(void)
 {
-    pyRecord_type.tp_flags = Py_TPFLAGS_DEFAULT;
+    pyRecord_type.tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE;
     pyRecord_type.tp_methods = pyRecord_methods;
     pyRecord_type.tp_init = (initproc)pyRecord_Init;
 
@@ -157,5 +156,5 @@ void pyRecord_setup(PyObject *module)
 {
     PyObject *typeobj=(PyObject*)&pyRecord_type;
     Py_INCREF(typeobj);
-    PyModule_AddObject(module, "Field", (PyObject*)&pyRecord_type);
+    PyModule_AddObject(module, "_Record", (PyObject*)&pyRecord_type);
 }

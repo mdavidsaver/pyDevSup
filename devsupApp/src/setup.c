@@ -18,6 +18,7 @@
 #include <epicsThread.h>
 #include <epicsExit.h>
 
+/* dictionary of initHook names */
 static PyObject *hooktable;
 
 typedef struct {
@@ -184,7 +185,7 @@ void pyRecord_setup(PyObject *module);
 /* initialize "magic" builtin module */
 static void init_dbapi(void)
 {
-    PyObject *mod, *hookdict;
+    PyObject *mod, *hookdict, *pysuptable;
     pystate *st;
     PyGILState_STATE state;
 
@@ -201,6 +202,11 @@ static void init_dbapi(void)
 
     mod = Py_InitModule("_dbapi", devsup_methods);
 
+    pysuptable = PySet_New(NULL);
+    if(!pysuptable)
+        return;
+    PyModule_AddObject(mod, "_supports", pysuptable);
+
     hookdict = PyDict_New();
     if(!hookdict)
         return;
@@ -209,7 +215,7 @@ static void init_dbapi(void)
     for(st = statenames; st->name; st++) {
         PyDict_SetItemString(hookdict, st->name, PyInt_FromLong((long)st->state));
     }
-    Py_INCREF(hooktable); /* an extra ref */
+    Py_INCREF(hooktable); /* an extra ref for the global pointer */
     PyModule_AddObject(mod, "_hooktable", hooktable);
 
     pyField_setup(mod);

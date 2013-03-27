@@ -1,1 +1,11 @@
 registrar(pySetupReg)
+
+device(longin, INST_IO, pydevsupCom, "Python Device")
+device(longout, INST_IO, pydevsupCom, "Python Device")
+
+device(ai, INST_IO, pydevsupCom, "Python Device")
+device(ao, INST_IO, pydevsupCom, "Python Device")
+
+device(ai, INST_IO, pydevsupCom2, "Raw Python Device")
+device(ao, INST_IO, pydevsupCom2, "Raw Python Device")
+

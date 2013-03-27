@@ -39,6 +39,7 @@ devsup_SRCS_vxWorks += -nil-
 devsup_SRCS += setup.c
 devsup_SRCS += dbrec.c
 devsup_SRCS += dbfield.c
+devsup_SRCS += dbdset.c
 
 # Add support from base/src/vxWorks if needed
 #devsup_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary

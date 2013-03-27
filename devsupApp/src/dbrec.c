@@ -32,6 +32,19 @@ static int pyRecord_Init(pyRecord *self, PyObject *args, PyObject *kws)
     return 0;
 }
 
+static int pyRecord_compare(pyRecord *A, pyRecord *B)
+{
+    dbCommon *a=A->entry.precnode->precord,
+             *b=B->entry.precnode->precord;
+
+    if(a<b)
+        return -1;
+    else if(a==b)
+        return 0;
+    else
+        return 1;
+}
+
 static PyObject* pyRecord_name(pyRecord *self)
 {
     dbCommon *prec=self->entry.precnode->precord;
@@ -145,6 +158,7 @@ int pyRecord_prepare(void)
     pyRecord_type.tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE;
     pyRecord_type.tp_methods = pyRecord_methods;
     pyRecord_type.tp_init = (initproc)pyRecord_Init;
+    pyRecord_type.tp_compare = (cmpfunc)pyRecord_compare;
 
     pyRecord_type.tp_new = PyType_GenericNew;
     if(PyType_Ready(&pyRecord_type)<0)

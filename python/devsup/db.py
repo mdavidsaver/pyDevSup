@@ -52,3 +52,15 @@ class Field(_Field):
 
     def __repr__(self):
         return 'Field("%s.%s")'%self.name()
+
+def processLink(name, lstr):
+    """Process the INP or OUT link
+    
+    Expects lstr to be "module arg1 arg2"
+
+    Returns (callable, Record, "arg1 arg2")
+    """
+    rec = getRecord(name)
+    modname, factname, args = lstr.split(None,2)
+    mod = __import__(modname)
+    return rec, mod.build(rec, args)

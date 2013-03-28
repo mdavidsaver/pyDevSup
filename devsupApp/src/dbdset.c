@@ -105,15 +105,27 @@ static long init_record(dbCommon *prec)
         return 0;
     }
 
+    if(ent.pflddes->field_type!=DBF_INLINK
+            && ent.pflddes->field_type!=DBF_OUTLINK)
+    {
+        fprintf(stderr, "%s: INP/OUT has unacceptible type %d\n",
+                prec->name, ent.pflddes->field_type);
+        goto fail;
+    }
+
     priv->plink = ent.pfield;
 
     if(priv->plink->type != INST_IO) {
         fprintf(stderr, "%s: Has invalid link type %d\n", prec->name, priv->plink->type);
-        free(priv);
-        return 0;
+        goto fail;
     }
 
+    dbFreeEntry(&ent);
     prec->dpvt = priv;
+    return 0;
+fail:
+    dbFreeEntry(&ent);
+    free(priv);
     return 0;
 }
 

@@ -17,13 +17,28 @@ typedef struct {
     DBENTRY entry;
 } pyRecord;
 
+static void pyRecord_dealloc(pyRecord *self)
+{
+    dbFinishEntry(&self->entry);
+    self->ob_type->tp_free((PyObject*)self);
+}
+
+static PyObject* pyRecord_new(PyTypeObject *type, PyObject *args, PyObject *kws)
+{
+    pyRecord *self;
+
+    self = (pyRecord*)type->tp_alloc(type, 0);
+    if(self) {
+        dbInitEntry(pdbbase, &self->entry);
+    }
+    return (PyObject*)self;
+}
+
 static int pyRecord_Init(pyRecord *self, PyObject *args, PyObject *kws)
 {
     const char *recname;
     if(!PyArg_ParseTuple(args, "s", &recname))
         return -1;
-
-    dbInitEntry(pdbbase, &self->entry);
 
     if(dbFindRecord(&self->entry, recname)){
         PyErr_SetString(PyExc_ValueError, "Record not found");
@@ -37,12 +52,9 @@ static int pyRecord_compare(pyRecord *A, pyRecord *B)
     dbCommon *a=A->entry.precnode->precord,
              *b=B->entry.precnode->precord;
 
-    if(a<b)
-        return -1;
-    else if(a==b)
+    if(a==b)
         return 0;
-    else
-        return 1;
+    return strcmp(a->name, b->name);
 }
 
 static PyObject* pyRecord_name(pyRecord *self)
@@ -157,6 +169,9 @@ int pyRecord_prepare(void)
 {
     pyRecord_type.tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE;
     pyRecord_type.tp_methods = pyRecord_methods;
+
+    pyRecord_type.tp_new = (newfunc)pyRecord_new;
+    pyRecord_type.tp_dealloc = (destructor)pyRecord_dealloc;
     pyRecord_type.tp_init = (initproc)pyRecord_Init;
     pyRecord_type.tp_compare = (cmpfunc)pyRecord_compare;
 

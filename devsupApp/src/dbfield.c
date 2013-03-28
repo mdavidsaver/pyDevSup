@@ -164,6 +164,54 @@ static PyMethodDef pyField_methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
+static Py_ssize_t pyField_buf_getcount(pyField *self, Py_ssize_t *totallen)
+{
+    if(totallen)
+        *totallen = self->addr.field_size * self->addr.no_elements;
+    return 1;
+}
+
+static Py_ssize_t pyField_buf_getbuf(pyField *self, Py_ssize_t bufid, void **data)
+{
+    if(bufid!=0) {
+        PyErr_SetString(PyExc_SystemError, "Requested invalid segment");
+        return -1;
+    }
+    *data = self->addr.pfield;
+    return 0;
+}
+
+static Py_ssize_t pyField_buf_getcharbuf(pyField *self, Py_ssize_t bufid, char **data)
+{
+    if(bufid!=0) {
+        PyErr_SetString(PyExc_SystemError, "Requested invalid segment");
+        return -1;
+    }
+    if(self->addr.field_size!=1) {
+        PyErr_SetString(PyExc_TypeError, "Field type must be CHAR or UCHAR");
+        return -1;
+    }
+    *data = self->addr.pfield;
+    return 0;
+}
+
+static int pyField_buf_getbufferproc(pyField *self, Py_buffer *buf, int flags)
+{
+    return PyBuffer_FillInfo(buf, (PyObject*)self,
+                             self->addr.pfield,
+                             self->addr.field_size * self->addr.no_elements,
+                             0, flags);
+}
+
+static PyBufferProcs pyField_buf_methods = {
+    (readbufferproc)pyField_buf_getbuf,
+    (writebufferproc)pyField_buf_getbuf,
+    (segcountproc)pyField_buf_getcount,
+    (charbufferproc)pyField_buf_getcharbuf,
+    (getbufferproc)pyField_buf_getbufferproc,
+    (releasebufferproc)NULL,
+};
+
 
 static PyTypeObject pyField_type = {
     PyObject_HEAD_INIT(NULL)
@@ -175,7 +223,9 @@ static PyTypeObject pyField_type = {
 int pyField_prepare(void)
 {
     pyField_type.tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE;
+    pyField_type.tp_flags |= Py_TPFLAGS_HAVE_GETCHARBUFFER|Py_TPFLAGS_HAVE_NEWBUFFER;
     pyField_type.tp_methods = pyField_methods;
+    pyField_type.tp_as_buffer = &pyField_buf_methods;
     pyField_type.tp_init = (initproc)pyField_Init;
 
     pyField_type.tp_new = PyType_GenericNew;

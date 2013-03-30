@@ -34,7 +34,6 @@ static PyObject* pyRecord_new(PyTypeObject *type, PyObject *args, PyObject *kws)
     self = (pyRecord*)type->tp_alloc(type, 0);
     if(self) {
         dbInitEntry(pdbbase, &self->entry);
-        self->ispyrec = isPyRecord(self->entry.precnode->precord);
     }
     return (PyObject*)self;
 }
@@ -49,6 +48,7 @@ static int pyRecord_Init(pyRecord *self, PyObject *args, PyObject *kws)
         PyErr_SetString(PyExc_ValueError, "No record by this name");
         return -1;
     }
+    self->ispyrec = isPyRecord(self->entry.precnode->precord);
     return 0;
 }
 

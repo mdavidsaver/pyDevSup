@@ -54,17 +54,23 @@ static long parse_link(dbCommon *prec, const char* src)
 static long detach_common(dbCommon *prec)
 {
     pyDevice *priv = prec->dpvt;
-    PyObject *ret;
+    long ret = 0;
 
-    ret = PyObject_CallMethod(priv->support, "detach", "O", priv->pyrecord);
-    Py_DECREF(priv->support);
-    Py_DECREF(priv->pyrecord);
-    priv->support = NULL;
+    if(priv->support) {
+        PyObject *sup = 0;
+        sup = PyObject_CallMethod(priv->support, "detach", "O", priv->pyrecord);
+        Py_DECREF(priv->support);
+        priv->support = NULL;
+        if(sup)
+            Py_DECREF(sup);
+        else
+            ret = -1;
+    }
+    if(priv->pyrecord)
+        Py_DECREF(priv->pyrecord);
     priv->pyrecord = NULL;
-    if(!ret)
-        return -1;
-    Py_DECREF(ret);
-    return 0;
+
+    return ret;
 }
 
 static long process_common(dbCommon *prec, int cause)
@@ -81,60 +87,12 @@ static long process_common(dbCommon *prec, int cause)
 
 static long init_record(dbCommon *prec)
 {
-    pyDevice *priv;
-    DBENTRY ent;
-    long ret;
-
-    priv = callocMustSucceed(1, sizeof(*priv), "init_record");
-
-    dbInitEntry(pdbbase, &ent);
-
-    /* find ourself */
-    ret = dbFindRecord(&ent, prec->name);
-    assert(ret==0); /* really shouldn't fail */
-
-    ret = dbFindField(&ent, "INP");
-
-    if(ret)
-        ret = dbFindField(&ent, "OUT");
-
-    if(ret) {
-        fprintf(stderr, "%s: Unable to find INP/OUT\n", prec->name);
-        recGblSetSevr(prec, BAD_SUB_ALARM, INVALID_ALARM);
-        free(priv);
-        return 0;
-    }
-
-    if(ent.pflddes->field_type!=DBF_INLINK
-            && ent.pflddes->field_type!=DBF_OUTLINK)
-    {
-        fprintf(stderr, "%s: INP/OUT has unacceptible type %d\n",
-                prec->name, ent.pflddes->field_type);
-        goto fail;
-    }
-
-    priv->plink = ent.pfield;
-
-    if(priv->plink->type != INST_IO) {
-        fprintf(stderr, "%s: Has invalid link type %d\n", prec->name, priv->plink->type);
-        goto fail;
-    }
-
-    dbFreeEntry(&ent);
-    prec->dpvt = priv;
-    return 0;
-fail:
-    dbFreeEntry(&ent);
-    free(priv);
     return 0;
 }
 
 static long init_record2(dbCommon *prec)
 {
-    long ret = init_record(prec);
-    if(ret==0)
-        ret = 2;
-    return ret;
+    return 2;
 }
 
 static long add_record(dbCommon *prec)
@@ -143,8 +101,63 @@ static long add_record(dbCommon *prec)
     PyGILState_STATE pystate;
     long ret;
 
-    if(!priv)
-        return 0;
+    fprintf(stderr, "%s: init_record\n", prec->name);
+
+    if(!priv) {
+        DBENTRY ent;
+
+        dbInitEntry(pdbbase, &ent);
+
+        /* find ourself */
+        ret = dbFindRecord(&ent, prec->name);
+        assert(ret==0); /* really shouldn't fail */
+
+        ret = dbFindField(&ent, "INP");
+
+        if(ret)
+            ret = dbFindField(&ent, "OUT");
+
+        if(ret) {
+            fprintf(stderr, "%s: Unable to find INP/OUT\n", prec->name);
+            recGblSetSevr(prec, BAD_SUB_ALARM, INVALID_ALARM);
+            return 0;
+        }
+
+        if(ent.pflddes->field_type!=DBF_INLINK
+                && ent.pflddes->field_type!=DBF_OUTLINK)
+        {
+            fprintf(stderr, "%s: INP/OUT has unacceptible type %d\n",
+                    prec->name, ent.pflddes->field_type);
+            recGblSetSevr(prec, BAD_SUB_ALARM, INVALID_ALARM);
+            return 0;
+        }
+
+        priv = callocMustSucceed(1, sizeof(*priv), "init_record");
+        priv->precord = prec;
+        priv->plink = ent.pfield;
+
+        if(priv->plink->type != INST_IO) {
+            fprintf(stderr, "%s: Has invalid link type %d\n", prec->name, priv->plink->type);
+            recGblSetSevr(prec, BAD_SUB_ALARM, INVALID_ALARM);
+            free(priv);
+            return 0;
+        }
+
+        dbFinishEntry(&ent);
+        prec->dpvt = priv;
+    }
+
+    assert(priv);
+    assert(priv->plink->type == INST_IO);
+
+    {
+        char *msg=priv->plink->value.instio.string;
+        if(!msg || *msg=='\0') {
+            fprintf(stderr, "%s: Empty link string\n", prec->name);
+            recGblSetSevr(prec, BAD_SUB_ALARM, INVALID_ALARM);
+            return 0;
+        }
+    }
 
     pystate = PyGILState_Ensure();
 
@@ -164,8 +177,10 @@ done:
 
 static long del_record(dbCommon *prec)
 {
-    pyDevice *priv = prec->dpvt;
+    pyDevice *priv=prec->dpvt;
     PyGILState_STATE pystate;
+
+    fprintf(stderr, "%s: del_record.  priv=%p\n", prec->name, priv);
 
     if(!priv)
         return 0;
@@ -173,7 +188,7 @@ static long del_record(dbCommon *prec)
     pystate = PyGILState_Ensure();
 
     if(detach_common(prec)) {
-        fprintf(stderr, "%s: Exception in del_record", prec->name);
+        fprintf(stderr, "%s: Exception in del_record\n", prec->name);
         PyErr_Print();
         PyErr_Clear();
     }
@@ -194,12 +209,10 @@ static long process_record(dbCommon *prec)
     pystate = PyGILState_Ensure();
 
     if(process_common(prec, 0)) {
-        fprintf(stderr, "%s: Exception in process_record", prec->name);
+        fprintf(stderr, "%s: Exception in process_record\n", prec->name);
         PyErr_Print();
         PyErr_Clear();
     }
-
-    assert(!priv->support);
 
     PyGILState_Release(pystate);
     return 0;

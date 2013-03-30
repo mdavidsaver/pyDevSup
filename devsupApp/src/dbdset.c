@@ -15,6 +15,7 @@
 #include <recGbl.h>
 #include <alarm.h>
 #include <ellLib.h>
+#include <dbScan.h>
 #include <cantProceed.h>
 
 #include "pydevsup.h"
@@ -30,6 +31,9 @@ typedef struct {
 
     PyObject *pyrecord;
     PyObject *support;
+
+    int allowscan;
+    IOSCANPVT scan;
 
     PyObject *reason;
 } pyDevice;
@@ -49,6 +53,7 @@ static long parse_link(dbCommon *prec, const char* src)
         return -1;
 
     if(!PyArg_ParseTuple(ret, "OO", &priv->pyrecord, &priv->support)) {
+        priv->pyrecord = priv->support = NULL; /* paranoia */
         Py_DECREF(ret);
         return -1;
     }
@@ -96,6 +101,20 @@ static long process_common(dbCommon *prec)
         return -1;
     Py_DECREF(ret);
     return 0;
+}
+
+static int allow_ioscan(pyDevice *priv)
+{
+    PyObject *ret = PyObject_CallMethod(priv->support, "allowScan", "O", priv->pyrecord);
+    if(!ret || !PyObject_IsTrue(ret)) {
+        PyErr_Print();
+        PyErr_Clear();
+        Py_XDECREF(ret);
+        return 0;
+    } else {
+        Py_DECREF(ret);
+        return 1;
+    }
 }
 
 static long init_record(dbCommon *prec)
@@ -146,6 +165,7 @@ static long add_record(dbCommon *prec)
         priv = callocMustSucceed(1, sizeof(*priv), "init_record");
         priv->precord = prec;
         priv->plink = ent.pfield;
+        scanIoInit(&priv->scan);
 
         if(priv->plink->type != INST_IO) {
             fprintf(stderr, "%s: Has invalid link type %d\n", prec->name, priv->plink->type);
@@ -194,7 +214,7 @@ static long del_record(dbCommon *prec)
     pyDevice *priv=prec->dpvt;
     PyGILState_STATE pystate;
 
-    if(!priv)
+    if(!priv || !priv->support)
         return 0;
 
     pystate = PyGILState_Ensure();
@@ -209,6 +229,22 @@ static long del_record(dbCommon *prec)
     assert(!priv->pyrecord);
 
     PyGILState_Release(pystate);
+    return 0;
+}
+
+static long get_iointr_info(int dir, dbCommon *prec, IOSCANPVT *scan)
+{
+    pyDevice *priv=prec->dpvt;
+    if(!priv || !priv->support)
+        return 0;
+
+    if(dir==0) {
+        if(!allow_ioscan(priv))
+            return S_db_Blocked;
+        priv->allowscan = 1;
+    } else
+        priv->allowscan = 0;
+    *scan = priv->scan;
     return 0;
 }
 
@@ -273,12 +309,26 @@ typedef struct {
     DEVSUPFUN proc;
 } dset5;
 
-static dset5 pydevsupCom = {{5, NULL, (DEVSUPFUN)&init, (DEVSUPFUN)&init_record, NULL}, (DEVSUPFUN)&process_record};
-static dset5 pydevsupCom2 = {{5, NULL, (DEVSUPFUN)&init, (DEVSUPFUN)&init_record2, NULL}, (DEVSUPFUN)&process_record};
+static dset5 pydevsupCom = {{5, NULL, (DEVSUPFUN)&init,
+                             (DEVSUPFUN)&init_record,
+                             (DEVSUPFUN)&get_iointr_info},
+                            (DEVSUPFUN)&process_record};
+static dset5 pydevsupCom2 = {{5, NULL, (DEVSUPFUN)&init,
+                              (DEVSUPFUN)&init_record2,
+                              (DEVSUPFUN)&get_iointr_info},
+                             (DEVSUPFUN)&process_record};
 
 int isPyRecord(dbCommon *prec)
 {
     return prec->dset==(dset*)&pydevsupCom || prec->dset==(dset*)&pydevsupCom2;
+}
+
+int canIOScanRecord(dbCommon *prec)
+{
+    pyDevice *priv=prec->dpvt;
+    if(isPyRecord(prec))
+        return 0;
+    return priv->allowscan;
 }
 
 /* Called with GIL locked */
@@ -300,12 +350,9 @@ void pyDBD_cleanup(void)
 
         /* cleanup and dealloc */
 
-        if(priv->support)
-            Py_DECREF(priv->support);
-        if(priv->pyrecord)
-            Py_DECREF(priv->pyrecord);
-        if(priv->reason)
-            Py_DECREF(priv->reason);
+        Py_XDECREF(priv->support);
+        Py_XDECREF(priv->pyrecord);
+        Py_XDECREF(priv->reason);
         priv->support = priv->pyrecord = priv->reason = NULL;
 
         free(priv);

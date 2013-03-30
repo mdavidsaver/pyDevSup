@@ -18,6 +18,7 @@ typedef struct {
     PyObject_HEAD
 
     DBENTRY entry;
+    int ispyrec;
 } pyRecord;
 
 static void pyRecord_dealloc(pyRecord *self)
@@ -33,6 +34,7 @@ static PyObject* pyRecord_new(PyTypeObject *type, PyObject *args, PyObject *kws)
     self = (pyRecord*)type->tp_alloc(type, 0);
     if(self) {
         dbInitEntry(pdbbase, &self->entry);
+        self->ispyrec = isPyRecord(self->entry.precnode->precord);
     }
     return (PyObject*)self;
 }
@@ -48,6 +50,11 @@ static int pyRecord_Init(pyRecord *self, PyObject *args, PyObject *kws)
         return -1;
     }
     return 0;
+}
+
+static PyObject* pyRecord_ispyrec(pyRecord *self)
+{
+    return PyBool_FromLong(self->ispyrec);
 }
 
 static int pyRecord_compare(pyRecord *A, pyRecord *B)
@@ -124,11 +131,12 @@ static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
 {
     dbCommon *prec = self->entry.precnode->precord;
 
-    static char* names[] = {"sync", "reason", NULL};
+    static char* names[] = {"sync", "reason", "force", NULL};
+    unsigned int force = 0;
     PyObject *reason = Py_None;
     PyObject *sync = Py_False;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kws, "|OO", names, &sync, &reason))
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "|OOI", names, &sync, &reason, &force))
         return NULL;
 
     if(!PyObject_IsTrue(sync)) {
@@ -136,20 +144,32 @@ static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
         Py_RETURN_NONE;
 
     } else {
-        long ret;
+        long ret=-1;
+        int ran=1;
         setReasonPyRecord(prec, reason);
 
         Py_BEGIN_ALLOW_THREADS {
 
             dbScanLock(prec);
-            ret = dbProcess(prec);
+            if(force==1
+               || (force==0 && prec->scan==menuScanPassive)
+               || (force==2 && prec->scan==menuScanI_O_Intr && canIOScanRecord(prec)))
+            {
+                ran = 1;
+                ret = dbProcess(prec);
+            }
             dbScanUnlock(prec);
 
         } Py_END_ALLOW_THREADS
 
         clearReasonPyRecord(prec);
 
-        return PyLong_FromLong(ret);
+        if(ran)
+            return PyLong_FromLong(ret);
+        else {
+            PyErr_SetNone(PyExc_RuntimeError);
+            return NULL;
+        }
     }
 }
 
@@ -181,7 +201,7 @@ static PyObject *pyRecord_asyncFinish(pyRecord *self, PyObject *args, PyObject *
         return NULL;
     }
 
-    Py_INCREF(self);
+    Py_INCREF(self); /* necessary? */
 
     setReasonPyRecord(prec, reason);
 
@@ -213,6 +233,8 @@ static PyObject *pyRecord_asyncFinish(pyRecord *self, PyObject *args, PyObject *
 static PyMethodDef pyRecord_methods[] = {
     {"name", (PyCFunction)pyRecord_name, METH_NOARGS,
      "Return record name string"},
+    {"isPyRecord", (PyCFunction)pyRecord_ispyrec, METH_NOARGS,
+     "Is this record using Python Device."},
     {"info", (PyCFunction)pyRecord_info, METH_VARARGS,
      "Lookup info name\ninfo(name, def=None)"},
     {"infos", (PyCFunction)pyRecord_infos, METH_NOARGS,

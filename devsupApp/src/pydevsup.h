@@ -11,6 +11,7 @@ int pyRecord_prepare(void);
 void pyRecord_setup(PyObject *module);
 
 int isPyRecord(dbCommon *);
+int canIOScanRecord(dbCommon *);
 int setReasonPyRecord(dbCommon *, PyObject *);
 int clearReasonPyRecord(dbCommon *);
 

@@ -30,6 +30,8 @@ typedef struct {
 
     PyObject *pyrecord;
     PyObject *support;
+
+    PyObject *reason;
 } pyDevice;
 
 static long parse_link(dbCommon *prec, const char* src)
@@ -80,12 +82,16 @@ static long detach_common(dbCommon *prec)
     return ret;
 }
 
-static long process_common(dbCommon *prec, int cause)
+static long process_common(dbCommon *prec)
 {
     pyDevice *priv = prec->dpvt;
+    PyObject *cause = priv->reason;
     PyObject *ret;
 
-    ret = PyObject_CallMethod(priv->support, "process", "Oi", priv->pyrecord, cause);
+    if(!cause)
+        cause = Py_None;
+
+    ret = PyObject_CallMethod(priv->support, "process", "OO", priv->pyrecord, cause);
     if(!ret)
         return -1;
     Py_DECREF(ret);
@@ -215,7 +221,7 @@ static long process_record(dbCommon *prec)
         return 0;
     pystate = PyGILState_Ensure();
 
-    if(process_common(prec, 0)) {
+    if(process_common(prec)) {
         fprintf(stderr, "%s: Exception in process_record\n", prec->name);
         PyErr_Print();
         PyErr_Clear();
@@ -224,6 +230,27 @@ static long process_record(dbCommon *prec)
     PyGILState_Release(pystate);
     return 0;
 }
+
+int setCausePyRecord(dbCommon *prec, PyObject *reason)
+{
+    pyDevice *priv=prec->dpvt;
+    if(!isPyRecord(prec) || !priv || priv->reason)
+        return 0;
+    Py_INCREF(reason);
+    priv->reason = reason;
+    return 1;
+}
+
+int clearCausePyRecord(dbCommon *prec)
+{
+    pyDevice *priv=prec->dpvt;
+    if(!isPyRecord(prec) || !priv || !priv->reason)
+        return 0;
+    Py_DECREF(priv->reason);
+    priv->reason = NULL;
+    return 1;
+}
+
 
 static dsxt pydevsupExt = {&add_record, &del_record};
 

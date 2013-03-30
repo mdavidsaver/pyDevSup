@@ -123,15 +123,18 @@ static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
 {
     dbCommon *prec = self->entry.precnode->precord;
 
-    static char* names[] = {"sync", NULL};
+    static char* names[] = {"sync", "reason", NULL};
+    PyObject *reason = Py_None;
     PyObject *sync = Py_False;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kws, "|O", names, &sync))
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "|OO", names, &sync, &reason))
         return NULL;
 
     if(!PyObject_IsTrue(sync)) {
         scanOnce(prec);
     } else {
+        setCausePyRecord(prec, reason);
+
         Py_BEGIN_ALLOW_THREADS {
 
             dbScanLock(prec);
@@ -139,6 +142,8 @@ static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
             dbScanUnlock(prec);
 
         } Py_END_ALLOW_THREADS
+
+        clearCausePyRecord(prec);
     }
 
     Py_RETURN_NONE;

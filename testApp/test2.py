@@ -8,16 +8,9 @@ insts = {}
 def done(obj):
     print obj,'Expires'
 
-_tracking = {}
-def track(obj):
-    W = weakref.ref(obj, done)
-    print 'track',obj,'with',W
-    _tracking[id(obj)] = W
-
 class Driver(threading.Thread):
     def __init__(self, name):
         super(Driver,self).__init__()
-        track(self)
         self.name = name
         self._lock = threading.Lock()
         self._recs = set()
@@ -59,17 +52,13 @@ def addDrv(name):
 
 class Device(object):
     def __init__(self, rec, drv):
-        track(self)
         self.driver, self.record = drv, rec
         self.driver.addrec(self)
         self.val = rec.field('VAL')
     def detach(self, rec):
         self.driver.delrec(self)
     def process(self, rec, data):
-        if data is None:
-            print rec,'Someone processed me?'
-        else:
-            print rec,'update to',data
+        if data is not None:
             self.val.putval(data)
 
 def build(rec, args):

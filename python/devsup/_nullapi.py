@@ -17,6 +17,9 @@ class Record(object):
     def name(self):
         """Record name
         """
+    def isPyRecord(self):
+        """Is this record using Python Device.
+        """
     def info(self, key):
         """info(key)
         info(key, default)
@@ -30,7 +33,7 @@ class Record(object):
         for this record
         """
 
-    def scan(self, sync=False):
+    def scan(self, sync=False, reason=None, force=0):
         """scan(sync=False)
         
         Scan this record.  If sync is False then a
@@ -38,10 +41,17 @@ class Record(object):
         is scannined immidately on the current thread.
         """
 
+    def asyncStart(self):
+        pass
+    def asyncFinish(self, reason=None):
+        pass
+
 def Field(object):
     """Handle for field operations
     
     f = Field("rec:name.HOPR")
+    
+    Field objects implement the buffer protocol.
     """
     def __init__(self, fld):
         pass
@@ -66,4 +76,8 @@ def Field(object):
         """Update the field value
         
         Must be an Int, Float or str
+        """
+
+    def getarray(self):
+        """Return a numpy ndarray refering to this field for in-place operations.
         """

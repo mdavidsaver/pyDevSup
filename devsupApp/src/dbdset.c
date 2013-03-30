@@ -66,12 +66,12 @@ static long detach_common(dbCommon *prec)
     long ret = 0;
 
     if(priv->support) {
-        PyObject *sup = 0;
-        sup = PyObject_CallMethod(priv->support, "detach", "O", priv->pyrecord);
-        Py_DECREF(priv->support);
+        PyObject *junk = 0, *sup=priv->support;
+        junk = PyObject_CallMethod(sup, "detach", "O", priv->pyrecord);
         priv->support = NULL;
-        if(sup)
-            Py_DECREF(sup);
+        Py_DECREF(sup);
+        if(junk)
+            Py_DECREF(junk);
         else
             ret = -1;
     }

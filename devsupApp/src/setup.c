@@ -57,15 +57,23 @@ static pystate statenames[] = {
     INITST(AfterCaServerPaused),
     INITST(AfterDatabasePaused),
     INITST(AfterIocPaused),
+
+    {(initHookState)9999, "AtIocExit"},
+
     {(initHookState)0, NULL}
 };
 #undef INITST
+
+static void pyhook(initHookState state);
 
 static void cleanupPy(void *junk)
 {
     PyThreadState *state = PyGILState_GetThisThreadState();
 
     PyEval_RestoreThread(state);
+
+    /* special "fake" hook for shutdown */
+    pyhook((initHookState)9999);
 
     PyField_cleanup();
 

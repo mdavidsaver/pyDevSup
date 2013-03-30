@@ -300,7 +300,7 @@ void pyField_setup(PyObject *module)
     PyModule_AddObject(module, "_Field", (PyObject*)&pyField_type);
 }
 
-void PyField_cleanup(void)
+void pyField_cleanup(void)
 {
     size_t i;
 

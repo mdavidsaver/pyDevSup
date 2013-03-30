@@ -281,6 +281,37 @@ int isPyRecord(dbCommon *prec)
     return prec->dset==(dset*)&pydevsupCom || prec->dset==(dset*)&pydevsupCom2;
 }
 
+/* Called with GIL locked */
+void pyDBD_cleanup(void)
+{
+    ELLNODE *cur;
+    while((cur=ellGet(&devices))!=NULL) {
+        pyDevice *priv=(pyDevice*)cur;
+
+        /* disconnect record by clearing DPVT */
+        Py_BEGIN_ALLOW_THREADS {
+
+            dbScanLock(priv->precord);
+            assert(priv==priv->precord->dpvt);
+            priv->precord->dpvt = NULL;
+            dbScanUnlock(priv->precord);
+
+        } Py_END_ALLOW_THREADS
+
+        /* cleanup and dealloc */
+
+        if(priv->support)
+            Py_DECREF(priv->support);
+        if(priv->pyrecord)
+            Py_DECREF(priv->pyrecord);
+        if(priv->reason)
+            Py_DECREF(priv->reason);
+        priv->support = priv->pyrecord = priv->reason = NULL;
+
+        free(priv);
+    }
+}
+
 #include <epicsExport.h>
 
 epicsExportAddress(dset, pydevsupCom);

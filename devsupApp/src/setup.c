@@ -75,7 +75,9 @@ static void cleanupPy(void *junk)
     /* special "fake" hook for shutdown */
     pyhook((initHookState)9999);
 
-    PyField_cleanup();
+    pyDBD_cleanup();
+
+    pyField_cleanup();
 
     /* release extra reference for hooktable */
     Py_DECREF(hooktable);

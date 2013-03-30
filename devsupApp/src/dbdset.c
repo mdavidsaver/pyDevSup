@@ -14,11 +14,16 @@
 #include <dbLink.h>
 #include <recGbl.h>
 #include <alarm.h>
+#include <ellLib.h>
 #include <cantProceed.h>
 
 #include "pydevsup.h"
 
+static ELLLIST devices = ELLLIST_INIT;
+
 typedef struct {
+    ELLNODE node;
+
     dbCommon *precord;
 
     DBLINK *plink;
@@ -142,6 +147,8 @@ static long add_record(dbCommon *prec)
             free(priv);
             return 0;
         }
+
+        ellAdd(&devices, &priv->node);
 
         dbFinishEntry(&ent);
         prec->dpvt = priv;

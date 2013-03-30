@@ -4,3 +4,13 @@ record(longin, "$(P)li:cnt") {
   field(INP , "@test1 hello world")
   field(SCAN, "1 second")
 }
+
+record(longin, "$(P)val:a") {
+  field(DTYP, "Python Device")
+  field(INP , "@test2 AAAA")
+}
+
+record(longin, "$(P)val:b") {
+  field(DTYP, "Python Device")
+  field(INP , "@test2 AAAA")
+}

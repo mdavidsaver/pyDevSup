@@ -1,0 +1,6 @@
+
+record(longin, "$(P)li:cnt") {
+  field(DTYP, "Python Device")
+  field(INP , "@test1 hello world")
+  field(SCAN, "1 second")
+}

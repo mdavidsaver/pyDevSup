@@ -61,6 +61,6 @@ def processLink(name, lstr):
     Returns (callable, Record, "arg1 arg2")
     """
     rec = getRecord(name)
-    modname, factname, args = lstr.split(None,2)
+    modname, args = lstr.split(None,1)
     mod = __import__(modname)
     return rec, mod.build(rec, args)

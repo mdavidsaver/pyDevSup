@@ -5,16 +5,19 @@ include $(TOP)/configure/CONFIG
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
 
-PYTHON = python
-# EG 2.7
-PY_VER = $(shell $(PYTHON) -c 'from distutils.sysconfig import get_config_var; print get_config_var("VERSION")')
-# EG -I/usr/include/python2.7
-PY_CFLAGS := -I$(shell $(PYTHON) -c 'from distutils.sysconfig import get_python_inc; print get_python_inc()')
-# EG -L/usr/lib
-PY_LIBDIR := -L$(shell $(PYTHON) -c 'from distutils.sysconfig import get_config_var; print get_config_var("LIBDIR")')
+ifdef T_A
+include $(TOP)/configure/O.$(T_A)/CONFIG_PY
+ifneq ($(PY_OK),YES)
+$(error Unable to get python configuration)
+endif
+endif
 
-USR_CPPFLAGS += $(PY_CFLAGS)
-USR_LDFLAGS += $(PY_LIBDIR)
+USR_CPPFLAGS += $(PY_INCDIRS:%=-I%)
+USR_LDFLAGS += $(PY_LIBDIRS:%=-L%)
+
+ifeq ($(HAVE_NUMPY),YES)
+USR_CPPFLAGS += -DHAVE_NUMPY
+endif
 
 #=============================
 # Build the IOC application
@@ -53,3 +56,11 @@ include $(TOP)/configure/RULES
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
 
+pyconfig:
+	@echo "Python Configuration for interpreter: $(PYTHON)"
+	@echo "Version: $(PY_VER)"
+	@echo "Found numpy: $(HAVE_NUMPY)"
+	@echo "Includes: $(PY_INCDIRS)"
+	@echo "Library path: $(PY_LIBDIRS)"
+	@echo "USR_CPPFLAGS: $(USR_CPPFLAGS)"
+	@echo "USR_LDFLAGS: $(USR_LDFLAGS)"

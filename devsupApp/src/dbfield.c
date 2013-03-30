@@ -178,7 +178,7 @@ static Py_ssize_t pyField_buf_getbuf(pyField *self, Py_ssize_t bufid, void **dat
         return -1;
     }
     *data = self->addr.pfield;
-    return 0;
+    return self->addr.field_size * self->addr.no_elements;
 }
 
 static Py_ssize_t pyField_buf_getcharbuf(pyField *self, Py_ssize_t bufid, char **data)
@@ -186,13 +186,12 @@ static Py_ssize_t pyField_buf_getcharbuf(pyField *self, Py_ssize_t bufid, char *
     if(bufid!=0) {
         PyErr_SetString(PyExc_SystemError, "Requested invalid segment");
         return -1;
-    }
-    if(self->addr.field_size!=1) {
+    } else if(self->addr.field_size!=1) {
         PyErr_SetString(PyExc_TypeError, "Field type must be CHAR or UCHAR");
         return -1;
     }
     *data = self->addr.pfield;
-    return 0;
+    return self->addr.field_size * self->addr.no_elements;
 }
 
 static int pyField_buf_getbufferproc(pyField *self, Py_buffer *buf, int flags)

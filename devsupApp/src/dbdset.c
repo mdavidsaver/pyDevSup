@@ -85,13 +85,13 @@ static long detach_common(dbCommon *prec)
 static long process_common(dbCommon *prec)
 {
     pyDevice *priv = prec->dpvt;
-    PyObject *cause = priv->reason;
+    PyObject *reason = priv->reason;
     PyObject *ret;
 
-    if(!cause)
-        cause = Py_None;
+    if(!reason)
+        reason = Py_None;
 
-    ret = PyObject_CallMethod(priv->support, "process", "OO", priv->pyrecord, cause);
+    ret = PyObject_CallMethod(priv->support, "process", "OO", priv->pyrecord, reason);
     if(!ret)
         return -1;
     Py_DECREF(ret);
@@ -236,7 +236,7 @@ static long process_record(dbCommon *prec)
     return 0;
 }
 
-int setCausePyRecord(dbCommon *prec, PyObject *reason)
+int setReasonPyRecord(dbCommon *prec, PyObject *reason)
 {
     pyDevice *priv=prec->dpvt;
     if(!isPyRecord(prec) || !priv || priv->reason)
@@ -246,7 +246,7 @@ int setCausePyRecord(dbCommon *prec, PyObject *reason)
     return 1;
 }
 
-int clearCausePyRecord(dbCommon *prec)
+int clearReasonPyRecord(dbCommon *prec)
 {
     pyDevice *priv=prec->dpvt;
     if(!isPyRecord(prec) || !priv || !priv->reason)

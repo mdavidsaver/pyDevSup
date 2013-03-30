@@ -172,26 +172,28 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
 }
 
 static PyObject *pyField_getarray(pyField *self)
-#ifdef HAVE_NUMPY
 {
+#ifdef HAVE_NUMPY
     int flags = NPY_CARRAY;
     char *data=self->addr.pfield;
     npy_int dims[1] = {self->addr.no_elements};
     PyArray_Descr *desc;
+
     if(self->addr.field_type>DBF_ENUM) {
         PyErr_SetString(PyExc_TypeError, "Can not map field type to numpy type");
         return NULL;
-    }
+    } else if(self->addr.field_type==DBF_STRING)
+        dims[0] *= self->addr.field_size;
+
     desc = dbf2np[self->addr.field_type];
     Py_XINCREF(desc);
     return PyArray_NewFromDescr(&PyArray_Type, desc, 1, dims, NULL, data, flags, (PyObject*)self);
-}
+
 #else
-{
     PyErr_SetNone(PyExc_NotImplementedError);
     return NULL;
-}
 #endif
+}
 
 static PyMethodDef pyField_methods[] = {
     {"name", (PyCFunction)pyField_name, METH_NOARGS,

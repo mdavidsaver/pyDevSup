@@ -101,8 +101,6 @@ static long add_record(dbCommon *prec)
     PyGILState_STATE pystate;
     long ret;
 
-    fprintf(stderr, "%s: init_record\n", prec->name);
-
     if(!priv) {
         DBENTRY ent;
 
@@ -169,6 +167,7 @@ static long add_record(dbCommon *prec)
         goto done;
     }
     assert(priv->support);
+    assert(priv->pyrecord);
     ret = 0;
 done:
     PyGILState_Release(pystate);
@@ -179,8 +178,6 @@ static long del_record(dbCommon *prec)
 {
     pyDevice *priv=prec->dpvt;
     PyGILState_STATE pystate;
-
-    fprintf(stderr, "%s: del_record.  priv=%p\n", prec->name, priv);
 
     if(!priv)
         return 0;
@@ -194,6 +191,7 @@ static long del_record(dbCommon *prec)
     }
 
     assert(!priv->support);
+    assert(!priv->pyrecord);
 
     PyGILState_Release(pystate);
     return 0;

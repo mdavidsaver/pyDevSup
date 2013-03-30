@@ -71,105 +71,58 @@ static PyObject* pyField_fldinfo(pyField *self)
     return Py_BuildValue("hhk", dbf, fsize, nelm);
 }
 
-union dbfvalue {
-    char dv_sval[MAX_STRING_SIZE];
-    epicsUInt32 dv_uval;
-    epicsInt32 dv_ival;
-    double dv_fval;
-};
-
 static PyObject* pyField_getval(pyField *self)
 {
-    union dbfvalue buf;
-    long nReq = 1;
-    short reqtype;
-
     switch(self->addr.field_type)
     {
-    case DBF_CHAR:
-    case DBF_UCHAR:
-    case DBF_SHORT:
-    case DBF_USHORT:
-    case DBF_ENUM:
-    case DBF_LONG:
-        reqtype = DBF_LONG;
-        break;
-    case DBF_ULONG:
-        reqtype = DBF_ULONG;
-        break;
-    case DBF_FLOAT:
-    case DBF_DOUBLE:
-        reqtype = DBF_DOUBLE;
-        break;
+#define OP(FTYPE, CTYPE, FN) case DBF_##FTYPE: return FN(*(CTYPE*)self->addr.pfield)
+    OP(CHAR,  epicsInt8,   PyInt_FromLong);
+    OP(UCHAR, epicsUInt8,  PyInt_FromLong);
+    OP(SHORT, epicsInt16,  PyInt_FromLong);
+    OP(USHORT,epicsUInt16, PyInt_FromLong);
+    OP(LONG,  epicsInt32,  PyInt_FromLong);
+    OP(ULONG, epicsUInt32, PyInt_FromLong);
+    OP(FLOAT, epicsFloat32,PyFloat_FromDouble);
+    OP(DOUBLE,epicsFloat64,PyFloat_FromDouble);
+#undef OP
     case DBF_STRING:
-        reqtype = DBF_STRING;
-        break;
+        return PyString_FromString((char*)self->addr.pfield);
     default:
-        PyErr_SetString(PyExc_ValueError, "Access to this field type is not supported");
+        PyErr_SetNone(PyExc_TypeError);
         return NULL;
-    }
-
-    if(dbGet(&self->addr, reqtype, buf.dv_sval, NULL, &nReq, NULL)) {
-        PyErr_SetString(PyExc_ValueError, "Error getting field value");
-        return NULL;
-    }
-
-    switch(reqtype) {
-    case DBF_LONG:
-        return PyInt_FromLong(buf.dv_ival);
-    case DBF_ULONG:
-        return PyInt_FromLong(buf.dv_uval);
-    case DBF_DOUBLE:
-        return PyInt_FromLong(buf.dv_fval);
-    case DBF_STRING:
-        return PyString_FromString(buf.dv_sval);
-    default:
-        Py_RETURN_NONE;
     }
 }
-
 
 static PyObject* pyField_putval(pyField *self, PyObject* args)
 {
     PyObject *val;
 
-    union dbfvalue buf;
-    short puttype;
-
     if(!PyArg_ParseTuple(args, "O", &val))
         return NULL;
 
-    if(PyFloat_Check(val)) {
-        double v = PyFloat_AsDouble(val);
-        buf.dv_fval = v;
-        puttype = DBF_DOUBLE;
-
-    } else if(PyInt_Check(val)) {
-        long v = PyInt_AsLong(val);
-        if(v>0x7fffffffL) {
-            buf.dv_uval = v;
-            puttype = DBF_ULONG;
-        } else {
-            buf.dv_ival = v;
-            puttype = DBF_LONG;
-        }
-
-    } else if(PyString_Check(val)) {
-        const char *v = PyString_AsString(val);
-        strncpy(buf.dv_sval, v, MAX_STRING_SIZE);
-        buf.dv_sval[MAX_STRING_SIZE-1] = '\0';
-        puttype = DBF_STRING;
-
-    } else {
-        PyErr_SetString(PyExc_TypeError, "Unable to convert put type");
+    switch(self->addr.field_type)
+    {
+#define OP(FTYPE, CTYPE, FN) case DBF_##FTYPE: *(CTYPE*)self->addr.pfield = FN(val); break
+    OP(CHAR,  epicsInt8,   PyInt_AsLong);
+    OP(UCHAR, epicsUInt8,  PyInt_AsLong);
+    OP(SHORT, epicsInt16,  PyInt_AsLong);
+    OP(USHORT,epicsUInt16, PyInt_AsLong);
+    OP(LONG,  epicsInt32,  PyInt_AsLong);
+    OP(ULONG, epicsUInt32, PyInt_AsLong);
+    OP(FLOAT, epicsFloat32,PyFloat_AsDouble);
+    OP(DOUBLE,epicsFloat64,PyFloat_AsDouble);
+#undef OP
+    case DBF_STRING: {
+        char *fld = PyString_AsString(val);
+        strncpy(self->addr.pfield, fld, MAX_STRING_SIZE);
+        fld = self->addr.pfield;
+        fld[MAX_STRING_SIZE-1]='\0';
+        break;
+    }
+    default:
+        PyErr_SetNone(PyExc_TypeError);
         return NULL;
     }
-
-    if(dbPut(&self->addr, puttype, buf.dv_sval, 1)){
-        PyErr_SetString(PyExc_ValueError, "Error putting field value");
-        return NULL;
-    }
-
     Py_RETURN_NONE;
 }
 

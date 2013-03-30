@@ -41,7 +41,7 @@ static int pyRecord_Init(pyRecord *self, PyObject *args, PyObject *kws)
         return -1;
 
     if(dbFindRecord(&self->entry, recname)){
-        PyErr_SetString(PyExc_ValueError, "Record not found");
+        PyErr_SetString(PyExc_ValueError, "No record by this name");
         return -1;
     }
     return 0;
@@ -175,7 +175,6 @@ int pyRecord_prepare(void)
     pyRecord_type.tp_init = (initproc)pyRecord_Init;
     pyRecord_type.tp_compare = (cmpfunc)pyRecord_compare;
 
-    pyRecord_type.tp_new = PyType_GenericNew;
     if(PyType_Ready(&pyRecord_type)<0)
         return -1;
     return 0;

@@ -6,6 +6,9 @@
 #undef _XOPEN_SOURCE
 
 #include <Python.h>
+#ifdef HAVE_NUMPY
+#include <numpy/ndarrayobject.h>
+#endif
 
 #include <stdio.h>
 
@@ -17,6 +20,13 @@
 #include <initHooks.h>
 #include <epicsThread.h>
 #include <epicsExit.h>
+
+int pyField_prepare(void);
+void pyField_setup(PyObject *module);
+void PyField_cleanup(void);
+
+int pyRecord_prepare(void);
+void pyRecord_setup(PyObject *module);
 
 /* dictionary of initHook names */
 static PyObject *hooktable;
@@ -61,6 +71,8 @@ static void cleanupPy(void *junk)
     PyThreadState *state = PyGILState_GetThisThreadState();
 
     PyEval_RestoreThread(state);
+
+    PyField_cleanup();
 
     /* release extra reference for hooktable */
     Py_DECREF(hooktable);
@@ -176,20 +188,13 @@ static PyMethodDef devsup_methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
-int pyField_prepare(void);
-void pyField_setup(PyObject *module);
-
-int pyRecord_prepare(void);
-void pyRecord_setup(PyObject *module);
-
 /* initialize "magic" builtin module */
 static void init_dbapi(void)
 {
     PyObject *mod, *hookdict, *pysuptable;
     pystate *st;
-    PyGILState_STATE state;
 
-    state = PyGILState_Ensure();
+    import_array();
 
     hooktable = PyDict_New();
     if(!hooktable)
@@ -221,7 +226,6 @@ static void init_dbapi(void)
     pyField_setup(mod);
     pyRecord_setup(mod);
 
-    PyGILState_Release(state);
 }
 
 #include <iocsh.h>
@@ -240,11 +244,20 @@ static void fileRun(const iocshArgBuf *args){evalFilePy(args[0].sval);}
 
 static void pySetupReg(void)
 {
+    PyGILState_STATE state;
+
     epicsThreadOnce(&setupPyOnceId, &setupPyOnce, NULL);
     iocshRegister(&codeDef, &codeRun);
     iocshRegister(&fileDef, &fileRun);
     initHookRegister(&pyhook);
+
+    state = PyGILState_Ensure();
     init_dbapi();
+    if(PyErr_Occurred()) {
+        PyErr_Print();
+        PyErr_Clear();
+    }
+    PyGILState_Release(state);
 }
 
 #include <epicsExport.h>

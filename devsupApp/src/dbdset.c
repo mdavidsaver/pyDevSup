@@ -216,6 +216,7 @@ static long process_record(dbCommon *prec)
 {
     pyDevice *priv = prec->dpvt;
     PyGILState_STATE pystate;
+    long pact = prec->pact;
 
     if(!priv || !priv->support)
         return 0;
@@ -226,6 +227,10 @@ static long process_record(dbCommon *prec)
         PyErr_Print();
         PyErr_Clear();
     }
+
+    /* always clear PACT if it was initially set */
+    if(pact)
+        prec->pact = 0;
 
     PyGILState_Release(pystate);
     return 0;

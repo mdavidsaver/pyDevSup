@@ -9,6 +9,7 @@
 #include <dbCommon.h>
 #include <dbAccess.h>
 #include <dbStaticLib.h>
+#include <recSup.h>
 #include <dbScan.h>
 
 #include "pydevsup.h"
@@ -132,21 +133,81 @@ static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
 
     if(!PyObject_IsTrue(sync)) {
         scanOnce(prec);
+        Py_RETURN_NONE;
+
     } else {
+        long ret;
         setCausePyRecord(prec, reason);
 
         Py_BEGIN_ALLOW_THREADS {
 
             dbScanLock(prec);
-            dbProcess(prec);
+            ret = dbProcess(prec);
             dbScanUnlock(prec);
 
         } Py_END_ALLOW_THREADS
 
         clearCausePyRecord(prec);
+
+        return PyLong_FromLong(ret);
+    }
+}
+
+static PyObject *pyRecord_asyncStart(pyRecord *self)
+{
+    dbCommon *prec=self->entry.precnode->precord;
+    epicsUInt8 pact = prec->pact;
+    if(!isPyRecord(prec)) {
+        PyErr_SetString(PyExc_RuntimeError, "Not a Python Device record");
+        return NULL;
+    }
+    prec->pact = 1;
+    return PyLong_FromLong(pact);
+}
+
+static PyObject *pyRecord_asyncFinish(pyRecord *self, PyObject *args, PyObject *kws)
+{
+    long pact, ret;
+    dbCommon *prec = self->entry.precnode->precord;
+
+    static char* names[] = {"reason", NULL};
+    PyObject *reason = Py_None;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "|O", names, &reason))
+        return NULL;
+
+    if(!isPyRecord(prec)) {
+        PyErr_SetString(PyExc_RuntimeError, "Not a Python Device record");
+        return NULL;
     }
 
-    Py_RETURN_NONE;
+    Py_INCREF(self);
+
+    setCausePyRecord(prec, reason);
+
+    Py_BEGIN_ALLOW_THREADS {
+        rset *rsup = prec->rset;
+
+        dbScanLock(prec);
+        pact = prec->pact;
+        if(pact) {
+            ret = (*rsup->process)(prec);
+            /* Out devsup always clears PACT if initially set */
+        }
+        dbScanUnlock(prec);
+
+    } Py_END_ALLOW_THREADS
+
+    clearCausePyRecord(prec);
+
+    if(!pact) {
+        PyErr_SetString(PyExc_ValueError, "Python Device record was not active");
+        return NULL;
+    }
+
+    Py_DECREF(self);
+
+    return PyLong_FromLong(ret);
 }
 
 static PyMethodDef pyRecord_methods[] = {
@@ -159,8 +220,11 @@ static PyMethodDef pyRecord_methods[] = {
     {"scan", (PyCFunction)pyRecord_scan, METH_VARARGS|METH_KEYWORDS,
      "scan(sync=False)\nScan this record.  If sync is False then"
      "a scan request is queued.  If sync is True then the record"
-     "is scannined immidately on the current thread."
-    },
+     "is scannined immidately on the current thread."},
+    {"asyncStart", (PyCFunction)pyRecord_asyncStart, METH_NOARGS,
+     "Begin an asynchronous action.  Record must be locked!"},
+    {"asyncFinish", (PyCFunction)pyRecord_asyncFinish, METH_VARARGS|METH_KEYWORDS,
+     "Complete an asynchronous action.  Record must *not* be locked!"},
     {NULL, NULL, 0, NULL}
 };
 

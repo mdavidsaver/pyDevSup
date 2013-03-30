@@ -13,6 +13,8 @@
 #include <dbAccess.h>
 #include <dbStaticLib.h>
 
+#include "pydevsup.h"
+
 #ifdef HAVE_NUMPY
 static int dbf2np_map[DBF_ENUM+1] = {
     NPY_BYTE,

@@ -21,12 +21,7 @@
 #include <epicsThread.h>
 #include <epicsExit.h>
 
-int pyField_prepare(void);
-void pyField_setup(PyObject *module);
-void PyField_cleanup(void);
-
-int pyRecord_prepare(void);
-void pyRecord_setup(PyObject *module);
+#include "pydevsup.h"
 
 /* dictionary of initHook names */
 static PyObject *hooktable;

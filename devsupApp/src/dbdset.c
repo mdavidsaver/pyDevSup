@@ -16,6 +16,8 @@
 #include <alarm.h>
 #include <cantProceed.h>
 
+#include "pydevsup.h"
+
 typedef struct {
     dbCommon *precord;
 
@@ -234,6 +236,11 @@ typedef struct {
 
 static dset5 pydevsupCom = {{5, NULL, (DEVSUPFUN)&init, (DEVSUPFUN)&init_record, NULL}, (DEVSUPFUN)&process_record};
 static dset5 pydevsupCom2 = {{5, NULL, (DEVSUPFUN)&init, (DEVSUPFUN)&init_record2, NULL}, (DEVSUPFUN)&process_record};
+
+int isPyRecord(dbCommon *prec)
+{
+    return prec->dset==(dset*)&pydevsupCom || prec->dset==(dset*)&pydevsupCom2;
+}
 
 #include <epicsExport.h>
 

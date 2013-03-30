@@ -11,6 +11,8 @@
 #include <dbStaticLib.h>
 #include <dbScan.h>
 
+#include "pydevsup.h"
+
 typedef struct {
     PyObject_HEAD
 

@@ -66,12 +66,42 @@ static long parse_link(dbCommon *prec, const char* src)
     return 0;
 }
 
+static int allow_ioscan(pyDevice *priv)
+{
+    PyObject *ret = PyObject_CallMethod(priv->support, "allowScan", "O", priv->pyrecord);
+    if(!ret) {
+        PyErr_Print();
+        PyErr_Clear();
+    } else if(!PyObject_IsTrue(ret)) {
+        Py_DECREF(ret);
+    } else {
+        priv->scanobj = ret;
+        return 1;
+    }
+    return 0;
+}
+
+static void release_ioscan(pyDevice *priv)
+{
+    if(priv->scanobj && PyCallable_Check(priv->scanobj)) {
+        PyObject *ret = PyObject_CallFunction(priv->scanobj, "O", priv->pyrecord);
+        if(ret)
+            Py_DECREF(ret);
+        else {
+            PyErr_Print();
+            PyErr_Clear();
+        }
+    }
+    Py_XDECREF(priv->scanobj);
+    priv->scanobj = NULL;
+}
+
 static long detach_common(dbCommon *prec)
 {
     pyDevice *priv = prec->dpvt;
     long ret = 0;
 
-    assert(!priv->scanobj); /* should already be released */
+    release_ioscan(priv);
 
     if(priv->support) {
         PyObject *junk = 0, *sup=priv->support;
@@ -104,35 +134,6 @@ static long process_common(dbCommon *prec)
         return -1;
     Py_DECREF(ret);
     return 0;
-}
-
-static int allow_ioscan(pyDevice *priv)
-{
-    PyObject *ret = PyObject_CallMethod(priv->support, "allowScan", "O", priv->pyrecord);
-    if(!ret || !PyObject_IsTrue(ret)) {
-        PyErr_Print();
-        PyErr_Clear();
-        Py_XDECREF(ret);
-        return 0;
-    } else {
-        priv->scanobj = ret;
-        return 1;
-    }
-}
-
-static void release_ioscan(pyDevice *priv)
-{
-    if(priv->scanobj && PyCallable_Check(priv->scanobj)) {
-        PyObject *ret = PyObject_CallFunction(priv->scanobj, "O", priv->pyrecord);
-        if(ret)
-            Py_DECREF(ret);
-        else {
-            PyErr_Print();
-            PyErr_Clear();
-        }
-    }
-    Py_XDECREF(priv->scanobj);
-    priv->scanobj = NULL;
 }
 
 static long report(int lvl)
@@ -292,9 +293,10 @@ static long get_iointr_info(int dir, dbCommon *prec, IOSCANPVT *scan)
     pystate = PyGILState_Ensure();
 
     if(dir==0) {
-        if(!allow_ioscan(priv))
+        priv->allowscan = allow_ioscan(priv);
+        fprintf(stderr, "%s: allowscan %d\n", prec->name, priv->allowscan);
+        if(!priv->allowscan)
             return S_db_Blocked;
-        priv->allowscan = 1;
     } else {
         priv->allowscan = 0;
         release_ioscan(priv);
@@ -384,7 +386,7 @@ int isPyRecord(dbCommon *prec)
 int canIOScanRecord(dbCommon *prec)
 {
     pyDevice *priv=prec->dpvt;
-    if(isPyRecord(prec))
+    if(!isPyRecord(prec))
         return 0;
     return priv->allowscan;
 }

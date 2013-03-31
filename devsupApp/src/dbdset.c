@@ -135,6 +135,38 @@ static void release_ioscan(pyDevice *priv)
     priv->scanobj = NULL;
 }
 
+static long report(int lvl)
+{
+    PyGILState_STATE pystate;
+    ELLNODE *cur;
+
+    pystate = PyGILState_Ensure();
+    if(lvl==0)
+        printf("%d records\n", (int)ellCount(&devices));
+    else
+        for(cur=ellFirst(&devices); cur; cur=ellNext(cur))
+        {
+            pyDevice *priv=(pyDevice*)cur;
+            printf("%s (%s)\n", priv->precord->name, priv->plink->value.instio.string);
+            if(lvl>1) {
+                PyObject *obj = priv->support ? priv->support : Py_None;
+                printf("Support: ");
+                PyObject_Print(obj, stdout, 0);
+
+                obj = priv->scanobj ? priv->scanobj : Py_None;
+                printf("IOSCAN: ");
+                PyObject_Print(obj, stdout, 0);
+
+                if(priv->reason) {
+                    printf("Leftover reason!: ");
+                    PyObject_Print(priv->reason, stdout, 0);
+                }
+            }
+        }
+    PyGILState_Release(pystate);
+    return 0;
+}
+
 static long init_record(dbCommon *prec)
 {
     return 0;
@@ -335,11 +367,11 @@ typedef struct {
     DEVSUPFUN proc;
 } dset5;
 
-static dset5 pydevsupCom = {{5, NULL, (DEVSUPFUN)&init,
+static dset5 pydevsupCom = {{5, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
                              (DEVSUPFUN)&init_record,
                              (DEVSUPFUN)&get_iointr_info},
                             (DEVSUPFUN)&process_record};
-static dset5 pydevsupCom2 = {{5, NULL, (DEVSUPFUN)&init,
+static dset5 pydevsupCom2 = {{5, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
                               (DEVSUPFUN)&init_record2,
                               (DEVSUPFUN)&get_iointr_info},
                              (DEVSUPFUN)&process_record};

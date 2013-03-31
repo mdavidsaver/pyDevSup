@@ -8,11 +8,13 @@ record(longin, "$(P)li:cnt") {
 record(longin, "$(P)val:a") {
   field(DTYP, "Python Device")
   field(INP , "@test2 AAAA")
+  field(SCAN, "I/O Intr")
 }
 
 record(longin, "$(P)val:b") {
   field(DTYP, "Python Device")
   field(INP , "@test2 AAAA")
+  field(SCAN, "I/O Intr")
 }
 
 record(waveform, "$(P)wf") {

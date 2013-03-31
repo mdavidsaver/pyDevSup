@@ -4,7 +4,7 @@ def verinfo():
     
     Query EPICS version information
     """
-    return (0,0,0,0.'invalid')
+    return (0,0,0,0,'invalid')
 
 class _Record(object):
     """Handle for record operations

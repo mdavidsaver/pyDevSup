@@ -5,4 +5,4 @@ except ImportError:
 
 __all__ = ['verinfo']
 
-from _dbapi import verinfo
+verinfo = _dbapi.verinfo

@@ -83,7 +83,7 @@ class IOScanListThread(IOScanListBlock):
             return cls._worker
         import hooks
         T = Worker(max=cls.queuelength)
-        hooks.addHook('AtIocExit', T.stop)
+        hooks.addHook('AtIocExit', T.join)
         T.start()
         cls._worker = T
         return T

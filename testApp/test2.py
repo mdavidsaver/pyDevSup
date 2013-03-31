@@ -1,5 +1,4 @@
 
-import weakref
 import threading, time
 from devsup.hooks import addHook
 from devsup.db import IOScanListThread
@@ -43,7 +42,6 @@ class Device(object):
         print 'detach',rec
 
     def process(self, rec, data):
-        print 'test2 Update',rec,data
         if data is not None:
             rec.VAL = data
 

@@ -11,6 +11,11 @@ class DeviceSupport(Interface):
     def allowScan(record):
         """Return True to allow SCAN='I/O Intr'
         or False to prevent this.
+        
+        If a callable object is returned then if
+        will be invoked when I/O Intr scanning
+        is disabled.  A Record instance is passed
+        as the first (and only) argument.
         """
 
     def process(record, reason):

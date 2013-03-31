@@ -122,7 +122,7 @@ static int allow_ioscan(pyDevice *priv)
 
 static void release_ioscan(pyDevice *priv)
 {
-    if(priv->scanobj && PyObject_HasAttrString(priv->scanobj, "release")) {
+    if(priv->scanobj && PyCallable_Check(priv->scanobj)) {
         PyObject *ret = PyObject_CallFunction(priv->scanobj, "O", priv->pyrecord);
         if(ret)
             Py_DECREF(ret);

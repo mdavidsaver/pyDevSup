@@ -81,7 +81,7 @@ class IOScanListThread(IOScanListBlock):
     @classmethod
     def getworker(cls):
         with cls._worker_lock:
-            if cls._worker:
+            if cls._worker is not None:
                 return cls._worker
             import hooks
             T = Worker(max=cls.queuelength)

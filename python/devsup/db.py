@@ -76,29 +76,29 @@ def _default_whendone(type, val, tb):
 
 class IOScanListThread(IOScanListBlock):
     _worker = None
+    _worker_lock = threading.Lock()
     queuelength=100
     @classmethod
     def getworker(cls):
-        if cls._worker:
-            return cls._worker
-        import hooks
-        T = Worker(max=cls.queuelength)
-        hooks.addHook('AtIocExit', T.join)
-        T.start()
-        cls._worker = T
-        return T
+        with cls._worker_lock:
+            if cls._worker:
+                return cls._worker
+            import hooks
+            T = Worker(max=cls.queuelength)
+            hooks.addHook('AtIocExit', T.join)
+            T.start()
+            cls._worker = T
+            return T
 
     def __init__(self):
         super(IOScanListThread,self).__init__()
         self._lock = threading.Lock()
 
     def add(self, rec):
-        print self,'add',rec
         with self._lock:
             return super(IOScanListThread,self).add(rec)
 
     def _remove(self, rec):
-        print self,'remove',rec
         with self._lock:
             return super(IOScanListThread,self)._remove(rec)
 

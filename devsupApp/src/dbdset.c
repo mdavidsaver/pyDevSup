@@ -328,6 +328,14 @@ static long process_record(dbCommon *prec)
     return 0;
 }
 
+static long process_record2(dbCommon *prec)
+{
+    long ret = process_record(prec);
+    if(ret==0)
+        ret = 2;
+    return ret;
+}
+
 int setReasonPyRecord(dbCommon *prec, PyObject *reason)
 {
     pyDevice *priv=prec->dpvt;
@@ -363,20 +371,27 @@ static long init(int i)
 typedef struct {
     dset com;
     DEVSUPFUN proc;
-} dset5;
+    DEVSUPFUN linconv;
+} dset6;
 
-static dset5 pydevsupCom = {{5, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
+static dset6 pydevsupCom = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
                              (DEVSUPFUN)&init_record,
                              (DEVSUPFUN)&get_iointr_info},
                             (DEVSUPFUN)&process_record};
-static dset5 pydevsupCom2 = {{5, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
-                              (DEVSUPFUN)&init_record2,
-                              (DEVSUPFUN)&get_iointr_info},
-                             (DEVSUPFUN)&process_record};
+static dset6 pydevsupComOut2 = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
+                                (DEVSUPFUN)&init_record2,
+                                (DEVSUPFUN)&get_iointr_info},
+                               (DEVSUPFUN)&process_record};
+static dset6 pydevsupComIn2 = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
+                                (DEVSUPFUN)&init_record,
+                                (DEVSUPFUN)&get_iointr_info},
+                               (DEVSUPFUN)&process_record2};
 
 int isPyRecord(dbCommon *prec)
 {
-    return prec->dset==(dset*)&pydevsupCom || prec->dset==(dset*)&pydevsupCom2;
+    return prec->dset==(dset*)&pydevsupCom
+            || prec->dset==(dset*)&pydevsupComIn2
+            || prec->dset==(dset*)&pydevsupComOut2;
 }
 
 int canIOScanRecord(dbCommon *prec)
@@ -418,4 +433,5 @@ void pyDBD_cleanup(void)
 #include <epicsExport.h>
 
 epicsExportAddress(dset, pydevsupCom);
-epicsExportAddress(dset, pydevsupCom2);
+epicsExportAddress(dset, pydevsupComIn2);
+epicsExportAddress(dset, pydevsupComOut2);

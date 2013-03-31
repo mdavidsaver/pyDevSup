@@ -151,7 +151,7 @@ static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
 
     } else {
         long ret=-1;
-        int ran=1;
+        int ran=0;
         setReasonPyRecord(prec, reason);
 
         Py_BEGIN_ALLOW_THREADS {

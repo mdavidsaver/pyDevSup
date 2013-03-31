@@ -30,7 +30,7 @@ class IOScanListBlock(object):
     def __init__(self):
         super(IOScanListBlock,self).__init__()
         self._recs, self._recs_add, self._recs_remove = set(), set(), set()
-        self._running = False
+        self.force, self._running = 2, False
 
     def add(self, rec):
         assert isinstance(rec, Record)
@@ -42,9 +42,9 @@ class IOScanListBlock(object):
         else:
             self._recs.add(rec)
 
-        return self._remove
+        return self.remove
 
-    def _remove(self, rec):
+    def remove(self, rec):
         if self._running:
             self._recs_add.discard(rec)
             self._recs_add._recs_remove(rec)
@@ -58,7 +58,7 @@ class IOScanListBlock(object):
             for R in self._recs:
                 if mask and R in mask:
                     continue
-                R.scan(sync=True, reason=reason, force=2)
+                R.scan(sync=True, reason=reason, force=self.force)
         finally:
             self._running = False
             if self._recs_add or self._recs_remove:
@@ -98,9 +98,9 @@ class IOScanListThread(IOScanListBlock):
         with self._lock:
             return super(IOScanListThread,self).add(rec)
 
-    def _remove(self, rec):
+    def remove(self, rec):
         with self._lock:
-            return super(IOScanListThread,self)._remove(rec)
+            return super(IOScanListThread,self).remove(rec)
 
     def interrupt(self, reason=None, mask=None, whendone=_default_whendone):
         W = self.getworker()

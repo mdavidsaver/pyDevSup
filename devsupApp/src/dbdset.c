@@ -33,7 +33,6 @@ typedef struct {
     PyObject *support;
     PyObject *scanobj;
 
-    int allowscan;
     IOSCANPVT scan;
 
     PyObject *reason;
@@ -293,12 +292,9 @@ static long get_iointr_info(int dir, dbCommon *prec, IOSCANPVT *scan)
     pystate = PyGILState_Ensure();
 
     if(dir==0) {
-        priv->allowscan = allow_ioscan(priv);
-        fprintf(stderr, "%s: allowscan %d\n", prec->name, priv->allowscan);
-        if(!priv->allowscan)
+        if(!allow_ioscan(priv))
             return S_db_Blocked;
     } else {
-        priv->allowscan = 0;
         release_ioscan(priv);
     }
 
@@ -388,7 +384,7 @@ int canIOScanRecord(dbCommon *prec)
     pyDevice *priv=prec->dpvt;
     if(!isPyRecord(prec))
         return 0;
-    return priv->allowscan;
+    return !!priv->scanobj;
 }
 
 /* Called with GIL locked */

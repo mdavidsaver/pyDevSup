@@ -28,7 +28,9 @@ class WfSup(object):
         val=self.arr[:N]
         x=self.x[:N]
 
-        val[:] = pha*x
+        # calculate inplace: uniform(0.5,2.0)*sin(pha*x)+2
+        val[:] = x
+        val[:] *= pha
         np.sin(val, out=val)
         val[:]*=uniform(0.5,2.0)
         val[:]+=2

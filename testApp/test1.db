@@ -22,3 +22,9 @@ record(waveform, "$(P)wf") {
   field(NELM, "10")
   field(SCAN, "2 second")
 }
+
+record(longin, "$(P)async:cnt") {
+  field(DTYP, "Python Device")
+  field(INP , "@test4")
+  field(SCAN, "1 second")
+}

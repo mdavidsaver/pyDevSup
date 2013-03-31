@@ -17,6 +17,9 @@ class Record(object):
     def name(self):
         """Record name
         """
+    def rtype(self):
+        """Record type
+        """
     def isPyRecord(self):
         """Is this record using Python Device.
         """

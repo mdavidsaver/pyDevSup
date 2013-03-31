@@ -73,6 +73,12 @@ static PyObject* pyRecord_name(pyRecord *self)
     return PyString_FromString(prec->name);
 }
 
+static PyObject* pyRecord_rtype(pyRecord *self)
+{
+    dbCommon *prec=self->entry.precnode->precord;
+    return PyString_FromString(prec->rdes->name);
+}
+
 static PyObject* pyRecord_info(pyRecord *self, PyObject *args)
 {
     const char *name;
@@ -233,6 +239,8 @@ static PyObject *pyRecord_asyncFinish(pyRecord *self, PyObject *args, PyObject *
 static PyMethodDef pyRecord_methods[] = {
     {"name", (PyCFunction)pyRecord_name, METH_NOARGS,
      "Return record name string"},
+    {"rtype", (PyCFunction)pyRecord_rtype, METH_NOARGS,
+     "Return record type name string"},
     {"isPyRecord", (PyCFunction)pyRecord_ispyrec, METH_NOARGS,
      "Is this record using Python Device."},
     {"info", (PyCFunction)pyRecord_info, METH_VARARGS,

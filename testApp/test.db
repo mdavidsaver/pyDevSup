@@ -30,3 +30,19 @@ record(longin, "$(P)async:cnt") {
   field(INP , "@test4")
   field(SCAN, "1 second")
 }
+
+
+record(ao, "$(P):A-SP") {
+  field(DTYP, "Raw Python Device")
+  field(OUT , "@test5 hello none")
+}
+
+record(ao, "$(P):B-SP") {
+  field(DTYP, "Raw Python Device")
+  field(OUT , "@test5 hello half")
+}
+
+record(ai, "$(P):A-RB") {
+  field(DTYP, "Raw Python Device")
+  field(INP , "@test5 hello none")
+}

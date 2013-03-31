@@ -14,7 +14,7 @@ class Counter(object):
     def process(self, rec, reason):
         if reason is AsyncComplete:
             rec.VAL = self.nextval
-            
+
         else:
             self.nextval = rec.VAL+1
             self.timer = threading.Timer(0.2, rec.asyncFinish, kwargs={'reason':AsyncComplete})

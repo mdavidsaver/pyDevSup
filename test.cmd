@@ -12,6 +12,6 @@ evalPy "import test2"
 evalPy "test2.addDrv('AAAA')"
 evalPy "test2.addDrv('BBBB')"
 
-dbLoadRecords("db/test1.db","P=md:")
+dbLoadRecords("db/test.db","P=md:")
 
 iocInit()

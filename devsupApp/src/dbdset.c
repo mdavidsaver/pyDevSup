@@ -31,6 +31,7 @@ typedef struct {
 
     PyObject *pyrecord;
     PyObject *support;
+    PyObject *scanobj;
 
     int allowscan;
     IOSCANPVT scan;
@@ -69,6 +70,8 @@ static long detach_common(dbCommon *prec)
 {
     pyDevice *priv = prec->dpvt;
     long ret = 0;
+
+    assert(!priv->scanobj); /* should already be released */
 
     if(priv->support) {
         PyObject *junk = 0, *sup=priv->support;
@@ -112,9 +115,24 @@ static int allow_ioscan(pyDevice *priv)
         Py_XDECREF(ret);
         return 0;
     } else {
-        Py_DECREF(ret);
+        priv->scanobj = ret;
         return 1;
     }
+}
+
+static void release_ioscan(pyDevice *priv)
+{
+    if(priv->scanobj && PyObject_HasAttrString(priv->scanobj, "release")) {
+        PyObject *ret = PyObject_CallFunction(priv->scanobj, "O", priv->pyrecord);
+        if(ret)
+            Py_DECREF(ret);
+        else {
+            PyErr_Print();
+            PyErr_Clear();
+        }
+    }
+    Py_XDECREF(priv->scanobj);
+    priv->scanobj = NULL;
 }
 
 static long init_record(dbCommon *prec)
@@ -235,15 +253,23 @@ static long del_record(dbCommon *prec)
 static long get_iointr_info(int dir, dbCommon *prec, IOSCANPVT *scan)
 {
     pyDevice *priv=prec->dpvt;
+    PyGILState_STATE pystate;
     if(!priv || !priv->support)
         return 0;
+
+    pystate = PyGILState_Ensure();
 
     if(dir==0) {
         if(!allow_ioscan(priv))
             return S_db_Blocked;
         priv->allowscan = 1;
-    } else
+    } else {
         priv->allowscan = 0;
+        release_ioscan(priv);
+    }
+
+    PyGILState_Release(pystate);
+
     *scan = priv->scan;
     return 0;
 }

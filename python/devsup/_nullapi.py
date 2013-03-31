@@ -49,7 +49,7 @@ class _Record(object):
     def asyncFinish(self, reason=None):
         pass
 
-def _Field(object):
+class _Field(object):
     """Handle for field operations
     
     f = Field("rec:name.HOPR")
@@ -84,3 +84,5 @@ def _Field(object):
     def getarray(self):
         """Return a numpy ndarray refering to this field for in-place operations.
         """
+
+_hooks = {}

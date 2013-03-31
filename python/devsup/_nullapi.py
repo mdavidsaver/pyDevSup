@@ -6,10 +6,10 @@ def verinfo():
     """
     return (0,0,0,0.'invalid')
 
-class Record(object):
+class _Record(object):
     """Handle for record operations
     
-    r = Record("rec:name")
+    r = _Record("rec:name")
     """
 
     def __init__(self, rec):
@@ -49,7 +49,7 @@ class Record(object):
     def asyncFinish(self, reason=None):
         pass
 
-def Field(object):
+def _Field(object):
     """Handle for field operations
     
     f = Field("rec:name.HOPR")

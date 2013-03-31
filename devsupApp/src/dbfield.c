@@ -50,7 +50,7 @@ static int pyField_Init(pyField *self, PyObject *args, PyObject *kws)
     }
 
     if(self->addr.field_type >= DBF_ENUM) {
-        PyErr_SetString(PyExc_ValueError, "Access to this field type is not supported");
+        PyErr_SetString(PyExc_TypeError, "Access to this field type is not supported");
         return -1;
     }
     return 0;

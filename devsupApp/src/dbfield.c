@@ -78,6 +78,7 @@ static PyObject* pyField_getval(pyField *self)
 #define OP(FTYPE, CTYPE, FN) case DBF_##FTYPE: return FN(*(CTYPE*)self->addr.pfield)
     OP(CHAR,  epicsInt8,   PyInt_FromLong);
     OP(UCHAR, epicsUInt8,  PyInt_FromLong);
+    OP(ENUM,  epicsEnum16, PyInt_FromLong);
     OP(SHORT, epicsInt16,  PyInt_FromLong);
     OP(USHORT,epicsUInt16, PyInt_FromLong);
     OP(LONG,  epicsInt32,  PyInt_FromLong);
@@ -105,6 +106,7 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
 #define OP(FTYPE, CTYPE, FN) case DBF_##FTYPE: *(CTYPE*)self->addr.pfield = FN(val); break
     OP(CHAR,  epicsInt8,   PyInt_AsLong);
     OP(UCHAR, epicsUInt8,  PyInt_AsLong);
+    OP(ENUM,  epicsEnum16, PyInt_AsLong);
     OP(SHORT, epicsInt16,  PyInt_AsLong);
     OP(USHORT,epicsUInt16, PyInt_AsLong);
     OP(LONG,  epicsInt32,  PyInt_AsLong);

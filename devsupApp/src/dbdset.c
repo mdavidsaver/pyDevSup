@@ -252,7 +252,7 @@ static long process_record(dbCommon *prec)
 {
     pyDevice *priv = prec->dpvt;
     PyGILState_STATE pystate;
-    long pact = prec->pact;
+    int pact = prec->pact;
 
     if(!priv || !priv->support)
         return 0;

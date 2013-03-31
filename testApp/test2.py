@@ -54,12 +54,11 @@ class Device(object):
     def __init__(self, rec, drv):
         self.driver, self.record = drv, rec
         self.driver.addrec(self)
-        self.val = rec.field('VAL')
     def detach(self, rec):
         self.driver.delrec(self)
     def process(self, rec, data):
         if data is not None:
-            self.val.putval(data)
+            self.VAL = data
 
 def build(rec, args):
     drv = insts[args]

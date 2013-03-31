@@ -1,11 +1,10 @@
 
 class MySup(object):
     def __init__(self, rec):
-        self.val = rec.field('VAL')
-        print rec,self.val.fieldinfo()
-        print 'VAL',self.val.getval()
+        print rec, rec.field('VAL').fieldinfo()
+        print 'VAL', rec.VAL
     def process(self, rec, reason):
-        self.val.putval(1+self.val.getval())
+        rec.VAL = 1+rec.VAL
     def detach(self, rec):
         print 'test1 detach',rec.name()
 

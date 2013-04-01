@@ -13,11 +13,17 @@ hooknames = _dbapi._hooks.keys()
 
 def addHook(state, func):
     """addHook("stats", funcion)
-    Add callback function to IOC start sequence.
+    Add callable to IOC start sequence.
     
-    def show():
-        print 'State Occurred'
-    addHook("AfterIocRunning", show)
+    Callables are run in the reverse of the order in
+    which they were added.
+    
+    >>> def show():
+    ...     print 'State Occurred'
+    >>> addHook("AfterIocRunning", show)
+    
+    An additional special hook 'AtIocExit' may be used
+    for cleanup actions during IOC shutdown.
     """
     sid = _dbapi._hooks[state]
     try:

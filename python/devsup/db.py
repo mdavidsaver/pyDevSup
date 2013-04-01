@@ -19,6 +19,15 @@ __all__ = [
 ]
 
 def getRecord(name):
+    """Retrieve a :class:`Record` instance by the
+    full record name.
+    
+    The result is cached so the future calls will return the same instance.
+    This is the prefered way to get :class:`Record` instances.
+    
+    >>> R = getRecord("my:record:name")
+    Record("my:record:name")
+    """
     try:
         return _rec_cache[name]
     except KeyError:
@@ -27,12 +36,45 @@ def getRecord(name):
         return rec
 
 class IOScanListBlock(object):
+    """A list of records which will be processed together.
+    
+    This convienence class to handle the accounting to
+    maintain a list of records.
+    """
     def __init__(self):
         super(IOScanListBlock,self).__init__()
         self._recs, self._recs_add, self._recs_remove = set(), set(), set()
         self.force, self._running = 2, False
 
     def add(self, rec):
+        """Add a record to the scan list.
+        
+        This method is designed to be consistent
+        with :meth:`allowScan <DeviceSupport.allowScan>`
+        by returning its :meth:`remove` method.
+        If fact this function can be completely delegated. ::
+        
+          class MyDriver(util.StoppableThread):
+            def __init__(self):
+              super(MyDriver,self).__init__()
+              self.lock = threading.Lock()
+              self.scan1 = IOScanListBlock()
+            def run(self):
+              try:
+                while self.shouldRun():
+                  time.sleep(1)
+                  with self.lock:
+                    self.scan1.interrupt()
+              finally:
+                self.finish()
+                
+          class MySup(object):
+            def __init__(self, driver):
+              self.driver = driver
+            def allowScan(rec):
+              with self.driver.lock:
+                return self.driver.scan1.add(rec)
+        """
         assert isinstance(rec, Record)
 
         if self._running:
@@ -45,6 +87,8 @@ class IOScanListBlock(object):
         return self.remove
 
     def remove(self, rec):
+        """Remove a record from the scan list.
+        """
         if self._running:
             self._recs_add.discard(rec)
             self._recs_add._recs_remove(rec)
@@ -53,6 +97,15 @@ class IOScanListBlock(object):
             self._recs.discard(rec)
 
     def interrupt(self, reason=None, mask=None):
+        """Scan the records in this list.
+
+        :param reason: Passed to :meth:`Record.scan`.
+        :param mask: A *list* or *set* or records which should not be scanned.
+
+        This method will call :meth:`Record.scan` of each of the records
+        currently in the list.  This is done synchronously in the current
+        thread.  It should **never** be call when any record locks are held.
+        """
         self._running = True
         try:
             for R in self._recs:
@@ -75,6 +128,10 @@ def _default_whendone(type, val, tb):
         traceback.print_exception(type, val, tb)
 
 class IOScanListThread(IOScanListBlock):
+    """A list of records w/ a worker thread to run them.
+    
+    All methods are thread-safe.
+    """
     _worker = None
     _worker_lock = threading.Lock()
     queuelength=100
@@ -95,6 +152,28 @@ class IOScanListThread(IOScanListBlock):
         self._lock = threading.Lock()
 
     def add(self, rec):
+        """Add a record to the scan list.
+        
+        This method is thread-safe and may be used
+        without additional locking. ::
+        
+          class MyDriver(util.StoppableThread):
+            def __init__(self):
+              super(MyDriver,self).__init__()
+              self.scan1 = IOScanListThread()
+            def run(self):
+              try:
+                while self.shouldRun():
+                  time.sleep(1)
+                  self.scan1.interrupt()
+              finally:
+                self.finish()
+                
+          class MySup(object):
+            def __init__(self, driver):
+              self.driver = driver
+              self.allowScan = self.driver.scan1.add
+        """
         with self._lock:
             return super(IOScanListThread,self).add(rec)
 
@@ -103,12 +182,26 @@ class IOScanListThread(IOScanListBlock):
             return super(IOScanListThread,self).remove(rec)
 
     def interrupt(self, reason=None, mask=None, whendone=_default_whendone):
+        """Queue a request to process the scan list.
+
+        :param reason: Passed to :meth:`Record.scan`.
+        :param mask: A *list* or *set* or records which should not be scanned.
+        :param whendone: A callable which will be invoked after all records are processed.
+        :throws: RuntimeError is the request can't be queued.
+
+        Calling this method will cause a request to be sent to a
+        worker thread.  This method can be called several times
+        to queue several requests.
+        
+        If provided, the *whendone* callable is invoked with three arguments.
+        These will be None except in the case an interrupt is raised in the
+        worker in which case they are: exception type, value, and traceback.
+        
+        .. note::
+          This method may be safely called while record locks are held.
+        """
         W = self.getworker()
-        try:
-            W.add(self._X, (reason, mask, whendone))
-            return True
-        except RuntimeError:
-            return False
+        W.add(self._X, (reason, mask, whendone))
 
     def _X(self, reason, mask, whendone):
         try:
@@ -127,18 +220,26 @@ class Record(_dbapi._Record):
     def field(self, name):
         """Lookup field in this record
         
-        fld = rec.field('HOPR')
+        :rtype: :class:`Field`
+        :throws: KeyError for non-existant fields.
+        
+        The returned object is cached so future calls will
+        return the same instance.
+        
+        >>> getRecord("rec").field('HOPR')
+        Field("rec.HOPR")
         """
         try:
             F = self._fld_cache[name]
             if F is _no_such_field:
                 raise ValueError()
             return F
-        except KeyError:
+        except KeyError, e:
             try:
                 fld = Field("%s.%s"%(self.name(), name))
             except ValueError:
                 self._fld_cache[name] = _no_such_field
+                raise e
             else:
                 self._fld_cache[name] = fld
                 return fld
@@ -166,7 +267,7 @@ class Record(_dbapi._Record):
 class Field(_dbapi._Field):
     @property
     def record(self):
-        """Fetch the record associated with this field
+        """Fetch the :class:`Record` associated with this field
         """
         try:
             return self._record

@@ -15,13 +15,23 @@ class _Record(object):
     def __init__(self, rec):
         pass
     def name(self):
-        """Record name
+        """Record name string.
+        
+        >>> R = getRecord("my:record:name")
+        >>> R.name()
+        "my:record:name"
         """
     def rtype(self):
-        """Record type
+        """Record type name string.
+        
+        >>> R = getRecord("my:record:name")
+        >>> R.type()
+        "longin"
         """
     def isPyRecord(self):
-        """Is this record using Python Device.
+        """Is this record using Python device support.
+        
+        :rtype: bool
         """
     def info(self, key):
         """info(key)
@@ -37,17 +47,70 @@ class _Record(object):
         """
 
     def scan(self, sync=False, reason=None, force=0):
-        """scan(sync=False)
+        """Scan this record.
         
-        Scan this record.  If sync is False then a
-        scan request is queued.  If sync is True then the record
+        :param sync: scan in current thread (``True``), or queue (``False``).
+        :param reason: Reason object passed to :meth:`process <DeviceSupport.process>` (sync=True only)
+        :param force: Record processing condtion (0=Passive, 1=Force, 2=I/O Intr)
+        :throws: ``RuntimeError`` when ``sync=True``, but ``force`` prevents scanning.
+        
+        If ``sync`` is False then a
+        scan request is queued to run in another thread..
+        If ``sync`` is True then the record
         is scannined immidately on the current thread.
+        
+        For ``reason`` argument must be used in conjunction with ``sync=True``
+        on records with Python device support.  This provides a means
+        of providing extra contextual information to the record's
+        :meth:`process <DeviceSupport.process>` method.
+        
+        ``force`` is used to decide if the record will actuall be processed,
+        ``force=0`` will only process records with SCAN=Passive.
+        ``force=1`` will process any record if at all possible.
+        ``force=2`` will only process records with Python device support and
+        SCAN=I/O Intr.
+        
+        It is **never** safe to use ``sync=True`` while holding record locks,
+        including from within a *process* method.
         """
 
     def asyncStart(self):
-        pass
+        """Start asynchronous processing
+        
+        This method may be called from a device support
+        :meth:`process <DeviceSupport.process>` method
+        to indicate that processing will continue
+        later.
+        
+        ..  important::
+          This method is **only** safe to call within a *process* method.
+        """
     def asyncFinish(self, reason=None):
-        pass
+        """Indicate that asynchronous processing can complete
+        
+        Similar to :meth:`scan`.  Used to conclude asynchronous
+        process started with :meth:`asyncStart`.
+        
+        Processing is completed on the current thread.
+        
+        ..  important::
+          This method should **never** be called within
+          a :meth:`process <DeviceSupport.process>` method,
+          or any other context where a Record lock is held.
+          Doing so will result in a deadlock.
+
+        Typically a *reason* will be passed to *process* as a way
+        of indicating that this is the completion of an async action. ::
+        
+          AsyncDone = object()
+          class MySup(object):
+            def process(record, reason):
+              if reason is AsyncDone:
+                record.VAL = ... # store result
+              else:
+                threading.Timer(1.0, record.asyncFinish, kwargs={'reason':AsyncDone})
+                record.asyncStart()
+        """
 
 class _Field(object):
     """Handle for field operations
@@ -59,7 +122,11 @@ class _Field(object):
     def __init__(self, fld):
         pass
     def name(self):
-        """("rec", "FLD") = name()
+        """Fetch the record and field names.
+        
+        >>> FLD = getRecord("rec").field("FLD")
+        >>> FLD.name()
+        ("rec", "FLD")
         """
     def fieldinfo(self):
         """(type, size, #elements) = fieldinfo()
@@ -72,17 +139,29 @@ class _Field(object):
     def getval(self):
         """Fetch the current field value as a scalar.
         
-        Returns Int, Float, or str
+        :rtype: int, float, or str
+        
+        Returned type depends of field DBF type.
+        An ``int`` is returned for CHAR, SHORT, LONG, and ENUM.
+        A ``float`` is returned for FLOAT and DOUBLE.
+        A ``str`` is returned for STRING.
         """
 
     def putval(self, val):
         """Update the field value
         
-        Must be an Int, Float or str
+        Must be an Int, Float or str.  Strings will be truncated to 39 charactors.
         """
 
     def getarray(self):
         """Return a numpy ndarray refering to this field for in-place operations.
+        
+        The dtype of the ndarray will correspond to the field's DBF type.
+        Its size will be the **maximum** number of elements.
+        
+        .. important::
+          It is only safe to read or write to this ndarray while the record
+          lock is held (ie withing :meth:`process <DeviceSupport.process>`).
         """
 
 _hooks = {}

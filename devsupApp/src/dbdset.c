@@ -112,8 +112,7 @@ static long detach_common(dbCommon *prec)
         else
             ret = -1;
     }
-    if(priv->pyrecord)
-        Py_DECREF(priv->pyrecord);
+    Py_XDECREF(priv->pyrecord);
     priv->pyrecord = NULL;
 
     return ret;
@@ -232,6 +231,8 @@ static long add_record(dbCommon *prec)
 
     assert(priv);
     assert(priv->plink->type == INST_IO);
+    assert(!priv->support);
+    assert(!priv->pyrecord);
 
     {
         char *msg=priv->plink->value.instio.string;

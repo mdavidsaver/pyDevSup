@@ -16,7 +16,7 @@
 #include "pydevsup.h"
 
 #ifdef HAVE_NUMPY
-static int dbf2np_map[DBF_ENUM+1] = {
+static int dbf2np_map[DBF_MENU+1] = {
     NPY_BYTE,
     NPY_BYTE,
     NPY_UBYTE,
@@ -27,8 +27,9 @@ static int dbf2np_map[DBF_ENUM+1] = {
     NPY_FLOAT32,
     NPY_FLOAT64,
     NPY_INT16,
+    NPY_INT16,
 };
-static PyArray_Descr* dbf2np[DBF_ENUM+1];
+static PyArray_Descr* dbf2np[DBF_MENU+1];
 #endif
 
 typedef struct {
@@ -45,12 +46,13 @@ static int pyField_Init(pyField *self, PyObject *args, PyObject *kws)
         return -1;
 
     if(dbNameToAddr(pvname, &self->addr)) {
-        PyErr_SetString(PyExc_ValueError, "Record field not found");
+        PyErr_Format(PyExc_ValueError, "%s: Record field not found", pvname);
         return -1;
     }
 
-    if(self->addr.field_type >= DBF_ENUM) {
-        PyErr_SetString(PyExc_TypeError, "Access to this field type is not supported");
+    if(self->addr.field_type > DBF_MENU) {
+        PyErr_Format(PyExc_TypeError, "%s: Access to field type %d is not supported",
+                     pvname, self->addr.field_type);
         return -1;
     }
     return 0;
@@ -79,6 +81,7 @@ static PyObject* pyField_getval(pyField *self)
     OP(CHAR,  epicsInt8,   PyInt_FromLong);
     OP(UCHAR, epicsUInt8,  PyInt_FromLong);
     OP(ENUM,  epicsEnum16, PyInt_FromLong);
+    OP(MENU,  epicsEnum16, PyInt_FromLong);
     OP(SHORT, epicsInt16,  PyInt_FromLong);
     OP(USHORT,epicsUInt16, PyInt_FromLong);
     OP(LONG,  epicsInt32,  PyInt_FromLong);
@@ -107,6 +110,7 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
     OP(CHAR,  epicsInt8,   PyInt_AsLong);
     OP(UCHAR, epicsUInt8,  PyInt_AsLong);
     OP(ENUM,  epicsEnum16, PyInt_AsLong);
+    OP(MENU,  epicsEnum16, PyInt_AsLong);
     OP(SHORT, epicsInt16,  PyInt_AsLong);
     OP(USHORT,epicsUInt16, PyInt_AsLong);
     OP(LONG,  epicsInt32,  PyInt_AsLong);
@@ -147,7 +151,7 @@ static PyObject *pyField_getarray(pyField *self)
     npy_int dims[1] = {self->addr.no_elements};
     PyArray_Descr *desc;
 
-    if(self->addr.field_type>DBF_ENUM) {
+    if(self->addr.field_type>DBF_MENU) {
         PyErr_SetString(PyExc_TypeError, "Can not map field type to numpy type");
         return NULL;
     } else if(self->addr.field_type==DBF_STRING)
@@ -259,7 +263,7 @@ int pyField_prepare(void)
     import_array1(-1);
 
 #ifdef HAVE_NUMPY
-    for(i=0; i<=DBF_ENUM; i++) {
+    for(i=0; i<=DBF_MENU; i++) {
         dbf2np[i] = PyArray_DescrFromType(dbf2np_map[i]);
         assert(dbf2np[i]);
     }
@@ -279,7 +283,7 @@ void pyField_cleanup(void)
 {
     size_t i;
 
-    for(i=0; i<=DBF_ENUM; i++) {
+    for(i=0; i<=DBF_MENU; i++) {
         Py_XDECREF(dbf2np[i]);
         dbf2np[i] = NULL;
     }

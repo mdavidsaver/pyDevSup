@@ -225,7 +225,7 @@ static void cleanupPy(void *junk)
     pyField_cleanup();
 
     /* release extra reference for hooktable */
-    Py_DECREF(hooktable);
+    Py_XDECREF(hooktable);
     hooktable = NULL;
 
     Py_Finalize();

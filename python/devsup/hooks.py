@@ -3,7 +3,7 @@ from __future__ import print_function
 try:
     import _dbapi
 except ImportError:
-    import _nullapi as _dbapi
+    import devsup._nullapi as _dbapi
 
 __all__ = [
     "hooknames",

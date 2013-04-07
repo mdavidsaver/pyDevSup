@@ -11,6 +11,8 @@ PY_INCDIRS := /path ...
 PY_LIBDIRS := /path ...
 """
 
+from __future__ import print_function
+
 import sys
 
 if len(sys.argv)<2:
@@ -34,11 +36,11 @@ except ImportError:
 incdirs = [get_python_inc()]+get_numpy_include_dirs()
 libdirs = [get_config_var('LIBDIR')]
 
-print >>out,'PY_VER :=',get_config_var('VERSION')
-print >>out,'PY_INCDIRS :=',' '.join(incdirs)
-print >>out,'PY_LIBDIRS :=',' '.join(libdirs)
-print >>out,'HAVE_NUMPY :=',have_np
+print('PY_VER :=',get_config_var('VERSION'), file=out)
+print('PY_INCDIRS :=',' '.join(incdirs), file=out)
+print('PY_LIBDIRS :=',' '.join(libdirs), file=out)
+print('HAVE_NUMPY :=',have_np, file=out)
 
-print >>out,'PY_OK := YES'
+print('PY_OK := YES', file=out)
 
 out.close()

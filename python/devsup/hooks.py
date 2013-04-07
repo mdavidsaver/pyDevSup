@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 try:
     import _dbapi
 except ImportError:
@@ -40,5 +42,5 @@ def debugHooks():
     """
     for h in hooknames:
         def _showstate(state=h):
-            print 'Reached state',state
+            print('Reached state',state)
         addHook(h, _showstate)

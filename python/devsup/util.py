@@ -1,4 +1,5 @@
 
+from __future__ import print_function
 import threading, traceback
 
 class StoppableThread(threading.Thread):
@@ -161,7 +162,7 @@ class Worker(threading.Thread):
                 try:
                     F(*A,**K)
                 except:
-                    print 'Error running',F,A,K
+                    print('Error running',F,A,K)
                     traceback.print_exc()
                 finally:
                     self._update.acquire()

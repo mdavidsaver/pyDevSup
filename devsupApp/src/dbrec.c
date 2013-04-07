@@ -24,7 +24,7 @@ typedef struct {
 static void pyRecord_dealloc(pyRecord *self)
 {
     dbFinishEntry(&self->entry);
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject* pyRecord_new(PyTypeObject *type, PyObject *args, PyObject *kws)
@@ -57,6 +57,7 @@ static PyObject* pyRecord_ispyrec(pyRecord *self)
     return PyBool_FromLong(self->ispyrec);
 }
 
+#if PY_MAJOR_VERSION < 3
 static int pyRecord_compare(pyRecord *A, pyRecord *B)
 {
     dbCommon *a=A->entry.precnode->precord,
@@ -66,6 +67,7 @@ static int pyRecord_compare(pyRecord *A, pyRecord *B)
         return 0;
     return strcmp(a->name, b->name);
 }
+#endif
 
 static PyObject* pyRecord_name(pyRecord *self)
 {
@@ -259,8 +261,12 @@ static PyMethodDef pyRecord_methods[] = {
 };
 
 static PyTypeObject pyRecord_type = {
+#if PY_MAJOR_VERSION >= 3
+    PyVarObject_HEAD_INIT(NULL, 0)
+#else
     PyObject_HEAD_INIT(NULL)
     0,
+#endif
     "_dbapi._Record",
     sizeof(pyRecord),
 };
@@ -274,7 +280,9 @@ int pyRecord_prepare(void)
     pyRecord_type.tp_new = (newfunc)pyRecord_new;
     pyRecord_type.tp_dealloc = (destructor)pyRecord_dealloc;
     pyRecord_type.tp_init = (initproc)pyRecord_Init;
+#if PY_MAJOR_VERSION < 3
     pyRecord_type.tp_compare = (cmpfunc)pyRecord_compare;
+#endif
 
     if(PyType_Ready(&pyRecord_type)<0)
         return -1;

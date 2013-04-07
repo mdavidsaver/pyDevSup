@@ -1,7 +1,7 @@
 
 import threading, sys, traceback
 
-from util import Worker
+from devsup.util import Worker
 
 try:
     import _dbapi
@@ -60,14 +60,11 @@ class IOScanListBlock(object):
               self.lock = threading.Lock()
               self.scan1 = IOScanListBlock()
             def run(self):
-              try:
-                while self.shouldRun():
-                  time.sleep(1)
-                  with self.lock:
-                    self.scan1.interrupt()
-              finally:
-                self.finish()
-                
+              while self.shouldRun():
+                time.sleep(1)
+                with self.lock:
+                  self.scan1.interrupt()
+  
           class MySup(object):
             def __init__(self, driver):
               self.driver = driver
@@ -140,9 +137,9 @@ class IOScanListThread(IOScanListBlock):
         with cls._worker_lock:
             if cls._worker is not None:
                 return cls._worker
-            import hooks
+            import devsup.hooks
             T = Worker(max=cls.queuelength)
-            hooks.addHook('AtIocExit', T.join)
+            devsup.hooks.addHook('AtIocExit', T.join)
             T.start()
             cls._worker = T
             return T
@@ -162,12 +159,9 @@ class IOScanListThread(IOScanListBlock):
               super(MyDriver,self).__init__()
               self.scan1 = IOScanListThread()
             def run(self):
-              try:
-                while self.shouldRun():
-                  time.sleep(1)
-                  self.scan1.interrupt()
-              finally:
-                self.finish()
+              while self.shouldRun():
+                time.sleep(1)
+                self.scan1.interrupt()
                 
           class MySup(object):
             def __init__(self, driver):
@@ -234,7 +228,7 @@ class Record(_dbapi._Record):
             if F is _no_such_field:
                 raise ValueError()
             return F
-        except KeyError, e:
+        except KeyError as e:
             try:
                 fld = Field("%s.%s"%(self.name(), name))
             except ValueError:

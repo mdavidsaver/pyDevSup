@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 import threading, time
 from devsup.hooks import addHook
@@ -7,7 +8,7 @@ from devsup.util import StoppableThread
 insts = {}
 
 def done(obj):
-    print obj,'Expires'
+    print(obj,'Expires')
 
 class Driver(StoppableThread):
     def __init__(self, name):
@@ -19,19 +20,17 @@ class Driver(StoppableThread):
         addHook('AtIocExit', self.join)
 
     def run(self):
-        try:
-            while self.shouldRun():
-                time.sleep(1.0)
-                
-                val = self.value
-                self.value += 1
-                self.scan.interrupt(reason=val)
-        finally:
-            self.finish()
+        print('Starting driver',self)
+        while self.shouldRun():
+            time.sleep(1.0)
+
+            val = self.value
+            self.value += 1
+            self.scan.interrupt(reason=val)
 
 def addDrv(name):
-    print 'Create driver',name
     insts[name] = Driver(name)
+    print('Created driver',name,insts[name])
 
 class Device(object):
     def __init__(self, rec, args):
@@ -39,7 +38,7 @@ class Device(object):
         self.allowScan = self.driver.scan.add
 
     def detach(self, rec):
-        print 'detach',rec
+        print('detach',rec)
 
     def process(self, rec, data):
         if data is not None:

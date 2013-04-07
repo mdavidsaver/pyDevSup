@@ -115,10 +115,21 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
     OP(DOUBLE,epicsFloat64,PyFloat_AsDouble);
 #undef OP
     case DBF_STRING: {
-        char *fld = PyString_AsString(val);
-        strncpy(self->addr.pfield, fld, MAX_STRING_SIZE);
-        fld = self->addr.pfield;
-        fld[MAX_STRING_SIZE-1]='\0';
+        const char *fld;
+        char *dest=self->addr.pfield;
+#if PY_MAJOR_VERSION >= 3
+        PyObject *data = PyUnicode_AsEncodedString(val, "ascii", "Encoding error:");
+        if(!data)
+            return NULL;
+        fld = PyUnicode_AS_DATA(data);
+#else
+        fld = PyString_AsString(val);
+#endif
+        strncpy(dest, fld, MAX_STRING_SIZE);
+        dest[MAX_STRING_SIZE-1]='\0';
+#if PY_MAJOR_VERSION >= 3
+        Py_DECREF(data);
+#endif
         break;
     }
     default:
@@ -166,6 +177,7 @@ static PyMethodDef pyField_methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
+#if PY_MAJOR_VERSION < 3
 static Py_ssize_t pyField_buf_getcount(pyField *self, Py_ssize_t *totallen)
 {
     if(totallen)
@@ -195,6 +207,7 @@ static Py_ssize_t pyField_buf_getcharbuf(pyField *self, Py_ssize_t bufid, char *
     *data = self->addr.pfield;
     return self->addr.field_size * self->addr.no_elements;
 }
+#endif
 
 static int pyField_buf_getbufferproc(pyField *self, Py_buffer *buf, int flags)
 {
@@ -205,18 +218,24 @@ static int pyField_buf_getbufferproc(pyField *self, Py_buffer *buf, int flags)
 }
 
 static PyBufferProcs pyField_buf_methods = {
+#if PY_MAJOR_VERSION < 3
     (readbufferproc)pyField_buf_getbuf,
     (writebufferproc)pyField_buf_getbuf,
     (segcountproc)pyField_buf_getcount,
     (charbufferproc)pyField_buf_getcharbuf,
+#endif
     (getbufferproc)pyField_buf_getbufferproc,
     (releasebufferproc)NULL,
 };
 
 
 static PyTypeObject pyField_type = {
+#if PY_MAJOR_VERSION >= 3
+    PyVarObject_HEAD_INIT(NULL, 0)
+#else
     PyObject_HEAD_INIT(NULL)
     0,
+#endif
     "_dbapi._Field",
     sizeof(pyField),
 };
@@ -226,7 +245,9 @@ int pyField_prepare(void)
     size_t i;
 
     pyField_type.tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE;
+#if PY_MAJOR_VERSION < 3
     pyField_type.tp_flags |= Py_TPFLAGS_HAVE_GETCHARBUFFER|Py_TPFLAGS_HAVE_NEWBUFFER;
+#endif
     pyField_type.tp_methods = pyField_methods;
     pyField_type.tp_as_buffer = &pyField_buf_methods;
     pyField_type.tp_init = (initproc)pyField_Init;

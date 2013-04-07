@@ -3,27 +3,26 @@ from __future__ import print_function
 import threading, traceback
 
 class StoppableThread(threading.Thread):
-    """A thread which can be required to stop.
+    """A thread which can be requested to stop.
     
     The thread run() method should periodically call the shouldRun()
-    method if this yields False, the finish() should be called before returning.
-    This is really only feasible by sub-classing.
+    method and return if this yields False.
     
     >>> class TestThread(StoppableThread):
     ...     def __init__(self):
     ...         super(TestThread,self).__init__()
     ...         self.E=threading.Event()
     ...     def run(self):
-    ...         try:
-    ...             import time
-    ...             self.E.set()
-    ...             while self.shouldRun():
-    ...                 time.sleep(0.01)
-    ...         finally:
-    ...             self.finish()
+    ...         import time
+    ...         self.cur = threading.current_thread()
+    ...         self.E.set()
+    ...         while self.shouldRun():
+    ...             time.sleep(0.01)
     >>> T = TestThread()
     >>> T.start()
     >>> T.E.wait()
+    True
+    >>> T.cur is T
     True
     >>> T.join()
     >>> T.is_alive()
@@ -31,45 +30,24 @@ class StoppableThread(threading.Thread):
     """
     def __init__(self, max=0):
         super(StoppableThread, self).__init__()
-        self._run, self._stop = False, False
-        self._sevt, self._lock = threading.Event(), threading.Lock()
-
-    def running(self):
-        with self._lock:
-            return self._run and not self._stop
+        self.__stop = True
+        self.__lock = threading.Lock()
 
     def start(self):
-        with self._lock:
-            assert not self._stop
-            self._run = True
-            self._sevt.clear()
+        with self.__lock:
+            self.__stop = False
 
         super(StoppableThread, self).start()
 
     def join(self):
-        with self._lock:
-            if not self._run:
-                return
-            self._stop = True
-
-        self._sevt.wait()
-        
+        with self.__lock:
+            self.__stop = True
+       
         super(StoppableThread, self).join()
 
     def shouldRun(self):
-        with self._lock:
-            return not self._stop
-
-    def finish(self):
-        with self._lock:
-            self._run = self._stop = False
-        self._sevt.set()
-
-    def run(self, *args, **kws):
-        try:
-            super(StoppableThread, self).start(*args, **kws)
-        finally:
-            self.finish()
+        with self.__lock:
+            return not self.__stop
 
 class Worker(threading.Thread):
     """A threaded work queue.
@@ -89,89 +67,77 @@ class Worker(threading.Thread):
     """
     def __init__(self, max=0):
         super(Worker, self).__init__()
-        self._run, self._stop = False, None
-        self._lock = threading.Lock()
-        self._update = threading.Condition(self._lock)
+        self.__stop = None
+        self.__lock = threading.Lock()
+        self.__update = threading.Condition(self.__lock)
         self.maxQ, self._Q = max, []
 
-    def running(self):
-        with self._lock:
-            return self._run and not self._stop
-
-    def start(self):
-        with self._lock:
-            if self._run or self._stop:
-                return
-            super(Worker, self).start()
-            self._run = True
 
     def join(self, flush=True):
-        self._update.acquire()
+        self.__update.acquire()
         try:
-            if self._stop:
+            if self.__stop is not None:
                 raise RuntimeError("Someone else is already trying to stop me")
 
-            self._stop = threading.Event()
-            self._update.notify()
+            self.__stop = threading.Event()
+            self.__update.notify()
 
-            self._update.release()
+            self.__update.release()
             try:
-                self._stop.wait()
+                self.__stop.wait()
             finally:
-                self._update.acquire()
+                self.__update.acquire()
 
-            self._stop = None
-            assert not self._run
+            self.__stop = None
             
             if flush:
                 self._Q = []
 
         finally:
-            self._update.release()
+            self.__update.release()
 
     def __len__(self):
-        with self._lock:
+        with self.__lock:
             return len(self._Q)
 
     def add(self, func, args=(), kws={}):
-        with self._lock:
-            if not self._run or self._stop:
+        with self.__lock:
+            if self.__stop is not None:
                 return
             elif self.maxQ>0 and len(self._Q)>=self.maxQ:
                 raise RuntimeError('Worker queue full')
 
             self._Q.append((func,args,kws))
-            self._update.notify()
+            self.__update.notify()
 
     def run(self):
-        self._update.acquire()
+        self.__update.acquire()
         try:
-            assert self._run
 
             while True:
 
-                while self._stop is None and len(self._Q)==0:
-                    self._update.wait()
+                while self.__stop is None and len(self._Q)==0:
+                    self.__update.wait()
 
-                if self._stop is not None:
+                if self.__stop is not None:
                     break
 
                 F, A, K = self._Q.pop(0)
 
-                self._update.release()
+                self.__update.release()
                 try:
                     F(*A,**K)
                 except:
                     print('Error running',F,A,K)
                     traceback.print_exc()
                 finally:
-                    self._update.acquire()
+                    self.__update.acquire()
 
-            self._run = False
-            self._stop.set()
-
+            self.__stop.set()
+        except:
+            traceback.print_exc()
         finally:
-            self._update.release()
+            self.__update.release()
 
 if __name__=='__main__':
     import doctest

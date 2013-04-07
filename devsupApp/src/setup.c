@@ -64,43 +64,6 @@ static pystate statenames[] = {
 };
 #undef INITST
 
-static void pyhook(initHookState state);
-
-static void cleanupPy(void *junk)
-{
-    PyThreadState *state = PyGILState_GetThisThreadState();
-
-    PyEval_RestoreThread(state);
-
-    /* special "fake" hook for shutdown */
-    pyhook((initHookState)9999);
-
-    pyDBD_cleanup();
-
-    pyField_cleanup();
-
-    /* release extra reference for hooktable */
-    Py_DECREF(hooktable);
-    hooktable = NULL;
-
-    Py_Finalize();
-}
-
-/* Initialize the interpreter environment
- */
-static epicsThreadOnceId setupPyOnceId = EPICS_THREAD_ONCE_INIT;
-static void setupPyOnce(void *junk)
-{
-    PyThreadState *state;
-
-    Py_Initialize();
-    PyEval_InitThreads();
-
-    state = PyEval_SaveThread();
-
-    epicsAtExit(&cleanupPy, NULL);
-}
-
 void evalPy(const char* code)
 {
     PyGILState_STATE state;
@@ -193,8 +156,18 @@ static PyMethodDef devsup_methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef dbapimodule = {
+  PyModuleDef_HEAD_INIT,
+    "_dbapi",
+    NULL,
+    -1,
+    devsup_methods
+};
+#endif
+
 /* initialize "magic" builtin module */
-static void init_dbapi(void)
+PyMODINIT_FUNC init_dbapi(void)
 {
     PyObject *mod, *hookdict, *pysuptable;
     pystate *st;
@@ -203,23 +176,27 @@ static void init_dbapi(void)
 
     hooktable = PyDict_New();
     if(!hooktable)
-        return;
+        MODINIT_RET(NULL);
 
     if(pyField_prepare())
-        return;
+        MODINIT_RET(NULL);
     if(pyRecord_prepare())
-        return;
+        MODINIT_RET(NULL);
 
+#if PY_MAJOR_VERSION >= 3
+    mod = PyModule_Create(&dbapimodule);
+#else
     mod = Py_InitModule("_dbapi", devsup_methods);
+#endif
 
     pysuptable = PySet_New(NULL);
     if(!pysuptable)
-        return;
+        MODINIT_RET(NULL);
     PyModule_AddObject(mod, "_supports", pysuptable);
 
     hookdict = PyDict_New();
     if(!hookdict)
-        return;
+        MODINIT_RET(NULL);
     PyModule_AddObject(mod, "_hooks", hookdict);
 
     for(st = statenames; st->name; st++) {
@@ -231,6 +208,43 @@ static void init_dbapi(void)
     pyField_setup(mod);
     pyRecord_setup(mod);
 
+    MODINIT_RET(mod);
+}
+
+static void cleanupPy(void *junk)
+{
+    PyThreadState *state = PyGILState_GetThisThreadState();
+
+    PyEval_RestoreThread(state);
+
+    /* special "fake" hook for shutdown */
+    pyhook((initHookState)9999);
+
+    pyDBD_cleanup();
+
+    pyField_cleanup();
+
+    /* release extra reference for hooktable */
+    Py_DECREF(hooktable);
+    hooktable = NULL;
+
+    Py_Finalize();
+}
+
+/* Initialize the interpreter environment
+ */
+static void setupPyInit(void)
+{
+    PyThreadState *state;
+
+    PyImport_AppendInittab("_dbapi", init_dbapi);
+
+    Py_Initialize();
+    PyEval_InitThreads();
+
+    state = PyEval_SaveThread();
+
+    epicsAtExit(&cleanupPy, NULL);
 }
 
 #include <iocsh.h>
@@ -251,7 +265,7 @@ static void pySetupReg(void)
 {
     PyGILState_STATE state;
 
-    epicsThreadOnce(&setupPyOnceId, &setupPyOnce, NULL);
+    setupPyInit();
     iocshRegister(&codeDef, &codeRun);
     iocshRegister(&fileDef, &fileRun);
     initHookRegister(&pyhook);

@@ -14,4 +14,6 @@ iocBoot_DEPEND_DIRS += $(filter %App,$(DIRS))
 
 include $(TOP)/configure/RULES_TOP
 
-
+#useful targets includ: doc-html and doc-clean
+doc-%:
+	PYTHONPATH=$$PWD/python $(MAKE) -C documentation $*

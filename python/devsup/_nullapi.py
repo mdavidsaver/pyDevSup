@@ -46,6 +46,12 @@ class _Record(object):
         for this record
         """
 
+    def setSevr(self, sevr=3, stat=15):
+        """setSevr(sevr=INVALID, stat=COMM)
+        
+        Set new alarm condition.
+        """
+
     def scan(self, sync=False, reason=None, force=0):
         """Scan this record.
         

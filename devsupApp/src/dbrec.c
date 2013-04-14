@@ -11,6 +11,8 @@
 #include <dbStaticLib.h>
 #include <recSup.h>
 #include <dbScan.h>
+#include <recGbl.h>
+#include <alarm.h>
 
 #include "pydevsup.h"
 
@@ -135,6 +137,27 @@ fail:
     return NULL;
 }
 
+static PyObject* pyRecord_setSevr(pyRecord *self, PyObject *args, PyObject *kws)
+{
+    dbCommon *prec = self->entry.precnode->precord;
+
+    static char* names[] = {"sevr", "stat", NULL};
+    short sevr = INVALID_ALARM, stat=COMM_ALARM;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "|hh", names, &sevr, &stat))
+        return NULL;
+
+    if(sevr<firstEpicsAlarmSev || sevr>lastEpicsAlarmSev
+       || stat<firstEpicsAlarmCond || stat>lastEpicsAlarmCond)
+    {
+        PyErr_Format(PyExc_ValueError, "%s: Can't set alarms %d %d", prec->name, sevr, stat);
+        return NULL;
+    }
+
+    recGblSetSevr(prec, sevr, stat);
+    Py_RETURN_NONE;
+}
+
 static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
 {
     dbCommon *prec = self->entry.precnode->precord;
@@ -249,6 +272,8 @@ static PyMethodDef pyRecord_methods[] = {
      "Lookup info name\ninfo(name, def=None)"},
     {"infos", (PyCFunction)pyRecord_infos, METH_NOARGS,
      "Return a dictionary of all infos for this record."},
+    {"setSevr", (PyCFunction)pyRecord_setSevr, METH_VARARGS|METH_KEYWORDS,
+     "Set alarm new alarm severity/status  Record must be locked!"},
     {"scan", (PyCFunction)pyRecord_scan, METH_VARARGS|METH_KEYWORDS,
      "scan(sync=False)\nScan this record.  If sync is False then"
      "a scan request is queued.  If sync is True then the record"

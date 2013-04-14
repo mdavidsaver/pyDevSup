@@ -59,18 +59,6 @@ static PyObject* pyRecord_ispyrec(pyRecord *self)
     return PyBool_FromLong(self->ispyrec);
 }
 
-#if PY_MAJOR_VERSION < 3
-static int pyRecord_compare(pyRecord *A, pyRecord *B)
-{
-    dbCommon *a=A->entry.precnode->precord,
-             *b=B->entry.precnode->precord;
-
-    if(a==b)
-        return 0;
-    return strcmp(a->name, b->name);
-}
-#endif
-
 static PyObject* pyRecord_name(pyRecord *self)
 {
     dbCommon *prec=self->entry.precnode->precord;
@@ -334,9 +322,6 @@ int pyRecord_prepare(PyObject *module)
     pyRecord_type.tp_new = (newfunc)pyRecord_new;
     pyRecord_type.tp_dealloc = (destructor)pyRecord_dealloc;
     pyRecord_type.tp_init = (initproc)pyRecord_Init;
-#if PY_MAJOR_VERSION < 3
-    pyRecord_type.tp_compare = (cmpfunc)pyRecord_compare;
-#endif
 
     if(PyType_Ready(&pyRecord_type)<0)
         return -1;

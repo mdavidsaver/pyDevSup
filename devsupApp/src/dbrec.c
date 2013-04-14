@@ -86,7 +86,7 @@ static PyObject* pyRecord_rtype(pyRecord *self)
 static PyObject* pyRecord_info(pyRecord *self, PyObject *args)
 {
     const char *name;
-    PyObject *def = Py_None;
+    PyObject *def = NULL;
     DBENTRY entry;
 
     if(!PyArg_ParseTuple(args, "s|O", &name, &def))

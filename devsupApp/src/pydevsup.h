@@ -13,12 +13,10 @@
 #endif
 void pyDBD_cleanup(void);
 
-int pyField_prepare(void);
-void pyField_setup(PyObject *module);
+int pyField_prepare(PyObject *module);
 void pyField_cleanup(void);
 
-int pyRecord_prepare(void);
-void pyRecord_setup(PyObject *module);
+int pyRecord_prepare(PyObject *module);
 
 int isPyRecord(dbCommon *);
 int canIOScanRecord(dbCommon *);

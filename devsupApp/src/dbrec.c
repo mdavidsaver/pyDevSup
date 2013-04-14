@@ -324,8 +324,10 @@ static PyTypeObject pyRecord_type = {
 };
 
 
-int pyRecord_prepare(void)
+int pyRecord_prepare(PyObject *module)
 {
+    PyObject *typeobj=(PyObject*)&pyRecord_type;
+
     pyRecord_type.tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE;
     pyRecord_type.tp_methods = pyRecord_methods;
 
@@ -338,12 +340,12 @@ int pyRecord_prepare(void)
 
     if(PyType_Ready(&pyRecord_type)<0)
         return -1;
-    return 0;
-}
 
-void pyRecord_setup(PyObject *module)
-{
-    PyObject *typeobj=(PyObject*)&pyRecord_type;
     Py_INCREF(typeobj);
-    PyModule_AddObject(module, "_Record", (PyObject*)&pyRecord_type);
+    if(PyModule_AddObject(module, "_Record", typeobj)) {
+        Py_DECREF(typeobj);
+        return -1;
+    }
+
+    return 0;
 }

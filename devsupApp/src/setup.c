@@ -150,40 +150,45 @@ static struct PyModuleDef dbapimodule = {
 /* initialize "magic" builtin module */
 PyMODINIT_FUNC init_dbapi(void)
 {
-    PyObject *mod, *hookdict, *pysuptable;
+    PyObject *mod = NULL, *hookdict;
     pystate *st;
 
     import_array();
-
-    if(pyField_prepare())
-        MODINIT_RET(NULL);
-    if(pyRecord_prepare())
-        MODINIT_RET(NULL);
 
 #if PY_MAJOR_VERSION >= 3
     mod = PyModule_Create(&dbapimodule);
 #else
     mod = Py_InitModule("_dbapi", devsup_methods);
 #endif
-
-    pysuptable = PySet_New(NULL);
-    if(!pysuptable)
-        MODINIT_RET(NULL);
-    PyModule_AddObject(mod, "_supports", pysuptable);
+    if(!mod)
+        goto fail;
 
     hookdict = PyDict_New();
     if(!hookdict)
-        MODINIT_RET(NULL);
+        goto fail;
+
     PyModule_AddObject(mod, "_hooks", hookdict);
 
     for(st = statenames; st->name; st++) {
-        PyDict_SetItemString(hookdict, st->name, PyInt_FromLong((long)st->state));
+        PyObject *ent = PyInt_FromLong((long)st->state);
+        if(!ent) goto fail;
+        if(PyDict_SetItemString(hookdict, st->name, ent)) {
+            Py_DECREF(ent);
+            goto fail;
+        }
     }
 
-    pyField_setup(mod);
-    pyRecord_setup(mod);
+    if(pyField_prepare(mod))
+        goto fail;
+    if(pyRecord_prepare(mod))
+        goto fail;
 
     MODINIT_RET(mod);
+
+fail:
+    fprintf(stderr, "Failed to initialize builtin _dbapi module!\n");
+    Py_XDECREF(mod);
+    MODINIT_RET(NULL);
 }
 
 static void cleanupPy(void *junk)

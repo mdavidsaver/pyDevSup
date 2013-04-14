@@ -292,9 +292,11 @@ static PyTypeObject pyField_type = {
     sizeof(pyField),
 };
 
-int pyField_prepare(void)
+int pyField_prepare(PyObject *module)
 {
     size_t i;
+
+    import_array1(-1);
 
     pyField_type.tp_flags = Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE;
 #if PY_MAJOR_VERSION < 3
@@ -308,7 +310,12 @@ int pyField_prepare(void)
     if(PyType_Ready(&pyField_type)<0)
         return -1;
 
-    import_array1(-1);
+    PyObject *typeobj=(PyObject*)&pyField_type;
+    Py_INCREF(typeobj);
+    if(PyModule_AddObject(module, "_Field", typeobj)) {
+        Py_DECREF(typeobj);
+        return -1;
+    }
 
 #ifdef HAVE_NUMPY
     for(i=0; i<=DBF_MENU; i++) {
@@ -318,13 +325,6 @@ int pyField_prepare(void)
 #endif
 
     return 0;
-}
-
-void pyField_setup(PyObject *module)
-{
-    PyObject *typeobj=(PyObject*)&pyField_type;
-    Py_INCREF(typeobj);
-    PyModule_AddObject(module, "_Field", (PyObject*)&pyField_type);
 }
 
 void pyField_cleanup(void)

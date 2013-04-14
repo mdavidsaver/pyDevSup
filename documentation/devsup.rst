@@ -40,6 +40,8 @@ devsup Package
     
     .. automethod:: field
     
+    .. automethod:: setTime
+    
     .. automethod:: scan
     
     .. automethod:: asyncStart
@@ -66,6 +68,10 @@ devsup Package
     .. automethod:: getarray
 
     .. automethod:: fieldinfo
+    
+    .. automethod:: getTime
+    
+    .. automethod:: getAlarm
 
 .. autoclass:: devsup.db.IOScanListBlock
     :members:

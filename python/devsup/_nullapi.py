@@ -34,8 +34,10 @@ class _Record(object):
         :rtype: bool
         """
     def info(self, key):
-        """info(key)
-        info(key, default)
+        """info(key [,default])
+        
+        :rtype: str
+        :throws: KeyError
         
         Lookup record info tag.  If no default
         is provided then an exception is raised

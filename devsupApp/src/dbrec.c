@@ -158,6 +158,31 @@ static PyObject* pyRecord_setSevr(pyRecord *self, PyObject *args, PyObject *kws)
     Py_RETURN_NONE;
 }
 
+static PyObject* pyRecord_setTime(pyRecord *self, PyObject *args)
+{
+    dbCommon *prec = self->entry.precnode->precord;
+
+    long sec, nsec;
+
+    if(!PyArg_ParseTuple(args, "ll", &sec, &nsec))
+        return NULL;
+
+    if(prec->tse != epicsTimeEventDeviceTime)
+        Py_RETURN_NONE;
+
+    sec -= POSIX_TIME_AT_EPICS_EPOCH;
+
+    if(sec<0 || nsec<0 || nsec>=1000000000) {
+        PyErr_Format(PyExc_ValueError,"%s: Can't set invalid time %ld:%ld",
+                     prec->name, sec, nsec);
+        return NULL;
+    }
+
+    prec->time.secPastEpoch = sec;
+    prec->time.nsec = nsec;
+    Py_RETURN_NONE;
+}
+
 static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
 {
     dbCommon *prec = self->entry.precnode->precord;
@@ -273,7 +298,9 @@ static PyMethodDef pyRecord_methods[] = {
     {"infos", (PyCFunction)pyRecord_infos, METH_NOARGS,
      "Return a dictionary of all infos for this record."},
     {"setSevr", (PyCFunction)pyRecord_setSevr, METH_VARARGS|METH_KEYWORDS,
-     "Set alarm new alarm severity/status  Record must be locked!"},
+     "Set alarm new alarm severity/status.  Record must be locked!"},
+    {"setTime", (PyCFunction)pyRecord_setTime, METH_VARARGS,
+     "Set record timestamp if TSE==-2.  Record must be locked!"},
     {"scan", (PyCFunction)pyRecord_scan, METH_VARARGS|METH_KEYWORDS,
      "scan(sync=False)\nScan this record.  If sync is False then"
      "a scan request is queued.  If sync is True then the record"

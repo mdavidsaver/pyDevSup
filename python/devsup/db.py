@@ -1,5 +1,5 @@
 
-import threading, sys, traceback
+import threading, sys, traceback, time
 
 from devsup.util import Worker
 
@@ -237,6 +237,24 @@ class Record(_dbapi._Record):
             else:
                 self._fld_cache[name] = fld
                 return fld
+
+    def setTime(self, ts):
+        """Set record timestamp.
+        
+        Has not effect if the TSE field is not set to -2.
+        Accepts timetuple, float, or (sec, nsec).
+        All inputs must be referenced to the posix epoch.
+        """
+        if hasattr(ts, 'timetuple'):
+            ts = time.mktime(ts.timetuple())
+
+        try:
+            sec, nsec = ts
+        except TypeError:
+            sec = int(ts)
+            nsec = int(ts*1e9)%1000000000
+
+        super(Record, self).setTime(sec, nsec)
 
     def __getattr__(self, name):
         try:

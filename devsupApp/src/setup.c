@@ -23,9 +23,6 @@
 
 #include "pydevsup.h"
 
-/* dictionary of initHook names */
-static PyObject *hooktable;
-
 typedef struct {
     const initHookState state;
     const char * const name;
@@ -98,46 +95,30 @@ void evalFilePy(const char* file)
 
 static void pyhook(initHookState state)
 {
+    static int madenoise = 0;
     PyGILState_STATE gilstate;
+    PyObject *mod, *ret;
+
+    /* ignore deprecated init hooks */
+    if(state==initHookAfterInterruptAccept || state==initHookAtEnd)
+        return;
 
     gilstate = PyGILState_Ensure();
 
-    if(hooktable && PyDict_Check(hooktable)) {
-        PyObject *next;
-        PyObject *key = PyInt_FromLong((long)state);
-        PyObject *list = PyDict_GetItem(hooktable, key);
-        Py_DECREF(key);
-
-        if(list) {
-
-            list = PyObject_GetIter(list);
-            if(!list) {
-                fprintf(stderr, "hook sequence not iterable!");
-
-            } else {
-
-                while((next=PyIter_Next(list))!=NULL) {
-                    PyObject *obj;
-                    if(!PyCallable_Check(next))
-                        continue;
-                    obj = PyObject_CallFunction(next, "");
-                    Py_DECREF(next);
-                    if(obj)
-                        Py_DECREF(obj);
-                    else {
-                        PyErr_Print();
-                        PyErr_Clear();
-                    }
-                }
-                if(!PyErr_Occurred()) {
-                    PyErr_Print();
-                    PyErr_Clear();
-                }
-
-                Py_DECREF(list);
-            }
-        }
+    mod = PyImport_ImportModule("devsup.hooks");
+    if(!mod) {
+        if(!madenoise)
+            fprintf(stderr, "Couldn't import devsup.hooks\n");
+        madenoise=1;
+        return;
     }
+    ret = PyObject_CallMethod(mod, "_runhook", "l", (long)state);
+    Py_DECREF(mod);
+    if(PyErr_Occurred()) {
+        PyErr_Print();
+        PyErr_Clear();
+    }
+    Py_XDECREF(ret);
 
     PyGILState_Release(gilstate);
 }
@@ -174,10 +155,6 @@ PyMODINIT_FUNC init_dbapi(void)
 
     import_array();
 
-    hooktable = PyDict_New();
-    if(!hooktable)
-        MODINIT_RET(NULL);
-
     if(pyField_prepare())
         MODINIT_RET(NULL);
     if(pyRecord_prepare())
@@ -202,8 +179,6 @@ PyMODINIT_FUNC init_dbapi(void)
     for(st = statenames; st->name; st++) {
         PyDict_SetItemString(hookdict, st->name, PyInt_FromLong((long)st->state));
     }
-    Py_INCREF(hooktable); /* an extra ref for the global pointer */
-    PyModule_AddObject(mod, "_hooktable", hooktable);
 
     pyField_setup(mod);
     pyRecord_setup(mod);
@@ -223,10 +198,6 @@ static void cleanupPy(void *junk)
     pyDBD_cleanup();
 
     pyField_cleanup();
-
-    /* release extra reference for hooktable */
-    Py_XDECREF(hooktable);
-    hooktable = NULL;
 
     Py_Finalize();
 }

@@ -61,7 +61,7 @@ static pystate statenames[] = {
 };
 #undef INITST
 
-void evalPy(const char* code)
+void py(const char* code)
 {
     PyGILState_STATE state;
 
@@ -73,7 +73,7 @@ void evalPy(const char* code)
     PyGILState_Release(state);
 }
 
-void evalFilePy(const char* file)
+void pyfile(const char* file)
 {
     FILE *fp;
     PyGILState_STATE state;
@@ -226,11 +226,11 @@ static const iocshArg argFile = {"file", iocshArgString};
 static const iocshArg* const codeArgs[] = {&argCode};
 static const iocshArg* const fileArgs[] = {&argFile};
 
-static const iocshFuncDef codeDef = {"evalPy", 1, codeArgs};
-static const iocshFuncDef fileDef = {"evalFilePy", 1, fileArgs};
+static const iocshFuncDef codeDef = {"py", 1, codeArgs};
+static const iocshFuncDef fileDef = {"pyfile", 1, fileArgs};
 
-static void codeRun(const iocshArgBuf *args){evalPy(args[0].sval);}
-static void fileRun(const iocshArgBuf *args){evalFilePy(args[0].sval);}
+static void codeRun(const iocshArgBuf *args){py(args[0].sval);}
+static void fileRun(const iocshArgBuf *args){pyfile(args[0].sval);}
 
 static void pySetupReg(void)
 {

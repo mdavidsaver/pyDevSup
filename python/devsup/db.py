@@ -288,6 +288,15 @@ class Field(_dbapi._Field):
             self._record = getRecord(rec)
             return self._record
 
+    def getTime(self):
+        """Get timestamp of link target.
+        
+        Only works for DBF_INLINK fields.
+        Returns the time in seconds since the posix epoch.
+        
+        :rtype: float
+        """
+
     def __cmp__(self, B):
         if isinstance(B, Field):
             B=B.getval()

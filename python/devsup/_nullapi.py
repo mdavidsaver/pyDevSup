@@ -170,4 +170,10 @@ class _Field(object):
           lock is held (ie withing :meth:`process <DeviceSupport.process>`).
         """
 
+    def getAlarm(self):
+        """Returns a tuple (severity, status) with the condtion of the linked field.
+        
+        Only works for fields of type DBF_INLINK.
+        """
+
 _hooks = {}

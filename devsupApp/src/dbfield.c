@@ -50,12 +50,13 @@ static int pyField_Init(pyField *self, PyObject *args, PyObject *kws)
         return -1;
     }
 
-    if(self->addr.field_type > DBF_MENU) {
-        PyErr_Format(PyExc_TypeError, "%s: Access to field type %d is not supported",
-                     pvname, self->addr.field_type);
-        return -1;
-    }
     return 0;
+}
+
+static void exc_wrong_ftype(pyField *self)
+{
+    PyErr_Format(PyExc_TypeError, "Operation on field type %d is not supported",
+                 self->addr.field_type);
 }
 
 static PyObject* pyField_name(pyField *self)
@@ -92,7 +93,7 @@ static PyObject* pyField_getval(pyField *self)
     case DBF_STRING:
         return PyString_FromString((char*)self->addr.pfield);
     default:
-        PyErr_SetNone(PyExc_TypeError);
+        exc_wrong_ftype(self);
         return NULL;
     }
 }
@@ -137,7 +138,7 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
         break;
     }
     default:
-        PyErr_SetNone(PyExc_TypeError);
+        exc_wrong_ftype(self);
         return NULL;
     }
     Py_RETURN_NONE;
@@ -167,6 +168,49 @@ static PyObject *pyField_getarray(pyField *self)
 #endif
 }
 
+static PyObject* pyField_getTime(pyField *self)
+{
+    DBLINK *plink = self->addr.pfield;
+    epicsTimeStamp ret;
+    long sts, sec, nsec;
+
+    if(self->addr.field_type!=DBF_INLINK) {
+        PyErr_SetString(PyExc_TypeError, "getTime can only be used on DBF_INLINK fields");
+        return NULL;
+    }
+
+    sts = dbGetTimeStamp(plink, &ret);
+    if(sts) {
+        PyErr_SetString(PyExc_TypeError, "getTime failed");
+        return NULL;
+    }
+
+    sec = ret.secPastEpoch + POSIX_TIME_AT_EPICS_EPOCH;
+    nsec = ret.nsec;
+
+    return Py_BuildValue("ll", sec, nsec);
+}
+
+static PyObject* pyField_getAlarm(pyField *self)
+{
+    DBLINK *plink = self->addr.pfield;
+    long sts;
+    epicsEnum16 stat, sevr;
+
+    if(self->addr.field_type!=DBF_INLINK) {
+        PyErr_SetString(PyExc_TypeError, "getAlarm can only be used on DBF_INLINK fields");
+        return NULL;
+    }
+
+    sts = dbGetAlarm(plink, &stat, &sevr);
+    if(sts) {
+        PyErr_SetString(PyExc_TypeError, "getAlarm failed");
+        return NULL;
+    }
+
+    return Py_BuildValue("ll", (long)sevr, (long)stat);
+}
+
 static PyMethodDef pyField_methods[] = {
     {"name", (PyCFunction)pyField_name, METH_NOARGS,
      "Return Names (\"record\",\"field\")"},
@@ -178,6 +222,10 @@ static PyMethodDef pyField_methods[] = {
      "Sets field value from a scalar"},
     {"getarray", (PyCFunction)pyField_getarray, METH_NOARGS,
      "Return a numpy ndarray refering to this field for in-place operations."},
+    {"getTime", (PyCFunction)pyField_getTime, METH_NOARGS,
+     "Return link target timestamp as a tuple (sec, nsec)."},
+    {"getAlarm", (PyCFunction)pyField_getAlarm, METH_NOARGS,
+     "Return link target alarm condtions as a tuple (severity, status)."},
     {NULL, NULL, 0, NULL}
 };
 

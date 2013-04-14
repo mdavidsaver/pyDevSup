@@ -20,6 +20,7 @@
 #include <initHooks.h>
 #include <epicsThread.h>
 #include <epicsExit.h>
+#include <alarm.h>
 
 #include "pydevsup.h"
 
@@ -191,6 +192,60 @@ fail:
     MODINIT_RET(NULL);
 }
 
+
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef constantsmodule = {
+  PyModuleDef_HEAD_INIT,
+    "_dbconstants",
+    NULL,
+    -1,
+    NULL
+};
+#endif
+
+/* initialize "magic" builtin module */
+PyMODINIT_FUNC init_dbconstants(void)
+{
+    PyObject *mod = NULL;
+
+#if PY_MAJOR_VERSION >= 3
+    mod = PyModule_Create(&constantsmodule);
+#else
+    mod = Py_InitModule("_dbconstants", NULL);
+#endif
+    if(!mod)
+        MODINIT_RET(NULL);
+
+    PyModule_AddIntMacro(mod, NO_ALARM);
+    PyModule_AddIntMacro(mod, MINOR_ALARM);
+    PyModule_AddIntMacro(mod, MAJOR_ALARM);
+    PyModule_AddIntMacro(mod, INVALID_ALARM);
+
+    PyModule_AddIntMacro(mod, READ_ALARM);
+    PyModule_AddIntMacro(mod, WRITE_ALARM);
+    PyModule_AddIntMacro(mod, HIHI_ALARM);
+    PyModule_AddIntMacro(mod, HIGH_ALARM);
+    PyModule_AddIntMacro(mod, LOLO_ALARM);
+    PyModule_AddIntMacro(mod, LOW_ALARM);
+    PyModule_AddIntMacro(mod, STATE_ALARM);
+    PyModule_AddIntMacro(mod, COS_ALARM);
+    PyModule_AddIntMacro(mod, COMM_ALARM);
+    PyModule_AddIntMacro(mod, TIMEOUT_ALARM);
+    PyModule_AddIntMacro(mod, HW_LIMIT_ALARM);
+    PyModule_AddIntMacro(mod, CALC_ALARM);
+    PyModule_AddIntMacro(mod, SCAN_ALARM);
+    PyModule_AddIntMacro(mod, LINK_ALARM);
+    PyModule_AddIntMacro(mod, SOFT_ALARM);
+    PyModule_AddIntMacro(mod, BAD_SUB_ALARM);
+    PyModule_AddIntMacro(mod, UDF_ALARM);
+    PyModule_AddIntMacro(mod, DISABLE_ALARM);
+    PyModule_AddIntMacro(mod, SIMM_ALARM);
+    PyModule_AddIntMacro(mod, READ_ACCESS_ALARM);
+    PyModule_AddIntMacro(mod, WRITE_ACCESS_ALARM);
+
+    MODINIT_RET(mod);
+}
+
 static void cleanupPy(void *junk)
 {
     PyThreadState *state = PyGILState_GetThisThreadState();
@@ -214,6 +269,7 @@ static void setupPyInit(void)
     PyThreadState *state;
 
     PyImport_AppendInittab("_dbapi", init_dbapi);
+    PyImport_AppendInittab("_dbconstants", init_dbconstants);
 
     Py_Initialize();
     PyEval_InitThreads();

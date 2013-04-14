@@ -241,7 +241,7 @@ class Record(_dbapi._Record):
     def setTime(self, ts):
         """Set record timestamp.
         
-        :param ts: timetuple, float, or (sec, nsec).
+        :param ts: datetime, float, or (sec, nsec).
         
         Has not effect if the TSE field is not set to -2.
         All inputs must be referenced to the posix epoch.

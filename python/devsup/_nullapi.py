@@ -49,9 +49,12 @@ class _Record(object):
         """
 
     def setSevr(self, sevr=3, stat=15):
-        """setSevr(sevr=INVALID, stat=COMM)
+        """setSevr(sevr=INVALID_ALARM, stat=COMM_ALARM)
         
-        Set new alarm condition.
+        Signal a new alarm condition.  The effect of this
+        call depends on the current alarm condition.
+        
+        See :c:func:`recGblSetSevr` in EPICS Base.
         """
 
     def scan(self, sync=False, reason=None, force=0):

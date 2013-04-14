@@ -1,8 +1,18 @@
 devsup Package
 ==============
 
+.. module:: devsup
+
 .. autofunction:: devsup.verinfo
 
+.. data:: NO_ALARM, MINOR_ALARM, MAJOR_ALARM, INVALID_ALARM
+
+  Constants for alarm severity.  Use with :meth:`Record.setSevr <.db.Record.setSevr>`
+  
+.. data:: NO_ALARM, READ_ALARM, WRITE_ALARM, ...
+
+  Constants for alarm status.  Use with :meth:`Record.setSevr <.db.Record.setSevr>`
+  
 :mod:`db` Module
 ----------------
 
@@ -39,6 +49,8 @@ devsup Package
     .. automethod:: rtype
     
     .. automethod:: field
+    
+    .. automethod:: setSevr
     
     .. automethod:: setTime
     

@@ -13,6 +13,8 @@ An example with the longin would be: ::
 This minimal example will attempt to import a Python
 module named 'pymodule'.  This module is expected
 to provide a :func:`build` function.
+Which will be called with a :class:`Record <devsup.db.Record>` instance
+and the string "some other string".
 
 :func:`build` Function
 ----------------------
@@ -41,11 +43,11 @@ to provide a :func:`build` function.
 
 .. class:: DeviceSupport
 
-  ``DeviceSupport`` is not an actually class.  Rather it is a description
+  ``DeviceSupport`` is not a class.  Rather it is a description
   of the methods which all Python device support instances must provide.
   These methods will be called during the course of IOC processing.
 
-  Execptions raised by these methods will be printed to the IOC console,
+  Execptions raised by these methods are printed to the IOC console,
   but will otherwise be ignored.
 
   The module :mod:`devsup.interfaces` provides a Zope Interface
@@ -57,10 +59,10 @@ to provide a :func:`build` function.
     :param reason: ``None`` or an object provided when processing was requested.
 
     This method is called whenever the associated record needs to be updated
-    in responce to a request.  The souce of this request is typically determined
+    in responce to a request.  The source of this request is typically determined
     by the record's SCAN field.
 
-    The actions taken by this method will depend heavily the application.
+    The actions taken by this method will depend heavily on the application.
     Typically this will include reading or writing values from fields.
     Record fields can be access through the provided ``Record`` instance.
 
@@ -69,9 +71,8 @@ to provide a :func:`build` function.
     :param record: :class:`Record <devsup.db.Record>` from which the request originated.
 
     Called when a device support instance is being dis-associated
-    from its Record.  This will occur when the IOC is shutdown.
-    It can also occur when the INP or OUT field of a record
-    is modified.
+    from its Record.  This will occur when the IOC is shutdown
+    or the INP or OUT field of a record is modified.
     
     No further calls to this object will be made in relation
     to *record*.
@@ -83,12 +84,11 @@ to provide a :func:`build` function.
   
     Called when an attempt is made to set the record's SCAN field
     to "I/O Intr" either at startup, or during runtime.
-    To permit this the return value of this function must
-    evaluate to *True*.
+    To permit this the method must return an object which evaluates to *True*.
     If not then the attempt will fail and SCAN will revert to
     "Passive".
 
-    If a callable object is return, then it will be invoked
+    If a callable object is returned, then it will be invoked
     when SCAN is changed again, or just before :meth:`detach`
     is called.
 
@@ -114,6 +114,7 @@ which should be placed in the Python module import path. ::
   class MySupport(object):
     def detach(self, record):
       pass # no cleanup needed
+
     def allowScan(self, record):
       return False # I/O Intr not supported
 

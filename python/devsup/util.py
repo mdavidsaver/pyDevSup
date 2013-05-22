@@ -57,7 +57,6 @@ class Worker(threading.Thread):
     """A threaded work queue.
 
     >>> w = Worker()
-    >>> w = Worker()
     >>> w.start()
     >>> w.join()
     >>> import threading

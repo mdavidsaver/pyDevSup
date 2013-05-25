@@ -21,7 +21,7 @@ class StoppableThread(threading.Thread):
     ...         self.cur = threading.current_thread()
     ...         self.E.set()
     ...         while self.shouldRun():
-    ...             time.sleep(0.01)
+    ...             self.sleep(10.0)
     >>> T = TestThread()
     >>> T.start()
     >>> T.E.wait(1.0)
@@ -34,24 +34,30 @@ class StoppableThread(threading.Thread):
     """
     def __init__(self, max=0):
         super(StoppableThread, self).__init__()
-        self.__stop = True
-        self.__lock = threading.Lock()
+        self.__stop = threading.Event()
+        self.__stop.set()
 
     def start(self):
-        with self.__lock:
-            self.__stop = False
-
+        self.__stop.clear()
         super(StoppableThread, self).start()
 
     def join(self):
-        with self.__lock:
-            self.__stop = True
-       
+        self.__stop.set()       
         super(StoppableThread, self).join()
 
     def shouldRun(self):
-        with self.__lock:
-            return not self.__stop
+        """Returns False is a request to stop is made.
+        """
+        return not self.__stop.isSet()
+
+    def sleep(self, delay):
+        """Sleep for some time, or until a request to stop is made.
+        Return value is the same as shouldRun()
+        """
+        R = self.__stop.wait(delay)
+        if R is None:
+            R = self.__stop.isSet() # Handle python <= 2.6
+        return not R
 
 class Worker(threading.Thread):
     """A threaded work queue.

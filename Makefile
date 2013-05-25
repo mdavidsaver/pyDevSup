@@ -12,6 +12,8 @@ $(foreach dir, $(filter-out configure,$(DIRS)),$(eval $(call DIR_template,$(dir)
 
 iocBoot_DEPEND_DIRS += $(filter %App,$(DIRS))
 
+UNINSTALL_DIRS += $(TOP)/python
+
 include $(TOP)/configure/RULES_TOP
 
 #useful targets includ: doc-html and doc-clean

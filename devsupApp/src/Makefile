@@ -50,9 +50,18 @@ devsup_SRCS += dbdset.c
 # Finally link to the EPICS Base libraries
 devsup_LIBS += $(EPICS_BASE_IOC_LIBS)
 
+
+PY += devsup/__init__.py
+PY += devsup/_nullapi.py
+PY += devsup/db.py
+PY += devsup/hooks.py
+PY += devsup/interfaces.py
+PY += devsup/util.py
+
 #===========================
 
 include $(TOP)/configure/RULES
+include $(TOP)/configure/RULES_PY
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
 

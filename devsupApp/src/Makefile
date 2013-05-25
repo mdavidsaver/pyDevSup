@@ -22,33 +22,44 @@ endif
 #=============================
 # Build the IOC application
 
-PROD_IOC = devsup
-# devsup.dbd will be created and installed
-DBD += devsup.dbd
+LIBRARY = pyDevSup$(PY_VER)
 
-# devsup.dbd will be made up from these files:
-devsup_DBD += base.dbd
-devsup_DBD += pyDevSup.dbd
+SHRLIB_VERSION = 0
 
-devsup_SYS_LIBS += python$(PY_VER)
+DBD += pyDevSup.dbd
 
-# devsup_registerRecordDeviceDriver.cpp derives from devsup.dbd
-devsup_SRCS += devsup_registerRecordDeviceDriver.cpp
+pyDevSup$(PY_VER)_SYS_LIBS += python$(PY_VER)
+
+pyDevSup$(PY_VER)_SRCS += setup.c
+pyDevSup$(PY_VER)_SRCS += dbrec.c
+pyDevSup$(PY_VER)_SRCS += dbfield.c
+pyDevSup$(PY_VER)_SRCS += dbdset.c
+
+
+PROD_IOC = softIocPy
+# softIocPy.dbd will be created and installed
+DBD += softIocPy.dbd
+
+# softIocPy.dbd will be made up from these files:
+softIocPy_DBD += base.dbd
+softIocPy_DBD += pyDevSup.dbd
+
+softIocPy_LIBS += pyDevSup$(PY_VER)
+
+softIocPy_SYS_LIBS += python$(PY_VER)
+
+# softIocPy_registerRecordDeviceDriver.cpp derives from softIocPy.dbd
+softIocPy_SRCS += softIocPy_registerRecordDeviceDriver.cpp
 
 # Build the main IOC entry point on workstation OSs.
-devsup_SRCS_DEFAULT += devsupMain.cpp
-devsup_SRCS_vxWorks += -nil-
-
-devsup_SRCS += setup.c
-devsup_SRCS += dbrec.c
-devsup_SRCS += dbfield.c
-devsup_SRCS += dbdset.c
+softIocPy_SRCS_DEFAULT += devsupMain.cpp
+softIocPy_SRCS_vxWorks += -nil-
 
 # Add support from base/src/vxWorks if needed
-#devsup_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
+#softIocPy_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 # Finally link to the EPICS Base libraries
-devsup_LIBS += $(EPICS_BASE_IOC_LIBS)
+softIocPy_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 
 PY += devsup/__init__.py

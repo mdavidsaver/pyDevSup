@@ -1,9 +1,9 @@
-#!./bin/linux-x86-debug/devsup
+#!./bin/linux-x86/softIocPy
 
 epicsEnvSet("PYTHONPATH", "${PWD}/python:${PWD}/testApp")
 
-dbLoadDatabase("dbd/devsup.dbd")
-devsup_registerRecordDeviceDriver(pdbbase)
+dbLoadDatabase("dbd/softIocPy.dbd")
+softIocPy_registerRecordDeviceDriver(pdbbase)
 
 #py "import devsup.hooks"
 #py "devsup.hooks.debugHooks()"

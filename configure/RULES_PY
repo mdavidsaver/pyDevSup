@@ -3,7 +3,7 @@ PY_FILES = $(PY:%=$(INSTALL_LOCATION)/python/%)
 
 $(PY_FILES) : $(INSTALL_LOCATION)/python/%: ../%
 	@[ -d $(dir $@) ] || install -d $(dir $@)
-	@echo "Install PROTO $@"
+	@echo "Install PY $@"
 	install -m 644 $< $@
 
 build: $(PY_FILES)

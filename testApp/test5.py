@@ -41,6 +41,9 @@ class UnitWorker(object):
         self.scan.interrupt(reason=values)
 
 class UnitSupport(object):
+
+    raw = True
+
     def __init__(self, rec, args):
         worker, self.unit = args.split(None, 1)
         try:

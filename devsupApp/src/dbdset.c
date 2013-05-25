@@ -11,7 +11,6 @@
 #include <dbStaticLib.h>
 #include <dbAccess.h>
 #include <devSup.h>
-#include <dbLink.h>
 #include <recGbl.h>
 #include <alarm.h>
 #include <ellLib.h>
@@ -32,6 +31,8 @@ typedef struct {
     PyObject *pyrecord;
     PyObject *support;
     PyObject *scanobj;
+
+    int rawsupport;
 
     IOSCANPVT scan;
 
@@ -61,6 +62,15 @@ static long parse_link(dbCommon *prec, const char* src)
     Py_INCREF(priv->pyrecord);
     Py_INCREF(priv->support);
     Py_DECREF(ret);
+
+    ret = PyObject_GetAttrString(priv->support, "raw");
+    if(!ret)
+        PyErr_Clear();
+    else if(ret && PyObject_IsTrue(ret)==1)
+        priv->rawsupport = 1;
+    Py_XDECREF(ret);
+    if(PyErr_Occurred())
+        return -1;
 
     return 0;
 }
@@ -173,7 +183,10 @@ static long init_record(dbCommon *prec)
 
 static long init_record2(dbCommon *prec)
 {
-    return 2;
+    pyDevice *priv = prec->dpvt;
+    if(priv && priv->rawsupport)
+        return 2;
+    return 0;
 }
 
 static long add_record(dbCommon *prec)
@@ -331,8 +344,9 @@ static long process_record(dbCommon *prec)
 
 static long process_record2(dbCommon *prec)
 {
+    pyDevice *priv = prec->dpvt;
     long ret = process_record(prec);
-    if(ret==0)
+    if(ret==0 && priv && priv->rawsupport)
         ret = 2;
     return ret;
 }
@@ -375,24 +389,24 @@ typedef struct {
     DEVSUPFUN linconv;
 } dset6;
 
-static dset6 pydevsupCom = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
+static dset6 pydevsupComSpec = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
                              (DEVSUPFUN)&init_record,
                              (DEVSUPFUN)&get_iointr_info},
                             (DEVSUPFUN)&process_record};
-static dset6 pydevsupComOut2 = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
+static dset6 pydevsupComOut = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
                                 (DEVSUPFUN)&init_record2,
                                 (DEVSUPFUN)&get_iointr_info},
                                (DEVSUPFUN)&process_record};
-static dset6 pydevsupComIn2 = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
+static dset6 pydevsupComIn = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
                                 (DEVSUPFUN)&init_record,
                                 (DEVSUPFUN)&get_iointr_info},
                                (DEVSUPFUN)&process_record2};
 
 int isPyRecord(dbCommon *prec)
 {
-    return prec->dset==(dset*)&pydevsupCom
-            || prec->dset==(dset*)&pydevsupComIn2
-            || prec->dset==(dset*)&pydevsupComOut2;
+    return prec->dset==(dset*)&pydevsupComSpec
+            || prec->dset==(dset*)&pydevsupComIn
+            || prec->dset==(dset*)&pydevsupComOut;
 }
 
 int canIOScanRecord(dbCommon *prec)
@@ -433,6 +447,6 @@ void pyDBD_cleanup(void)
 
 #include <epicsExport.h>
 
-epicsExportAddress(dset, pydevsupCom);
-epicsExportAddress(dset, pydevsupComIn2);
-epicsExportAddress(dset, pydevsupComOut2);
+epicsExportAddress(dset, pydevsupComSpec);
+epicsExportAddress(dset, pydevsupComIn);
+epicsExportAddress(dset, pydevsupComOut);

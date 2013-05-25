@@ -53,6 +53,15 @@ and the string "some other string".
   The module :mod:`devsup.interfaces` provides a Zope Interface
   definition by this name which may be referenced.
 
+  .. attribute:: raw
+
+    A boolean value indicating whether this device support
+    uses "raw" access.  A Raw support module will update
+    the VAL field even if the recordtype has an RVAL field
+    (eg. ai/ao, mbbi/mbbo).
+
+    Omitting this attribute is the same as False.
+
   .. method:: process(record, reason)
 
     :param record: :class:`Record <devsup.db.Record>` from which the request originated.
@@ -135,10 +144,6 @@ This support code can then be referenced from records. ::
   record(longin, "my:int:counter") {
     field(DTYP, "Python Device")
     field(INP , "counter hello world")
-  }
-  record(ai, "my:float:counter") {
-    field(DTYP, "Raw Python Device")
-    field(INP , "counter hello there")
   }
   
 The following will fail to associate. ::

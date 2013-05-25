@@ -1,7 +1,10 @@
 
-from zope.interface import Interface
+from zope.interface import Interface, Attribute
 
 class DeviceSupport(Interface):
+
+    raw = Attribute('True if this support modifies VAL instead of RVAL')
+
     def detach(record):
         """Disconnect from the record.
 

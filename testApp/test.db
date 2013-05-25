@@ -33,16 +33,16 @@ record(longin, "$(P)async:cnt") {
 
 
 record(ao, "$(P):A-SP") {
-  field(DTYP, "Raw Python Device")
+  field(DTYP, "Python Device")
   field(OUT , "@test5 hello none")
 }
 
 record(ao, "$(P):B-SP") {
-  field(DTYP, "Raw Python Device")
+  field(DTYP, "Python Device")
   field(OUT , "@test5 hello half")
 }
 
 record(ai, "$(P):A-RB") {
-  field(DTYP, "Raw Python Device")
+  field(DTYP, "Python Device")
   field(INP , "@test5 hello none")
 }

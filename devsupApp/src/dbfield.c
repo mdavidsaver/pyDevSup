@@ -105,6 +105,13 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
     if(!PyArg_ParseTuple(args, "O", &val))
         return NULL;
 
+    if(val==Py_None) {
+        PyErr_Format(PyExc_ValueError, "Can't assign None to %s.%s",
+                     self->addr.precord->name,
+                     self->addr.pfldDes->name);
+        return NULL;
+    }
+
     switch(self->addr.field_type)
     {
 #define OP(FTYPE, CTYPE, FN) case DBF_##FTYPE: *(CTYPE*)self->addr.pfield = FN(val); break
@@ -130,8 +137,12 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
 #else
         fld = PyString_AsString(val);
 #endif
-        strncpy(dest, fld, MAX_STRING_SIZE);
-        dest[MAX_STRING_SIZE-1]='\0';
+        if(fld) {
+          strncpy(dest, fld, MAX_STRING_SIZE);
+          dest[MAX_STRING_SIZE-1]='\0';
+        } else {
+          dest[0] = '\0';
+        }
 #if PY_MAJOR_VERSION >= 3
         Py_DECREF(data);
 #endif

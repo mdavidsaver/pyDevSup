@@ -1,0 +1,106 @@
+record(stringin, "$(P)Wthr-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Station ID")
+  field(INP , "@weather $(LOC) showID")
+  field(PINI, "YES")
+}
+
+record(ai, "$(P)K:Update-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Update period")
+  field(INP , "@weather $(LOC) updatePeriod")
+  field(SCAN, "I/O Intr")
+  field(EGU , "min")
+  field(HOPR, "30")
+  field(LOPR, "0")
+}
+
+
+record(stringin, "$(P)K-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Measurement time")
+  field(INP , "@weather $(LOC) getISOTime")
+  field(SCAN, "I/O Intr")
+  field(TSE , "-2")
+}
+
+record(ai, "$(P)T-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Air temperature")
+  field(INP , "@weather $(LOC) getTemperatureCelsius")
+  field(SCAN, "I/O Intr")
+  field(TSE , "-2")
+  field(EGU , "C")
+  field(HOPR, "30")
+  field(LOPR, "-5")
+  field(PREC, "1")
+}
+record(ai, "$(P)T:Chill-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Wind chill")
+  field(INP , "@weather $(LOC) getWindchill")
+  field(SCAN, "I/O Intr")
+  field(TSE , "-2")
+  field(EGU , "C")
+  field(HOPR, "30")
+  field(LOPR, "-15")
+  field(PREC, "1")
+}
+
+
+record(ai, "$(P)Humid-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Relative humidity")
+  field(INP , "@weather $(LOC) getHumidity")
+  field(SCAN, "I/O Intr")
+  field(TSE , "-2")
+  field(EGU , "%")
+  field(HOPR, "100")
+  field(LOPR, "0")
+}
+
+record(ai, "$(P)P-I") {
+  field(DTYP, "Python Device")
+  field(INP , "@weather $(LOC) getPressure")
+  field(SCAN, "I/O Intr")
+  field(TSE , "-2")
+  field(EGU , "mbar")
+  field(HOPR, "1100")
+  field(LOPR, "900")
+}
+
+record(stringin, "$(P)Cond-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Sky condition")
+  field(INP , "@weather $(LOC) getSkyConditions")
+  field(SCAN, "I/O Intr")
+  field(TSE , "-2")
+}
+record(stringin, "$(P)Wthr-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Current Weather")
+  field(INP , "@weather $(LOC) getWeather")
+  field(SCAN, "I/O Intr")
+  field(TSE , "-2")
+}
+
+record(ai, "$(P)Dir:Wind-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Wind direction")
+  field(INP , "@weather $(LOC) getWindDirection")
+  field(SCAN, "I/O Intr")
+  field(TSE , "-2")
+  field(EGU , "deg")
+  field(HOPR, "360")
+  field(LOPR, "0")
+}
+record(ai, "$(P)V:Wind-I") {
+  field(DTYP, "Python Device")
+  field(DESC, "Wind speed")
+  field(INP , "@weather $(LOC) getWindSpeed")
+  field(SCAN, "I/O Intr")
+  field(TSE , "-2")
+  field(EGU , "m/s")
+  field(HOPR, "20")
+  field(LOPR, "0")
+}

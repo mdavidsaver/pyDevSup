@@ -142,7 +142,7 @@ static PyObject* pyRecord_setSevr(pyRecord *self, PyObject *args, PyObject *kws)
         return NULL;
     }
 
-    recGblSetSevr(prec, sevr, stat);
+    recGblSetSevr(prec, stat, sevr);
     Py_RETURN_NONE;
 }
 

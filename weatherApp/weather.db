@@ -1,11 +1,11 @@
-record(stringin, "$(P)Wthr-I") {
+record(stringin, "$(P)ID-I") {
   field(DTYP, "Python Device")
   field(DESC, "Station ID")
   field(INP , "@weather $(LOC) showID")
   field(PINI, "YES")
 }
 
-record(ai, "$(P)K:Update-I") {
+record(ai, "$(P)Time:Update-I") {
   field(DTYP, "Python Device")
   field(DESC, "Update period")
   field(INP , "@weather $(LOC) updatePeriod")
@@ -16,7 +16,7 @@ record(ai, "$(P)K:Update-I") {
 }
 
 
-record(stringin, "$(P)K-I") {
+record(stringin, "$(P)Time-I") {
   field(DTYP, "Python Device")
   field(DESC, "Measurement time")
   field(INP , "@weather $(LOC) getISOTime")
@@ -48,7 +48,7 @@ record(ai, "$(P)T:Chill-I") {
 }
 
 
-record(ai, "$(P)Humid-I") {
+record(ai, "$(P)RH-I") {
   field(DTYP, "Python Device")
   field(DESC, "Relative humidity")
   field(INP , "@weather $(LOC) getHumidity")
@@ -69,16 +69,16 @@ record(ai, "$(P)P-I") {
   field(LOPR, "900")
 }
 
-record(stringin, "$(P)Cond-I") {
+record(stringin, "$(P)Val:Sky-I") {
   field(DTYP, "Python Device")
   field(DESC, "Sky condition")
   field(INP , "@weather $(LOC) getSkyConditions")
   field(SCAN, "I/O Intr")
   field(TSE , "-2")
 }
-record(stringin, "$(P)Wthr-I") {
+record(stringin, "$(P)Val:Rmrk-I") {
   field(DTYP, "Python Device")
-  field(DESC, "Current Weather")
+  field(DESC, "Observe remarks")
   field(INP , "@weather $(LOC) getWeather")
   field(SCAN, "I/O Intr")
   field(TSE , "-2")
@@ -94,7 +94,7 @@ record(ai, "$(P)Dir:Wind-I") {
   field(HOPR, "360")
   field(LOPR, "0")
 }
-record(ai, "$(P)V:Wind-I") {
+record(ai, "$(P)S:Wind-I") {
   field(DTYP, "Python Device")
   field(DESC, "Wind speed")
   field(INP , "@weather $(LOC) getWindSpeed")

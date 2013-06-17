@@ -1,13 +1,15 @@
 #!./bin/linux-x86/softIocPy
 
+epicsEnvSet("http_proxy", "http://proxy:8888/")
+
 epicsEnvSet("PYTHONPATH", "${PWD}/python")
 
 dbLoadDatabase("dbd/softIocPy.dbd")
 softIocPy_registerRecordDeviceDriver(pdbbase)
 
-dbLoadRecords("db/weather.db","P=kisp:,LOC=KISP")
-#dbLoadRecords("db/weather.db","P=khwv:,LOC=KHWV")
-#dbLoadRecords("db/weather.db","P=unnt:,LOC=UNNT")
+dbLoadRecords("db/weather.db","P=CF:Ext{KISP},LOC=KISP")
+dbLoadRecords("db/weather.db","P=CF:Ext{KHWV},LOC=KHWV")
+dbLoadRecords("db/weather.db","P=CF:Ext{UNNT},LOC=UNNT")
 
 iocInit()
 

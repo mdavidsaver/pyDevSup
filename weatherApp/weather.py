@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import socket, time
+import socket, time, urllib2
 
 from weakref import WeakValueDictionary
 
@@ -147,10 +147,9 @@ class ReportScanner(StoppableThread):
 
         self.lastUpdate = rtime
 
-      except socket.error, e:
+      except (socket.error, urllib2.URLError) as e:
         print("download error for",self.station,":",e)
         self.updatePeriod = self.initPeriod
-
 
       self.intscan.interrupt()
 

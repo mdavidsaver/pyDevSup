@@ -66,6 +66,9 @@ void py(const char* code)
 {
     PyGILState_STATE state;
 
+    if(!code)
+        return;
+
     state = PyGILState_Ensure();
 
     if(PyRun_SimpleStringFlags(code, NULL)!=0)
@@ -78,6 +81,9 @@ void pyfile(const char* file)
 {
     FILE *fp;
     PyGILState_STATE state;
+
+    if(!file)
+        return;
 
     state = PyGILState_Ensure();
 

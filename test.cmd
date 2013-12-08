@@ -1,6 +1,6 @@
 #!./bin/linux-x86/softIocPy
 
-epicsEnvSet("PYTHONPATH", "${PWD}/python:${PWD}/testApp")
+epicsEnvSet("PYTHONPATH", "${PWD}/python/linux-x86:${PWD}/testApp")
 
 dbLoadDatabase("dbd/softIocPy.dbd")
 softIocPy_registerRecordDeviceDriver(pdbbase)

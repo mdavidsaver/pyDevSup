@@ -6,7 +6,7 @@ cd("$(TOP)")
 
 epicsEnvSet("http_proxy", "http://proxy:8888/")
 
-epicsEnvSet("PYTHONPATH", "${TOP}/python")
+epicsEnvSet("PYTHONPATH", "${TOP}/python/$(ARCH)")
 
 dbLoadDatabase("dbd/softIocPy.dbd")
 softIocPy_registerRecordDeviceDriver(pdbbase)

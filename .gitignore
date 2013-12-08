@@ -1,12 +1,13 @@
 *.pyc
 *.pyo
 *~
+*.dbl
 O.*
 bin
 include
 lib
 db
 dbd
-python
+python*
 _build
 envPaths

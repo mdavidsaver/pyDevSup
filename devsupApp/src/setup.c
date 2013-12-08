@@ -272,15 +272,13 @@ static void cleanupPy(void *junk)
  */
 static void setupPyInit(void)
 {
-    PyThreadState *state;
-
     PyImport_AppendInittab("_dbapi", init_dbapi);
     PyImport_AppendInittab("_dbconstants", init_dbconstants);
 
     Py_Initialize();
     PyEval_InitThreads();
 
-    state = PyEval_SaveThread();
+    (void)PyEval_SaveThread();
 
     epicsAtExit(&cleanupPy, NULL);
 }

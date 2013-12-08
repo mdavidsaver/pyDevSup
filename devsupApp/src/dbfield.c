@@ -160,7 +160,7 @@ static PyObject *pyField_getarray(pyField *self)
 #ifdef HAVE_NUMPY
     int flags = NPY_CARRAY;
     char *data=self->addr.pfield;
-    npy_int dims[1] = {self->addr.no_elements};
+    npy_intp dims[1] = {self->addr.no_elements};
     PyArray_Descr *desc;
 
     if(self->addr.field_type>DBF_MENU) {

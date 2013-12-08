@@ -115,9 +115,9 @@ static void pyhook(initHookState state)
     mod = PyImport_ImportModule("devsup.hooks");
     if(!mod) {
         if(!madenoise)
-            fprintf(stderr, "Couldn't import devsup.hooks\n");
+            fprintf(stderr, "Error: Couldn't import devsup.hooks!  Python module initHooks can not be run!\n");
         madenoise=1;
-        return;
+        goto fail;
     }
     ret = PyObject_CallMethod(mod, "_runhook", "l", (long)state);
     Py_DECREF(mod);
@@ -127,6 +127,7 @@ static void pyhook(initHookState state)
     }
     Py_XDECREF(ret);
 
+fail:
     PyGILState_Release(gilstate);
 }
 

@@ -1,6 +1,8 @@
 ifneq ($(T_A),)
 
-PY_INSTALL_DIR = $(INSTALL_LOCATION)/python/$(T_A)
+ifndef PY_VER
+$(error Must include CONFIG_PY)
+endif
 
 PY_FILES += $(PY:%=$(PY_INSTALL_DIR)/%)
 

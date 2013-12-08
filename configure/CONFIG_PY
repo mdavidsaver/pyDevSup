@@ -1,0 +1,28 @@
+PYMODULE ?= YES
+
+ifneq ($(T_A),)
+
+include $(TOP)/configure/O.$(T_A)/CONFIG_PY
+ifneq ($(PY_OK),YES)
+$(error Unable to get python configuration)
+endif
+
+USR_CPPFLAGS += $(PY_INCDIRS:%=-I%)
+USR_LDFLAGS += $(PY_LIBDIRS:%=-L%)
+
+ifeq ($(HAVE_NUMPY),YES)
+USR_CPPFLAGS += -DHAVE_NUMPY
+endif
+
+LIB_SYS_LIBS += python$(PY_VER)
+
+PY_INSTALL_DIR = $(INSTALL_LOCATION)/python$(PY_VER)/$(T_A)
+
+# Python loadables have no prefix (eg 'pymod.so')
+# and are installed alongsize .py files
+LOADABLE_SHRLIB_PREFIX =
+ifneq ($(PYMODULE),NO)
+INSTALL_SHRLIB = $(PY_INSTALL_DIR)
+endif
+
+endif

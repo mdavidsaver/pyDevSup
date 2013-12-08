@@ -1,23 +1,11 @@
 TOP=../..
 
 include $(TOP)/configure/CONFIG
+PYMODULE = NO
+include $(TOP)/configure/CONFIG_PY
 #----------------------------------------
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
-
-ifdef T_A
-include $(TOP)/configure/O.$(T_A)/CONFIG_PY
-ifneq ($(PY_OK),YES)
-$(error Unable to get python configuration)
-endif
-endif
-
-USR_CPPFLAGS += $(PY_INCDIRS:%=-I%)
-USR_LDFLAGS += $(PY_LIBDIRS:%=-L%)
-
-ifeq ($(HAVE_NUMPY),YES)
-USR_CPPFLAGS += -DHAVE_NUMPY
-endif
 
 #=============================
 # Build the IOC application

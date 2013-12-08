@@ -1,9 +1,11 @@
 #!./bin/linux-x86/softIocPy
 
-epicsEnvSet("PYTHONPATH", "${PWD}/python/linux-x86:${PWD}/testApp")
-
 dbLoadDatabase("dbd/softIocPy.dbd")
 softIocPy_registerRecordDeviceDriver(pdbbase)
+
+py "import devsup; print devsup.HAVE_DBAPI"
+py "import sys; sys.path.insert(0,'${PWD}/testApp')"
+py "print sys.path"
 
 #py "import devsup.hooks"
 #py "devsup.hooks.debugHooks()"

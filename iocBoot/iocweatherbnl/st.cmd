@@ -1,8 +1,12 @@
-#!./bin/linux-x86/softIocPy
+#!../../bin/linux-x86/softIocPy
+
+< envPaths
+
+cd("$(TOP)")
 
 epicsEnvSet("http_proxy", "http://proxy:8888/")
 
-epicsEnvSet("PYTHONPATH", "${PWD}/python")
+epicsEnvSet("PYTHONPATH", "${TOP}/python")
 
 dbLoadDatabase("dbd/softIocPy.dbd")
 softIocPy_registerRecordDeviceDriver(pdbbase)

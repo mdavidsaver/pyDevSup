@@ -131,27 +131,13 @@ fail:
     PyGILState_Release(gilstate);
 }
 
-static const char sitestr[] = EPICS_SITE_VERSION;
-
-static PyObject *modversion(PyObject *self)
-{
-    int ver=EPICS_VERSION, rev=EPICS_REVISION, mod=EPICS_MODIFICATION, patch=EPICS_PATCH_LEVEL;
-    return Py_BuildValue("iiiis", ver, rev, mod, patch, sitestr);
-}
-
-static PyMethodDef devsup_methods[] = {
-    {"verinfo", (PyCFunction)modversion, METH_NOARGS,
-     "EPICS Version information\nreturn (MAJOR, MINOR, MOD, PATH, \"site\""},
-    {NULL, NULL, 0, NULL}
-};
-
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef dbapimodule = {
   PyModuleDef_HEAD_INIT,
     "_dbapi",
     NULL,
     -1,
-    devsup_methods
+    NULL
 };
 #endif
 
@@ -166,7 +152,7 @@ PyMODINIT_FUNC init_dbapi(void)
 #if PY_MAJOR_VERSION >= 3
     mod = PyModule_Create(&dbapimodule);
 #else
-    mod = Py_InitModule("_dbapi", devsup_methods);
+    mod = Py_InitModule("_dbapi", NULL);
 #endif
     if(!mod)
         goto fail;
@@ -213,7 +199,7 @@ static struct PyModuleDef constantsmodule = {
 /* initialize "magic" builtin module */
 PyMODINIT_FUNC init_dbconstants(void)
 {
-    PyObject *mod = NULL;
+    PyObject *mod = NULL, *vertup;
 
 #if PY_MAJOR_VERSION >= 3
     mod = PyModule_Create(&constantsmodule);
@@ -250,6 +236,37 @@ PyMODINIT_FUNC init_dbconstants(void)
     PyModule_AddIntMacro(mod, READ_ACCESS_ALARM);
     PyModule_AddIntMacro(mod, WRITE_ACCESS_ALARM);
 
+    /* standard macros from epicsVersion.h */
+    PyModule_AddStringMacro(mod, EPICS_VERSION_STRING);
+    PyModule_AddStringMacro(mod, EPICS_DEV_SNAPSHOT);
+    PyModule_AddStringMacro(mod, EPICS_SITE_VERSION);
+    PyModule_AddIntMacro(mod, EPICS_VERSION);
+    PyModule_AddIntMacro(mod, EPICS_REVISION);
+    PyModule_AddIntMacro(mod, EPICS_PATCH_LEVEL);
+    PyModule_AddIntMacro(mod, EPICS_MODIFICATION);
+    /* additional build time info */
+    PyModule_AddStringMacro(mod, XEPICS_ARCH);
+    PyModule_AddStringMacro(mod, XPYDEV_BASE);
+    PyModule_AddStringMacro(mod, XEPICS_BASE);
+
+
+    vertup = Py_BuildValue("(iiiiss)",
+                           (int)EPICS_VERSION,
+                           (int)EPICS_REVISION,
+                           (int)EPICS_MODIFICATION,
+                           (int)EPICS_PATCH_LEVEL,
+                           EPICS_SITE_VERSION,
+                           EPICS_DEV_SNAPSHOT);
+    if(vertup)
+        PyModule_AddObject(mod, "epicsver", vertup);
+    Py_XDECREF(vertup);
+
+    /* pyDevSup version */
+    vertup = Py_BuildValue("(ii)", 0, 2);
+    if(vertup)
+        PyModule_AddObject(mod, "pydevver", vertup);
+    Py_XDECREF(vertup);
+
     MODINIT_RET(mod);
 }
 
@@ -284,6 +301,71 @@ static void setupPyInit(void)
     epicsAtExit(&cleanupPy, NULL);
 }
 
+#ifndef PATH_MAX
+#  define PATH_MAX 100
+#endif
+
+static void extendPath(PyObject *list,
+                       const char *base,
+                       const char *archdir)
+{
+    PyObject *mod, *ret;
+
+    mod = PyImport_ImportModule("os.path");
+    if(!mod)
+        return;
+
+    ret = PyObject_CallMethod(mod, "join", "sss", base, PYDIR, archdir);
+    if(ret && !PySequence_Contains(list, ret)) {
+        PyList_Insert(list, 0, ret);
+    }
+    Py_XDECREF(ret);
+    Py_DECREF(mod);
+    if(PyErr_Occurred()) {
+        PyErr_Print();
+        PyErr_Clear();
+    }
+}
+
+static void insertDefaultPath(PyObject *list)
+{
+    const char *basedir, *pydevdir, *top, *arch;
+
+    basedir = getenv("EPICS_BASE");
+    if(!basedir)
+        basedir = XEPICS_BASE;
+    pydevdir = getenv("PYDEV_BASE");
+    if(!pydevdir)
+        pydevdir = XPYDEV_BASE;
+    top = getenv("TOP");
+    arch = getenv("ARCH");
+    if(!arch)
+        arch = XEPICS_ARCH;
+
+    assert(PyList_Check(list));
+    assert(PySequence_Check(list));
+    extendPath(list, basedir, arch);
+    extendPath(list, pydevdir, arch);
+    if(top)
+        extendPath(list, top, arch);
+}
+
+static void setupPyPath(void)
+{
+    PyObject *mod, *path = NULL;
+
+    mod = PyImport_ImportModule("sys");
+    if(mod)
+        path = PyObject_GetAttrString(mod, "path");
+    Py_XDECREF(mod);
+
+    if(path) {
+        insertDefaultPath(path);
+    }
+    Py_XDECREF(path);
+}
+
+
 #include <iocsh.h>
 
 static const iocshArg argCode = {"python code", iocshArgString};
@@ -309,6 +391,7 @@ static void pySetupReg(void)
 
     state = PyGILState_Ensure();
     init_dbapi();
+    setupPyPath();
     if(PyErr_Occurred()) {
         PyErr_Print();
         PyErr_Clear();

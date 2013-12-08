@@ -1,11 +1,4 @@
 
-def verinfo():
-    """(VER, REV, MOD, PATH, "site") = verinfo()
-    
-    Query EPICS version information
-    """
-    return (0,0,0,0,'invalid')
-
 class _Record(object):
     """Handle for record operations
     

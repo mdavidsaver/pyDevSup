@@ -1,0 +1,9 @@
+
+record(waveform, "$(N)") {
+  field(DTYP, "Python Device")
+  field(INP , "@logwatch $(FNAME)")
+  field(SCAN, "I/O Intr")
+  field(FTVL, "CHAR")
+  field(NELM, "$(NELM=200)")
+  info("logfilter","$(FILTER=)")
+}

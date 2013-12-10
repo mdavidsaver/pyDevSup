@@ -190,7 +190,7 @@ static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
     } else {
         long ret=-1;
         int ran=0;
-        setReasonPyRecord(prec, reason);
+        epicsThreadPrivateSet(pyDevReasonID, reason);
 
         Py_BEGIN_ALLOW_THREADS {
 
@@ -206,7 +206,7 @@ static PyObject* pyRecord_scan(pyRecord *self, PyObject *args, PyObject *kws)
 
         } Py_END_ALLOW_THREADS
 
-        clearReasonPyRecord(prec);
+        epicsThreadPrivateSet(pyDevReasonID, NULL);
 
         if(ran)
             return PyLong_FromLong(ret);
@@ -247,7 +247,7 @@ static PyObject *pyRecord_asyncFinish(pyRecord *self, PyObject *args, PyObject *
 
     Py_INCREF(self); /* necessary? */
 
-    setReasonPyRecord(prec, reason);
+    epicsThreadPrivateSet(pyDevReasonID, reason);
 
     Py_BEGIN_ALLOW_THREADS {
         rset *rsup = prec->rset;
@@ -262,7 +262,7 @@ static PyObject *pyRecord_asyncFinish(pyRecord *self, PyObject *args, PyObject *
 
     } Py_END_ALLOW_THREADS
 
-    clearReasonPyRecord(prec);
+    epicsThreadPrivateSet(pyDevReasonID, NULL);
 
     if(!pact) {
         PyErr_SetString(PyExc_ValueError, "Python Device record was not active");

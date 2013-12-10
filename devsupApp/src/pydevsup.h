@@ -1,6 +1,8 @@
 #ifndef PYDEVSUP_H
 #define PYDEVSUP_H
 
+#include <epicsThread.h>
+
 #if PY_MAJOR_VERSION >= 3
 #define PyInt_FromLong PyLong_FromLong
 #define PyInt_AsLong PyLong_AsLong
@@ -22,5 +24,7 @@ int isPyRecord(dbCommon *);
 int canIOScanRecord(dbCommon *);
 int setReasonPyRecord(dbCommon *, PyObject *);
 int clearReasonPyRecord(dbCommon *);
+
+extern epicsThreadPrivateId pyDevReasonID;
 
 #endif // PYDEVSUP_H

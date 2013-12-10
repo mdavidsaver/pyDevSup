@@ -6,6 +6,7 @@
 #include <Python.h>
 
 #include <epicsVersion.h>
+#include <epicsThread.h>
 #include <assert.h>
 #include <dbCommon.h>
 #include <dbStaticLib.h>
@@ -35,8 +36,6 @@ typedef struct {
     int rawsupport;
 
     IOSCANPVT scan;
-
-    PyObject *reason;
 } pyDevice;
 
 static long parse_link(dbCommon *prec, const char* src)
@@ -131,11 +130,13 @@ static long detach_common(dbCommon *prec)
 static long process_common(dbCommon *prec)
 {
     pyDevice *priv = prec->dpvt;
-    PyObject *reason = priv->reason;
+    PyObject *reason = epicsThreadPrivateGet(pyDevReasonID);
     PyObject *ret;
 
     if(!reason)
         reason = Py_None;
+    else
+        epicsThreadPrivateSet(pyDevReasonID, NULL);
 
     ret = PyObject_CallMethod(priv->support, "process", "OO", priv->pyrecord, reason);
     if(!ret)
@@ -165,11 +166,6 @@ static long report(int lvl)
                 obj = priv->scanobj ? priv->scanobj : Py_None;
                 printf("IOSCAN: ");
                 PyObject_Print(obj, stdout, 0);
-
-                if(priv->reason) {
-                    printf("Leftover reason!: ");
-                    PyObject_Print(priv->reason, stdout, 0);
-                }
             }
         }
     PyGILState_Release(pystate);
@@ -351,26 +347,6 @@ static long process_record2(dbCommon *prec)
     return ret;
 }
 
-int setReasonPyRecord(dbCommon *prec, PyObject *reason)
-{
-    pyDevice *priv=prec->dpvt;
-    if(!isPyRecord(prec) || !priv || priv->reason)
-        return 0;
-    Py_INCREF(reason);
-    priv->reason = reason;
-    return 1;
-}
-
-int clearReasonPyRecord(dbCommon *prec)
-{
-    pyDevice *priv=prec->dpvt;
-    if(!isPyRecord(prec) || !priv || !priv->reason)
-        return 0;
-    Py_DECREF(priv->reason);
-    priv->reason = NULL;
-    return 1;
-}
-
 
 static dsxt pydevsupExt = {&add_record, &del_record};
 
@@ -438,8 +414,7 @@ void pyDBD_cleanup(void)
 
         Py_XDECREF(priv->support);
         Py_XDECREF(priv->pyrecord);
-        Py_XDECREF(priv->reason);
-        priv->support = priv->pyrecord = priv->reason = NULL;
+        priv->support = priv->pyrecord = NULL;
 
         free(priv);
     }

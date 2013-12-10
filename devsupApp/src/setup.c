@@ -29,6 +29,8 @@ typedef struct {
     const char * const name;
 } pystate;
 
+epicsThreadPrivateId pyDevReasonID;
+
 #define INITST(hook) {initHook ## hook, #hook }
 static pystate statenames[] = {
     INITST(AtIocBuild),
@@ -284,6 +286,8 @@ static void cleanupPy(void *junk)
     pyField_cleanup();
 
     Py_Finalize();
+
+    epicsThreadPrivateDelete(pyDevReasonID);
 }
 
 /* Initialize the interpreter environment
@@ -383,6 +387,8 @@ static void fileRun(const iocshArgBuf *args){pyfile(args[0].sval);}
 static void pySetupReg(void)
 {
     PyGILState_STATE state;
+
+    pyDevReasonID = epicsThreadPrivateCreate();
 
     setupPyInit();
     iocshRegister(&codeDef, &codeRun);

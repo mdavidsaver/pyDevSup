@@ -36,6 +36,9 @@ except ImportError:
 incdirs = [get_python_inc()]+get_numpy_include_dirs()
 libdirs = [get_config_var('LIBDIR')]
 
+print('USR_CFLAGS +=',get_config_var('BASECFLAGS'), file=out)
+print('USR_CXXFLAGS +=',get_config_var('BASECFLAGS'), file=out)
+
 print('PY_VER :=',get_config_var('VERSION'), file=out)
 print('PY_INCDIRS :=',' '.join(incdirs), file=out)
 print('PY_LIBDIRS :=',' '.join(libdirs), file=out)

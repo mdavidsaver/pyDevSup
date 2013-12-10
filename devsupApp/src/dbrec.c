@@ -274,6 +274,26 @@ static PyObject *pyRecord_asyncFinish(pyRecord *self, PyObject *args, PyObject *
     return PyLong_FromLong(ret);
 }
 
+static PyObject *pyRecord_enter(pyRecord *self)
+{
+    dbScanLock(self->entry.precnode->precord);
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *pyRecord_exit(pyRecord *self, PyObject *args)
+{
+    PyObject *t, *v, *tb;
+
+    /* always unlock, regardless of arguments */
+    dbScanUnlock(self->entry.precnode->precord);
+
+    if(!PyArg_ParseTuple(args, "OOO", &t, &v, &tb))
+        return NULL;
+
+    Py_RETURN_FALSE;
+}
+
 static PyMethodDef pyRecord_methods[] = {
     {"name", (PyCFunction)pyRecord_name, METH_NOARGS,
      "Return record name string"},
@@ -297,6 +317,10 @@ static PyMethodDef pyRecord_methods[] = {
      "Begin an asynchronous action.  Record must be locked!"},
     {"asyncFinish", (PyCFunction)pyRecord_asyncFinish, METH_VARARGS|METH_KEYWORDS,
      "Complete an asynchronous action.  Record must *not* be locked!"},
+    {"__enter__", (PyCFunction)pyRecord_enter, METH_NOARGS,
+     "scan lock this record"},
+    {"__exit__", (PyCFunction)pyRecord_exit, METH_VARARGS,
+     "scan unlock this record"},
     {NULL, NULL, 0, NULL}
 };
 

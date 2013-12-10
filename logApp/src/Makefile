@@ -14,7 +14,8 @@ LOADABLE_LIBRARY_HOST = _inotifyy
 _inotifyy_SRCS += inotify_wrap.c
 
 PY += inotifyy.py
-PY += logwatch.py
+PY += logwatch/__init__.py
+PY += logwatch/caputlog.py
 
 #===========================
 

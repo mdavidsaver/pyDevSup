@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import os.path, errno
+import os.path, errno, time
 
 import numpy as np
 
 import inotifyy as inot
 
 from devsup.hooks import addHook
-from devsup.util import StoppableThread
+from devsup.util import importmod, StoppableThread
 from devsup.db import IOScanListThread
 
 mask=inot.IN_CREATE|inot.IN_DELETE|inot.IN_MOVED_FROM|inot.IN_MODIFY
@@ -34,7 +34,14 @@ class LogWatcher(StoppableThread):
         self.arr = rec.field('VAL').getarray()
         self.fd = None
 
+        filt = rec.info('logfilter',"")
+        if filt:
+            filt = importmod(filt)
+            filt = filt.filter(self.fname)
+        self.filt = filt
+
         print(rec, 'will watch', self.fname)
+        print(rec, 'filtered with',self.filt)
 
     def detach(self, rec):
         pass
@@ -42,11 +49,17 @@ class LogWatcher(StoppableThread):
     def process(self, rec, reason=None):
         if reason is None:
             return
+        ts, reason = reason
         buf = np.frombuffer(reason, dtype=self.arr.dtype)
         buf = buf[:rec.NELM-1]
         self.arr[:buf.size] = buf
         self.arr[buf.size] = 0
         rec.NORD = buf.size+1
+        
+        if ts:
+            rec.setTime(ts)
+        else:
+            rec.setTime(time.time())
 
     def join(self):
         print("Stopping logger for",self.fname)
@@ -82,6 +95,7 @@ class LogWatcher(StoppableThread):
         self.closefile()
         try:
             self.fd = open(self.fname, 'r')
+            self.pos = self.fd.tell()
         except IOError, e:
             if e.errno==errno.ENOENT:
                 return
@@ -95,14 +109,12 @@ class LogWatcher(StoppableThread):
     def catfile(self):
         if not self.fd:
             return
-        op = self.fd.tell()
         self.fd.seek(0,2) # Seek end
         end = self.fd.tell()
-        if end < op:
-            self.log("File size decreased, assuming truncation")
-            self.buf = None
-            op = 0
-        self.fd.seek(op,0)
+        if end < self.pos:
+            self.log("File size decreased from %d to %d, assuming truncation"%(self.pos,end))
+            self.pos, self.buf = 0, None
+        self.fd.seek(self.pos)
 
         for L in self.fd.readlines():
             if L[-1]!='\n':
@@ -115,7 +127,12 @@ class LogWatcher(StoppableThread):
                 L, self.buf = self.buf+L, None
             self.log(L[:-1]) # Skip newline
 
+        self.pos = self.fd.tell()
+
     def log(self, msg):
-        self.scan.interrupt(reason=msg)
+        ts = None
+        if self.filt:
+            ts, msg = self.filt.apply(msg)
+        self.scan.interrupt(reason=(ts, msg))
 
 build = LogWatcher

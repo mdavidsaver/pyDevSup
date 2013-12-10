@@ -9,7 +9,7 @@ import inotifyy as inot
 
 from devsup.hooks import addHook
 from devsup.util import StoppableThread
-from devsup.db import IOScanListBlock
+from devsup.db import IOScanListThread
 
 mask=inot.IN_CREATE|inot.IN_DELETE|inot.IN_MOVED_FROM|inot.IN_MODIFY
 
@@ -25,25 +25,24 @@ class LogWatcher(StoppableThread):
         self.IN = inot.INotify()
         self.dirwatch = self.IN.add(self.event, dir, mask)
 
-        self.scan = IOScanListBlock()
+        self.scan = IOScanListThread()
         self.allowScan = self.scan.add
 
         addHook('AfterIocRunning', self.start)
         addHook('AtIocExit', self.join)
 
         self.arr = rec.field('VAL').getarray()
-        print('arr',self.arr.dtype)
         self.fd = None
-        self.buf = None
-        self.msg = ""
 
         print(rec, 'will watch', self.fname)
 
     def detach(self, rec):
         pass
 
-    def process(self, rec, reason):
-        buf = np.frombuffer(self.msg, dtype=self.arr.dtype)
+    def process(self, rec, reason=None):
+        if reason is None:
+            return
+        buf = np.frombuffer(reason, dtype=self.arr.dtype)
         buf = buf[:rec.NELM-1]
         self.arr[:buf.size] = buf
         self.arr[buf.size] = 0
@@ -59,6 +58,7 @@ class LogWatcher(StoppableThread):
 
     def run(self):
         print("log watcher staring",self.fname)
+        self.log("Starting")
         self.openfile()
         self.catfile()
         self.IN.loop()
@@ -116,7 +116,6 @@ class LogWatcher(StoppableThread):
             self.log(L[:-1]) # Skip newline
 
     def log(self, msg):
-        self.msg = msg
-        self.scan.interrupt()
+        self.scan.interrupt(reason=msg)
 
 build = LogWatcher

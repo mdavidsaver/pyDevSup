@@ -12,6 +12,8 @@
 #include <dbCommon.h>
 #include <dbAccess.h>
 #include <dbStaticLib.h>
+#include <recSup.h>
+#include <special.h>
 
 #include "pydevsup.h"
 
@@ -158,10 +160,25 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
 static PyObject *pyField_getarray(pyField *self)
 {
 #ifdef HAVE_NUMPY
+    rset *prset;
     int flags = NPY_CARRAY;
-    char *data=self->addr.pfield;
+    char *data;
     npy_intp dims[1] = {self->addr.no_elements};
     PyArray_Descr *desc;
+
+    if(self->addr.special==SPC_DBADDR &&
+       (prset=dbGetRset(&self->addr)) &&
+       prset->get_array_info)
+    {
+        char *datasave=self->addr.pfield;
+        long noe, off; /* ignored */
+        prset->get_array_info(&self->addr, &noe, &off);
+        data = self->addr.pfield;
+        /* get_array_info can modify pfield in >3.15.0.1 */
+        self->addr.pfield = datasave;
+
+    } else
+        data = self->addr.pfield;
 
     if(self->addr.field_type>DBF_MENU) {
         PyErr_SetString(PyExc_TypeError, "Can not map field type to numpy type");

@@ -98,6 +98,7 @@ class IOScanListBlock(object):
 
         :param reason: Passed to :meth:`Record.scan`.
         :param mask: A *list* or *set* or records which should not be scanned.
+        :returns: True
 
         This method will call :meth:`Record.scan` of each of the records
         currently in the list.  This is done synchronously in the current
@@ -118,6 +119,7 @@ class IOScanListBlock(object):
                 self._recs_add.clear()
                 self._recs.difference_update(self._recs_remove)
                 self._recs_remove.clear()
+        return True
             
 
 def _default_whendone(type, val, tb):
@@ -181,6 +183,7 @@ class IOScanListThread(IOScanListBlock):
         :param reason: Passed to :meth:`Record.scan`.
         :param mask: A *list* or *set* or records which should not be scanned.
         :param whendone: A callable which will be invoked after all records are processed.
+        :returns: True is the request was queued, and False if the queue was full.
         :throws: RuntimeError is the request can't be queued.
 
         Calling this method will cause a request to be sent to a
@@ -195,7 +198,7 @@ class IOScanListThread(IOScanListBlock):
           This method may be safely called while record locks are held.
         """
         W = self.getworker()
-        W.add(self._X, (reason, mask, whendone))
+        return W.add(self._X, (reason, mask, whendone))
 
     def _X(self, reason, mask, whendone):
         try:

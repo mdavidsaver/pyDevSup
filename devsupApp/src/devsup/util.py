@@ -6,6 +6,17 @@ try:
 except ImportError:
     import queue
 
+def importmod(modname):
+    """Import the named python module(s)
+    add return the leaf.
+    
+    >>> M=importmod('xml.sax')
+    >>> M.__name__
+    'xml.sax'
+    >>>
+    """
+    return __import__(modname, fromlist=['__should_not_exist'])
+
 class StoppableThread(threading.Thread):
     """A thread which can be requested to stop.
     

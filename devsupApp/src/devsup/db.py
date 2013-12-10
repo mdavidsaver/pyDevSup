@@ -1,7 +1,7 @@
 
 import threading, sys, traceback, time
 
-from devsup.util import Worker
+from devsup.util import Worker, importmod
 
 try:
     import _dbapi
@@ -326,5 +326,5 @@ def processLink(name, lstr):
     rec = getRecord(name)
     parts = lstr.split(None,1)
     modname, args = parts[0], parts[1] if len(parts)>1 else None
-    mod = __import__(modname, fromlist=['__should_not_exist'])
+    mod = importmod(modname)
     return rec, mod.build(rec, args)

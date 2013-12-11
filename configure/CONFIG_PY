@@ -1,13 +1,21 @@
-PYMODULE ?= YES
-
 ifneq ($(T_A),)
 
--include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_PY.$(EPICS_HOST_ARCH).Common
--include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_PY.Common.$(T_A)
--include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_PY.$(EPICS_HOST_ARCH).$(T_A)
+PYMODULE ?= YES
+
+ifeq ($(PY_VER),)
+$(error Must set PY_VER to select a python version)
+endif
+
+-include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_PY$(PY_VER).$(EPICS_HOST_ARCH).Common
+-include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_PY$(PY_VER).Common.$(T_A)
+-include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_PY$(PY_VER).$(EPICS_HOST_ARCH).$(T_A)
+
+-include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_SITE_PY$(PY_VER).$(EPICS_HOST_ARCH).Common
+-include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_SITE_PY$(PY_VER).Common.$(T_A)
+-include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_SITE_PY$(PY_VER).$(EPICS_HOST_ARCH).$(T_A)
 
 ifneq ($(PY_OK),YES)
-$(error Unable to get generated python configuration)
+$(error No usable configuration for python$(PY_VER))
 endif
 
 PYTHON ?= python$(PY_VER)

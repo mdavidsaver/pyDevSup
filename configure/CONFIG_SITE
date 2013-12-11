@@ -32,6 +32,9 @@ CHECK_RELEASE = YES
 #   take effect.
 #IOCS_APPL_TOP = </IOC/path/to/application/top>
 
+# Default python version.
+PY_VER=2.7
+
 # Module will be build against this version of the
 # Python interpreter
-PYTHON ?= python
+#PYTHON = python$(PY_VER)

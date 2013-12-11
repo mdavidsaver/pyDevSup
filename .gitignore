@@ -11,3 +11,4 @@ dbd
 python*
 _build
 envPaths
+configure/os

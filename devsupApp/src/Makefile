@@ -10,23 +10,23 @@ include $(TOP)/configure/CONFIG_PY
 #=============================
 # Build the IOC application
 
-LIBRARY = pyDevSup$(PY_VER)
+LIBRARY = pyDevSup$(PY_LD_VER)
 
 SHRLIB_VERSION = 0
 
 DBD += pyDevSup.dbd
 
-pyDevSup$(PY_VER)_SYS_LIBS += python$(PY_VER)
+pyDevSup$(PY_LD_VER)_SYS_LIBS += python$(PY_LD_VER)
 
 setup_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
 setup_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
 setup_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
 setup_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
 
-pyDevSup$(PY_VER)_SRCS += setup.c
-pyDevSup$(PY_VER)_SRCS += dbrec.c
-pyDevSup$(PY_VER)_SRCS += dbfield.c
-pyDevSup$(PY_VER)_SRCS += dbdset.c
+pyDevSup$(PY_LD_VER)_SRCS += setup.c
+pyDevSup$(PY_LD_VER)_SRCS += dbrec.c
+pyDevSup$(PY_LD_VER)_SRCS += dbfield.c
+pyDevSup$(PY_LD_VER)_SRCS += dbdset.c
 
 
 PROD_IOC = softIocPy
@@ -37,9 +37,7 @@ DBD += softIocPy.dbd
 softIocPy_DBD += base.dbd
 softIocPy_DBD += pyDevSup.dbd
 
-softIocPy_LIBS += pyDevSup$(PY_VER)
-
-softIocPy_SYS_LIBS += python$(PY_VER)
+softIocPy_LIBS += pyDevSup$(PY_LD_VER)
 
 # softIocPy_registerRecordDeviceDriver.cpp derives from softIocPy.dbd
 softIocPy_SRCS += softIocPy_registerRecordDeviceDriver.cpp

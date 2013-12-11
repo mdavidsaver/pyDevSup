@@ -32,4 +32,6 @@ CHECK_RELEASE = YES
 #   take effect.
 #IOCS_APPL_TOP = </IOC/path/to/application/top>
 
+# Module will be build against this version of the
+# Python interpreter
 PYTHON ?= python

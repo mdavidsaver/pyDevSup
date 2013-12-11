@@ -2,19 +2,27 @@ PYMODULE ?= YES
 
 ifneq ($(T_A),)
 
-include $(TOP)/configure/O.$(T_A)/CONFIG_PY
+-include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_PY.$(EPICS_HOST_ARCH).Common
+-include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_PY.Common.$(T_A)
+-include $(dir $(lastword $(MAKEFILE_LIST)))/os/CONFIG_PY.$(EPICS_HOST_ARCH).$(T_A)
+
 ifneq ($(PY_OK),YES)
-$(error Unable to get python configuration)
+$(error Unable to get generated python configuration)
 endif
 
-USR_CPPFLAGS += $(PY_INCDIRS:%=-I%)
-USR_LDFLAGS += $(PY_LIBDIRS:%=-L%)
+PYTHON ?= python$(PY_VER)
+
+SHRLIB_DEPLIB_DIRS += $(PY_LIBDIRS)
+PROD_DEPLIB_DIRS += $(PY_LIBDIRS)
+
+INCLUDES += $(PY_INCDIRS:%=-I%)
 
 ifeq ($(HAVE_NUMPY),YES)
-USR_CPPFLAGS += -DHAVE_NUMPY
+TARGET_CPPFLAGS += -DHAVE_NUMPY
 endif
 
-LIB_SYS_LIBS += python$(PY_VER)
+LIB_SYS_LIBS += python$(PY_LD_VER)
+PROD_SYS_LIBS += python$(PY_LD_VER)
 
 PY_INSTALL_DIR = $(INSTALL_LOCATION)/python$(PY_VER)/$(T_A)
 

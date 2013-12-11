@@ -3,14 +3,19 @@ TOP=..
 include $(TOP)/configure/CONFIG
 
 TARGETS = $(CONFIG_TARGETS)
-CONFIGS += $(subst ../,,$(wildcard $(CONFIG_INSTALLS)))
 
-TARGETS += CONFIG_PY RULES_PY
+ifdef T_A
+CONFIGS = CONFIG_PY RULES_PY os/CONFIG_PY.Common.$(T_A)
+endif
 
 include $(TOP)/configure/RULES
 
-CONFIG_PY: $(TOP)/makehelper.py
+os/CONFIG_PY.Common.%: $(TOP)/makehelper.py
+	[ -d $(dir $@) ] || $(MKDIR) $(dir $@)
 	$(PYTHON) $< $@
 
-RULES_PY: ../RULES_PY
-	install -m644 $< $@
+realclean:: py_clean
+clean:: py_clean
+
+py_clean:
+	$(RMDIR) os

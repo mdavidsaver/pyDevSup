@@ -112,6 +112,13 @@ and the string "some other string".
         def allowScan(self, record):
           return self.a_scan.add(record)
 
+    Which is most cases can be abbriviated to ::
+
+      class MySup(object):
+        def __init__(self):
+          self.a_scan = devsup.db.IOScanListThread()
+          self.allowScan = self.a_scan.add
+
 Example
 -------
 

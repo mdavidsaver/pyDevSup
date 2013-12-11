@@ -10,6 +10,10 @@
 #include <Python.h>
 #include <structmember.h>
 
+#if PY_MAJOR_VERSION >= 3
+# define PyInt_FromLong PyLong_FromLong
+#endif
+
 #define EVTMAXSIZE (sizeof(struct inotify_event) + NAME_MAX + 1)
 #define EVTMINSIZE offsetof(struct inotify_event,name)
 
@@ -41,7 +45,7 @@ static int INotify_Init(INotify *self, PyObject *args, PyObject *kws)
 static void INotify_dealloc(INotify *self)
 {
     close(self->fd);
-    self->ob_type->tp_free(self);
+    Py_TYPE(self)->tp_free(self);
 }
 
 static PyObject* INotify_add_watch(INotify* self, PyObject* args)

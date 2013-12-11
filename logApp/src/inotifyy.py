@@ -42,7 +42,7 @@ class INotify(_inotifyy.INotify):
 
     def close(self):
         self.__done = True
-        os.write(self.__wake,'*')
+        os.write(self.__wake,b'*')
 
     def add(self, callback, path, mask=IN_ALL_EVENTS):
         wd = super(INotify, self).add(path, mask)

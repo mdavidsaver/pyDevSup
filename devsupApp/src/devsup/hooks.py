@@ -14,9 +14,9 @@ __all__ = [
     "debugHooks",
 ]
 
-hooknames = _dbapi._hooks.keys()
+hooknames = list(_dbapi._hooks.keys())
 
-_revnames = dict([(v,k) for k,v in _dbapi._hooks.iteritems()])
+_revnames = dict([(v,k) for k,v in _dbapi._hooks.items()])
 
 _hooktable = defaultdict(list)
 

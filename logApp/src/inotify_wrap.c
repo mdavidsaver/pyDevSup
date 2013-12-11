@@ -211,7 +211,11 @@ static struct PyModuleDef inotifymodule = {
 # define MODINIT_RET(VAL) return
 #endif
 
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit__inotifyy(void)
+#else
 PyMODINIT_FUNC init_inotifyy(void)
+#endif
 {
     PyObject *mod = NULL;
 

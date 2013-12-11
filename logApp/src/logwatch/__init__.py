@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import os.path, errno, time
+import os.path, errno, time, sys
 
 import numpy as np
 
@@ -10,6 +10,8 @@ import inotifyy as inot
 from devsup.hooks import addHook
 from devsup.util import importmod, StoppableThread
 from devsup.db import IOScanListThread
+
+py3 = sys.version_info[0]>=3
 
 mask=inot.IN_CREATE|inot.IN_DELETE|inot.IN_MOVED_FROM|inot.IN_MODIFY
 
@@ -50,6 +52,8 @@ class LogWatcher(StoppableThread):
         if reason is None:
             return
         ts, reason = reason
+        if py3:
+            reason = reason.encode('ascii')
         buf = np.frombuffer(reason, dtype=self.arr.dtype)
         buf = buf[:rec.NELM-1]
         self.arr[:buf.size] = buf
@@ -96,7 +100,7 @@ class LogWatcher(StoppableThread):
         try:
             self.fd = open(self.fname, 'r')
             self.pos = self.fd.tell()
-        except IOError, e:
+        except IOError as e:
             if e.errno==errno.ENOENT:
                 return
             raise

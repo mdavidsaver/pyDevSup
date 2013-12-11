@@ -4,7 +4,7 @@ Runtime Environment
 The pyDevSup module initializes the interpreter during the registration
 phase of IOC startup with the *pySetupReg* registrar function. ::
 
-  #!../../bin/linux-x86_64/softIocPy
+  #!../../bin/linux-x86_64/softIocPy2.7
   # Interpreter not started
   dbLoadDatabase("../../dbd/softIocPy.dbd",0,0)
   softIocPy_registerRecordDeviceDriver(pdbbase)
@@ -48,7 +48,11 @@ file. ::
   PYDEVSUP=/dir/where/pyDevSup/is/installed
   EPICS_BASE=/....
 
-The following should be added to the usual EPICS Makefiles. ::
+The default or preferred Python version can be specificed in *configure/CONFIG_SITE* ::
+
+  PY_VER ?= 2.7
+
+The following should be added to individual EPICS Makefiles. ::
 
   TOP=../..
   include $(TOP)/configure/CONFIG
@@ -66,7 +70,7 @@ which may be the same as ``PY_VER``.
 Include pyDevSup in your IOC
 ----------------------------
 
-While the *softIocPy* executable built as part of this module
+While the *softIocPyX.Y* executable(s) built as part of this module
 will be sufficient for many uses, it is also possible to
 include the pyDevSup modules in an IOC along with other drivers.
 This can be done in the usual way. ::
@@ -108,11 +112,12 @@ Installing for several Python versions
 The recipe for building and installing the pyDevSup module
 for several python version side by side is ::
 
-  make PYTHON=python2.6
+  make PY_VER=2.6
   make clean
-  make PYTHON=python2.7
+  make PY_VER=2.7
   make clean
-  make PYTHON=python3
+  make PY_VER=3.2
   make clean
 
-Note that the ``softIocPy`` will by build for the last version only.
+The ``PYTHON`` make variable can be specified if the interpreter executable
+has a name other than ``python$(PY_VER)``.

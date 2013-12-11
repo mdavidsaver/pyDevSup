@@ -6,6 +6,10 @@
 pydevsup documentation
 ======================
 
+*pyDevSup* is a means of writing EPICS device support code in Python.
+
+It currently supports EPICS >=3.14.11 and python versions: 2.6, 2.7, and 3.2.
+
 Contents:
 
 .. toctree::

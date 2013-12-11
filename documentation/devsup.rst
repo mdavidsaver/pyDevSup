@@ -3,8 +3,6 @@ devsup Package
 
 .. module:: devsup
 
-.. autofunction:: devsup.verinfo
-
 .. data:: NO_ALARM, MINOR_ALARM, MAJOR_ALARM, INVALID_ALARM
 
   Constants for alarm severity.  Use with :meth:`Record.setSevr <.db.Record.setSevr>`

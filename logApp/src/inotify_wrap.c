@@ -258,9 +258,11 @@ PyMODINIT_FUNC init_inotifyy(void)
 
     PyModule_AddIntMacro(mod, IN_ALL_EVENTS);
 
-    PyModule_AddIntMacro(mod, IN_EXCL_UNLINK);
     PyModule_AddIntMacro(mod, IN_ONESHOT);
     /* added in glibc 2.5 */
+#ifdef IN_EXCL_UNLINK
+    PyModule_AddIntMacro(mod, IN_EXCL_UNLINK);
+#endif
 #ifdef IN_DONT_FOLLOW
     PyModule_AddIntMacro(mod, IN_DONT_FOLLOW);
 #endif

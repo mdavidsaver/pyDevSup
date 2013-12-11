@@ -240,7 +240,9 @@ PyMODINIT_FUNC init_dbconstants(void)
 
     /* standard macros from epicsVersion.h */
     PyModule_AddStringMacro(mod, EPICS_VERSION_STRING);
+#ifdef EPICS_DEV_SNAPSHOT
     PyModule_AddStringMacro(mod, EPICS_DEV_SNAPSHOT);
+#endif
     PyModule_AddStringMacro(mod, EPICS_SITE_VERSION);
     PyModule_AddIntMacro(mod, EPICS_VERSION);
     PyModule_AddIntMacro(mod, EPICS_REVISION);
@@ -258,7 +260,11 @@ PyMODINIT_FUNC init_dbconstants(void)
                            (int)EPICS_MODIFICATION,
                            (int)EPICS_PATCH_LEVEL,
                            EPICS_SITE_VERSION,
+#ifdef EPICS_DEV_SNAPSHOT
                            EPICS_DEV_SNAPSHOT);
+#else
+                           "");
+#endif
     if(vertup)
         PyModule_AddObject(mod, "epicsver", vertup);
     Py_XDECREF(vertup);

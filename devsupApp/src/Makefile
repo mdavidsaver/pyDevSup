@@ -29,7 +29,9 @@ pyDevSup$(PY_LD_VER)_SRCS += dbfield.c
 pyDevSup$(PY_LD_VER)_SRCS += dbdset.c
 
 
-PROD_IOC = softIocPy
+PROD_IOC = softIocPy$(PY_VER)
+PRODNAME = $(addsuffix $(EXE),$(PROD))
+
 # softIocPy.dbd will be created and installed
 DBD += softIocPy.dbd
 
@@ -37,20 +39,20 @@ DBD += softIocPy.dbd
 softIocPy_DBD += base.dbd
 softIocPy_DBD += pyDevSup.dbd
 
-softIocPy_LIBS += pyDevSup$(PY_LD_VER)
+softIocPy$(PY_VER)_LIBS += pyDevSup$(PY_LD_VER)
 
 # softIocPy_registerRecordDeviceDriver.cpp derives from softIocPy.dbd
-softIocPy_SRCS += softIocPy_registerRecordDeviceDriver.cpp
+softIocPy$(PY_VER)_SRCS += softIocPy_registerRecordDeviceDriver.cpp
 
 # Build the main IOC entry point on workstation OSs.
-softIocPy_SRCS_DEFAULT += devsupMain.cpp
-softIocPy_SRCS_vxWorks += -nil-
+softIocPy$(PY_VER)_SRCS_DEFAULT += devsupMain.cpp
+softIocPy$(PY_VER)_SRCS_vxWorks += -nil-
 
 # Add support from base/src/vxWorks if needed
-#softIocPy_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
+#softIocPy$(PY_VER)_OBJS_vxWorks += $(EPICS_BASE_BIN)/vxComLibrary
 
 # Finally link to the EPICS Base libraries
-softIocPy_LIBS += $(EPICS_BASE_IOC_LIBS)
+softIocPy$(PY_VER)_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 
 PY += devsup/__init__.py

@@ -1,4 +1,4 @@
-#!../../bin/linux-x86_64/softIocPy
+#!../../bin/linux-x86/softIocPy2.6
 
 < envPaths
 

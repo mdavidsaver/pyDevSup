@@ -209,6 +209,7 @@ static PyObject *pyField_setlen(pyField *self, PyObject *args)
        !prset->put_array_info)
     {
         PyErr_SetString(PyExc_TypeError, "Not an array field");
+        return NULL;
     }
 
     if(len<1 || len > self->addr.no_elements) {

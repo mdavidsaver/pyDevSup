@@ -22,8 +22,6 @@ int pyRecord_prepare(PyObject *module);
 
 int isPyRecord(dbCommon *);
 int canIOScanRecord(dbCommon *);
-int setReasonPyRecord(dbCommon *, PyObject *);
-int clearReasonPyRecord(dbCommon *);
 
 extern epicsThreadPrivateId pyDevReasonID;
 

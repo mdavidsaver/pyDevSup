@@ -168,10 +168,23 @@ class _Field(object):
           lock is held (ie withing :meth:`process <DeviceSupport.process>`).
         """
 
+    def putarraylen(self, len):
+        """Set the number of active elements in field's array.
+
+        Requires that the underlying field be an array.
+        Must be less than the maximum length of the field.
+        """
+
     def getAlarm(self):
         """Returns a tuple (severity, status) with the condtion of the linked field.
         
         Only works for fields of type DBF_INLINK.
+        """
+
+    def __len__(self):
+        """Returns the maximum number of elements which may be stored in the field.
+
+        This is always 1 for scalar fields.
         """
 
 _hooks = {}

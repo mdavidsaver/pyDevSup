@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 import numpy as np
 import scipy as sp
@@ -5,10 +6,13 @@ from numpy.random import randint, uniform
 
 class WfSup(object):
     def __init__(self, rec, args):
-        self.arr = rec.field('VAL').getarray()
-        self.x = np.arange(rec.NELM)
+        self.fld = rec.field('VAL')
+        self.arr = self.fld.getarray()
+        assert(len(self.fld)==rec.NELM)
+        self.x = np.arange(len(self.fld))
 
         self.phase = 0.0
+        print("start",self)
 
     def detach(self, rec):
         pass
@@ -17,7 +21,7 @@ class WfSup(object):
         pha = self.phase*np.pi/180.0
         self.phase = np.fmod(self.phase+10.0, 360.0)
 
-        N=randint(1, rec.NELM)
+        N=randint(1, len(self.fld))
         
         val=self.arr[:N]
         x=self.x[:N]
@@ -28,8 +32,8 @@ class WfSup(object):
         np.sin(val, out=val)
         val[:]*=uniform(0.5,2.0)
         val[:]+=2
-        
-        self.NORD = N
+
+        self.fld.putarraylen(N)
 
 def build(rec, args):
     return WfSup(rec, args)

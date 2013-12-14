@@ -196,6 +196,32 @@ static PyObject *pyField_getarray(pyField *self)
 #endif
 }
 
+static PyObject *pyField_setlen(pyField *self, PyObject *args)
+{
+    rset *prset = dbGetRset(&self->addr);
+    Py_ssize_t len;
+
+    if(!PyArg_ParseTuple(args, "n", &len))
+        return NULL;
+
+    if(self->addr.special!=SPC_DBADDR ||
+       !prset ||
+       !prset->put_array_info)
+    {
+        PyErr_SetString(PyExc_TypeError, "Not an array field");
+    }
+
+    if(len<1 || len > self->addr.no_elements) {
+        PyErr_Format(PyExc_ValueError, "Requested length %ld out of range [1,%lu)",
+                        (long)len, (unsigned long)self->addr.no_elements);
+        return NULL;
+    }
+
+    prset->put_array_info(&self->addr, len);
+
+    Py_RETURN_NONE;
+}
+
 static PyObject* pyField_getTime(pyField *self)
 {
     DBLINK *plink = self->addr.pfield;
@@ -239,6 +265,11 @@ static PyObject* pyField_getAlarm(pyField *self)
     return Py_BuildValue("ll", (long)sevr, (long)stat);
 }
 
+static PyObject *pyField_len(pyField *self)
+{
+    return PyInt_FromLong(self->addr.no_elements);
+}
+
 static PyMethodDef pyField_methods[] = {
     {"name", (PyCFunction)pyField_name, METH_NOARGS,
      "Return Names (\"record\",\"field\")"},
@@ -250,10 +281,14 @@ static PyMethodDef pyField_methods[] = {
      "Sets field value from a scalar"},
     {"getarray", (PyCFunction)pyField_getarray, METH_NOARGS,
      "Return a numpy ndarray refering to this field for in-place operations."},
+    {"putarraylen", (PyCFunction)pyField_setlen, METH_VARARGS,
+     "Set array field length."},
     {"getTime", (PyCFunction)pyField_getTime, METH_NOARGS,
      "Return link target timestamp as a tuple (sec, nsec)."},
     {"getAlarm", (PyCFunction)pyField_getAlarm, METH_NOARGS,
      "Return link target alarm condtions as a tuple (severity, status)."},
+    {"__len__", (PyCFunction)pyField_len, METH_NOARGS,
+     "Maximum number of elements storable in this field"},
     {NULL, NULL, 0, NULL}
 };
 

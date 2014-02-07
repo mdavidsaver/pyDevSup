@@ -61,6 +61,7 @@ PY += devsup/db.py
 PY += devsup/hooks.py
 PY += devsup/interfaces.py
 PY += devsup/util.py
+PY += devsup/ptable.py
 
 #===========================
 

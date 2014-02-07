@@ -1,0 +1,22 @@
+record(ao, "$(P):A") {
+  field(DTYP, "Python Device")
+  field(OUT , "@devsup.ptable $(TNAME) A")
+}
+
+record(ao, "$(P):B") {
+  field(DTYP, "Python Device")
+  field(OUT , "@devsup.ptable $(TNAME) B")
+}
+
+record(ao, "$(P):C") {
+  field(DTYP, "Python Device")
+  field(OUT , "@$(TNAME) C")
+  info("pySupportMod", "devsup.ptable")
+}
+
+record(ai, "$(P):S") {
+  field(DTYP, "Python Device")
+  field(INP , "@devsup.ptable $(TNAME) S")
+  field(SCAN, "I/O Intr")
+  field(PINI, "YES")
+}

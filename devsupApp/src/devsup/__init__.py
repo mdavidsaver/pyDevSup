@@ -23,4 +23,6 @@ except ImportError:
     epicsver = (0,0,0,0,"0","")
     pydevver = (0,0)
 
+    INVALID_ALARM = UDF_ALARM = 0
+
 __all__ = []

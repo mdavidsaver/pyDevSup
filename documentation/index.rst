@@ -18,7 +18,7 @@ Contents:
    environment
    devsup
    interfaces
-
+   ptable
 
 Indices and tables
 ==================

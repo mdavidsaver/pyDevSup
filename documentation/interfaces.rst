@@ -150,13 +150,22 @@ This support code can then be referenced from records. ::
 
   record(longin, "my:int:counter") {
     field(DTYP, "Python Device")
-    field(INP , "counter hello world")
+    field(INP , "@counter hello world")
   }
   
 The following will fail to associate. ::
 
   record(longin, "my:int:counter") {
     field(DTYP, "Python Device")
-    field(INP , "counter do what I say")
+    field(INP , "@counter do what I say")
   }
 
+If a shorter INP link string is necessary, or to prevent
+runtime switching of modules, the module name may also
+be given in the *pySupportMod* info() tag. ::
+
+  record(longin, "my:int:counter") {
+    field(DTYP, "Python Device")
+    field(INP , "@hello world")
+    info("pySupportMod", "counter")
+  }

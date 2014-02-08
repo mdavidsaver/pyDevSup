@@ -320,11 +320,19 @@ def processLink(name, lstr):
     """Process the INP or OUT link
     
     Expects lstr to be "module arg1 arg2"
+    if the 'pySupportMod' info tag is not given.
+    When it is, the link string is passed
+    to the module build() function without
+    processing.
 
-    Returns (callable, Record, "arg1 arg2")
+    Returns (Record, Support)
     """
     rec = getRecord(name)
-    parts = lstr.split(None,1)
-    modname, args = parts[0], parts[1] if len(parts)>1 else None
+    modname = rec.info('pySupportMod', None)
+    if not modname:
+        parts = lstr.split(None,1)
+        modname, args = parts[0], parts[1] if len(parts)>1 else None
+    else:
+        args = lstr
     mod = importmod(modname)
     return rec, mod.build(rec, args)

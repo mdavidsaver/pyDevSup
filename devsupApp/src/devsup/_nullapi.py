@@ -168,6 +168,13 @@ class _Field(object):
           lock is held (ie withing :meth:`process <DeviceSupport.process>`).
         """
 
+    def getarraylen(self):
+        """Return the number of active elements for the field.
+        
+        >>> F = Field(...)
+        >>> assert len(F)>=F.getarraylen()
+        """
+
     def putarraylen(self, len):
         """Set the number of active elements in field's array.
 

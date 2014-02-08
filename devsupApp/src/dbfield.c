@@ -196,6 +196,25 @@ static PyObject *pyField_getarray(pyField *self)
 #endif
 }
 
+static PyObject *pyField_getlen(pyField *self)
+{
+    rset *prset;
+
+    if(self->addr.special==SPC_DBADDR &&
+       (prset=dbGetRset(&self->addr)) &&
+       prset->get_array_info)
+    {
+        char *datasave=self->addr.pfield;
+        long noe, off;
+        prset->get_array_info(&self->addr, &noe, &off);
+        /* get_array_info can modify pfield in >3.15.0.1 */
+        self->addr.pfield = datasave;
+        return PyInt_FromLong(noe);
+
+    } else
+        return PyInt_FromLong(1);
+}
+
 static PyObject *pyField_setlen(pyField *self, PyObject *args)
 {
     rset *prset = dbGetRset(&self->addr);
@@ -282,8 +301,10 @@ static PyMethodDef pyField_methods[] = {
      "Sets field value from a scalar"},
     {"getarray", (PyCFunction)pyField_getarray, METH_NOARGS,
      "Return a numpy ndarray refering to this field for in-place operations."},
+    {"getarraylen", (PyCFunction)pyField_getlen, METH_NOARGS,
+     "Return current number of valid elements for array fields."},
     {"putarraylen", (PyCFunction)pyField_setlen, METH_VARARGS,
-     "Set array field length."},
+     "Set number of valid elements for array fields."},
     {"getTime", (PyCFunction)pyField_getTime, METH_NOARGS,
      "Return link target timestamp as a tuple (sec, nsec)."},
     {"getAlarm", (PyCFunction)pyField_getAlarm, METH_NOARGS,

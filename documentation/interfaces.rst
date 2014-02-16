@@ -7,7 +7,15 @@ An example with the longin would be: ::
 
   record(longin, "instance:name") {
     field(DTYP, "Python Device")
-    field(INP , "pymodule some other string")
+    field(INP , "@pymodule some other string")
+  }
+
+Or equivalently: ::
+
+  record(longin, "instance:name") {
+    field(DTYP, "Python Device")
+    field(INP , "@some other string")
+    info("pySupportMod", "pymodule")
   }
 
 This minimal example will attempt to import a Python

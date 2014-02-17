@@ -1,0 +1,8 @@
+record(stringin, "$(N)") {
+    field(DTYP, "Python Device")
+    field(INP , "@pidmon")
+    field(SCAN, "$(SCAN=)")
+    field(FLNK, "$(FLNK=)")
+    info("pidfile", "$(FILE)")
+    info("pidpat", "$(PAT=)")
+}

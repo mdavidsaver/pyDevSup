@@ -273,7 +273,8 @@ static PyObject *pyRecord_enter(pyRecord *self)
 {
     dbScanLock(self->entry.precnode->precord);
 
-    Py_RETURN_NONE;
+    Py_INCREF(self);
+    return (PyObject*)self;
 }
 
 static PyObject *pyRecord_exit(pyRecord *self, PyObject *args)

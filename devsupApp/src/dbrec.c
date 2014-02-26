@@ -73,6 +73,7 @@ static PyObject* pyRecord_rtype(pyRecord *self)
 
 static PyObject* pyRecord_info(pyRecord *self, PyObject *args)
 {
+    long ret;
     const char *name;
     PyObject *def = NULL;
     DBENTRY entry;
@@ -81,18 +82,16 @@ static PyObject* pyRecord_info(pyRecord *self, PyObject *args)
         return NULL;
 
     dbCopyEntryContents(&self->entry, &entry);
+    ret = dbFindInfo(&entry, name);
+    dbFinishEntry(&entry);
 
-    if(dbFindInfo(&entry, name)) {
-        if(def) {
-            Py_INCREF(def);
-            return def;
-        } else {
-            PyErr_SetNone(PyExc_KeyError);
-            return NULL;
-        }
-    }
+    if(!ret)
+        return PyString_FromString(dbGetInfoString(&entry));
 
-    return PyString_FromString(dbGetInfoString(&entry));
+    Py_XINCREF(def);
+    if(!def)
+        PyErr_SetNone(PyExc_KeyError);
+    return def;
 }
 
 static PyObject* pyRecord_infos(pyRecord *self)
@@ -110,19 +109,15 @@ static PyObject* pyRecord_infos(pyRecord *self)
     for(status = dbFirstInfo(&entry); status==0;  status = dbNextInfo(&entry))
     {
         PyObject *val = PyString_FromString(dbGetInfoString(&entry));
-        if(!val)
-            goto fail;
-
-        if(PyDict_SetItemString(dict, dbGetInfoName(&entry), val)<0) {
-            Py_DECREF(val);
-            goto fail;
+        if(!val || PyDict_SetItemString(dict, dbGetInfoName(&entry), val)<0) {
+            Py_XDECREF(val);
+            Py_DECREF(dict);
+            dict = NULL;
+            break;
         }
     }
 
     return dict;
-fail:
-    Py_DECREF(dict);
-    return NULL;
 }
 
 static PyObject* pyRecord_setSevr(pyRecord *self, PyObject *args, PyObject *kws)
@@ -264,12 +259,12 @@ static PyObject *pyRecord_asyncFinish(pyRecord *self, PyObject *args, PyObject *
 
     epicsThreadPrivateSet(pyDevReasonID, NULL);
 
+    Py_DECREF(self);
+
     if(!pact) {
         PyErr_SetString(PyExc_ValueError, "Python Device record was not active");
         return NULL;
     }
-
-    Py_DECREF(self);
 
     return PyLong_FromLong(ret);
 }

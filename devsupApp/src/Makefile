@@ -24,6 +24,7 @@ setup_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
 setup_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
 
 pyDevSup$(PY_LD_VER)_SRCS += setup.c
+pyDevSup$(PY_LD_VER)_SRCS += dbbase.c
 pyDevSup$(PY_LD_VER)_SRCS += dbrec.c
 pyDevSup$(PY_LD_VER)_SRCS += dbfield.c
 pyDevSup$(PY_LD_VER)_SRCS += dbdset.c

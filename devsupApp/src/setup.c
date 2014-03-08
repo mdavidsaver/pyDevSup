@@ -102,6 +102,8 @@ void pyfile(const char* file)
     PyGILState_Release(state);
 }
 
+initHookState pyInitLastState = (initHookState)-1;
+
 static void pyhook(initHookState state)
 {
     static int madenoise = 0;
@@ -113,6 +115,8 @@ static void pyhook(initHookState state)
         return;
 
     gilstate = PyGILState_Ensure();
+
+    pyInitLastState = state;
 
     mod = PyImport_ImportModule("devsup.hooks");
     if(!mod) {
@@ -302,6 +306,7 @@ static void setupPyInit(void)
 {
     PyImport_AppendInittab("_dbapi", init_dbapi);
     PyImport_AppendInittab("_dbconstants", init_dbconstants);
+    PyImport_AppendInittab("_dbbase", init_dbbase);
 
     Py_Initialize();
     PyEval_InitThreads();

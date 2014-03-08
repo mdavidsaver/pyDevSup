@@ -2,6 +2,7 @@
 #define PYDEVSUP_H
 
 #include <epicsThread.h>
+#include <initHooks.h>
 
 #if PY_MAJOR_VERSION >= 3
 #define PyInt_FromLong PyLong_FromLong
@@ -13,6 +14,11 @@
 #define MODINIT_RET(VAL) return
 
 #endif
+
+initHookState pyInitLastState;
+
+PyMODINIT_FUNC init_dbbase(void);
+
 void pyDBD_cleanup(void);
 
 int pyField_prepare(PyObject *module);

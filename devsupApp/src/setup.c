@@ -311,10 +311,6 @@ static void setupPyInit(void)
     epicsAtExit(&cleanupPy, NULL);
 }
 
-#ifndef PATH_MAX
-#  define PATH_MAX 100
-#endif
-
 static void extendPath(PyObject *list,
                        const char *base,
                        const char *archdir)

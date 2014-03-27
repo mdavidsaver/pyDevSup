@@ -1,0 +1,41 @@
+#!../../bin/linux-x86_64/softIocPy2.7
+
+< envPaths
+
+dbLoadDatabase("../../dbd/softIocPy.dbd",0,0)
+softIocPy_registerRecordDeviceDriver(pdbbase)
+
+py "import logging"
+py "logging.basicConfig(level=logging.INFO)"
+
+epicsEnvSet("BASE","/DATA")
+epicsEnvSet("PPAT","The original process ID was ([0-9]+)")
+
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}1Wire-I,SCAN=10 second,FILE=$(BASE)/1wire/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}BPM-I,SCAN=10 second,FILE=$(BASE)/bpm/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}Boost-I,SCAN=10 second,FILE=$(BASE)/booster/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}Cryo-I,SCAN=10 second,FILE=$(BASE)/cryo/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}Diag-I,SCAN=10 second,FILE=$(BASE)/diag/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}EPS-I,SCAN=10 second,FILE=$(BASE)/EPS/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}FnO-I,SCAN=10 second,FILE=$(BASE)/facilityctrl/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}Gen-I,SCAN=10 second,FILE=$(BASE)/general/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}InjVA-I,SCAN=10 second,FILE=$(BASE)/inj-va/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}PSLTB-I,SCAN=10 second,FILE=$(BASE)/PS_LTB/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}PSP1-I,SCAN=10 second,FILE=$(BASE)/PS_P1/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}PSP2-I,SCAN=10 second,FILE=$(BASE)/PS_P2/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}PSP3-I,SCAN=10 second,FILE=$(BASE)/PS_P3/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}PSP4-I,SCAN=10 second,FILE=$(BASE)/PS_P4/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}PSP5-I,SCAN=10 second,FILE=$(BASE)/PS_P5/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}RadMon-I,SCAN=10 second,FILE=$(BASE)/RadMon/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}Skids-I,SCAN=10 second,FILE=$(BASE)/waterskid/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}VAP1-I,SCAN=10 second,FILE=$(BASE)/srp1-va/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}VAP2-I,SCAN=10 second,FILE=$(BASE)/srp2-va/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}VAP3-I,SCAN=10 second,FILE=$(BASE)/srp3-va/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}VAP4-I,SCAN=10 second,FILE=$(BASE)/srp4-va/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}VAP5-I,SCAN=10 second,FILE=$(BASE)/srp5-va/archive_active.lck,PAT=$(PPAT)")
+dbLoadRecords("../../db/pidmon.db","N=ACC-CT{Main}SRRF-I,SCAN=10 second,FILE=$(BASE)/SR-RF/archive_active.lck,PAT=$(PPAT)")
+
+iocInit()
+
+dbl > records.dbl
+

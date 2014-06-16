@@ -12,6 +12,14 @@ include $(TOP)/configure/CONFIG
 # databases, templates, substitutions like this
 #DB += xxx.db
 
+ifneq ($(DEVIOCSTATS),)
+DB_INSTALLS += $(DEVIOCSTATS)/db/iocAdminSoft.db
+endif
+
+ifneq ($(AUTOSAVE),)
+DB_INSTALLS += $(firstword $(wildcard $(AUTOSAVE)/asApp/Db/save_restoreStatus.db $(AUTOSAVE)/db/save_restoreStatus.db))
+endif
+
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add
 # <anyname>_template = <templatename>

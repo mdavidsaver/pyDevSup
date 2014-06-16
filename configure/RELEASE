@@ -21,12 +21,18 @@
 
 TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 
-# If using the sequencer, point SNCSEQ at its top directory:
-#SNCSEQ=$(EPICS_BASE)/../modules/soft/seq
+## Optional Modules ##
+# Comment out if not present
+
+# IOC statistics (cpu and mem usage, ...)
+#DEVIOCSTATS=$(EPICS_BASE)
+
+# automatic save with restore on boot
+#AUTOSAVE=$(EPICS_BASE)
+
+# logging of remote settings changes
+#CAPUTLOG=$(EPICS_BASE)
 
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=/usr/lib/epics
 
-# Set RULES here if you want to take build rules from somewhere
-# other than EPICS_BASE:
-#RULES=/path/to/epics/support/module/rules/x-y

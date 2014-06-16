@@ -9,6 +9,11 @@ pydevsup documentation
 *pyDevSup* is a means of writing EPICS device support code in Python.
 
 It currently supports EPICS >=3.14.11 and python versions: 2.6, 2.7, and 3.2.
+The numpy package is also required.
+
+The source can be found at http://github.com/mdavidsaver/pyDevSup
+
+File releases are available at http://sourceforge.net/projects/epics/files/pyDevSup
 
 Contents:
 
@@ -20,6 +25,13 @@ Contents:
    devsup
    interfaces
    ptable
+
+Release History
+---------------
+
+* v0.2 (June 2014)
+ * Initial release
+
 
 Indices and tables
 ==================

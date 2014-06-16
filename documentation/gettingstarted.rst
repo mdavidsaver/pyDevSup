@@ -13,7 +13,7 @@ It will attempt to scan (call the process method) one a second.
 The *INP* field is parsed and the first work identifies the Python module which will provide
 the logic behind this record (everything after the first word is passed to the module :py:func:`build` function.
 
-Now create :download:`cntrec.db <../testApp/cntmod.py>` with the following.
+Now create :download:`cntmod.py <../testApp/cntmod.py>` with the following.
 
 .. literalinclude:: ../testApp/cntmod.py
 

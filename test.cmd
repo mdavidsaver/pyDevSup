@@ -1,8 +1,5 @@
 #!./bin/linux-x86/softIocPy
 
-dbLoadDatabase("dbd/softIocPy.dbd")
-softIocPy_registerRecordDeviceDriver(pdbbase)
-
 py "import logging"
 py "logging.basicConfig(level=logging.DEBUG)"
 

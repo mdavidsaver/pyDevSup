@@ -2,9 +2,6 @@
 
 < envPaths
 
-dbLoadDatabase("../../dbd/softIocPy.dbd",0,0)
-softIocPy_registerRecordDeviceDriver(pdbbase)
-
 py "import logging"
 py "logging.basicConfig(level=logging.INFO)"
 

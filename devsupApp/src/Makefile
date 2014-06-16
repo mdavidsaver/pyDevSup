@@ -23,6 +23,8 @@ setup_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
 setup_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
 setup_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
 
+devsupMain_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
+
 pyDevSup$(PY_LD_VER)_SRCS += setup.c
 pyDevSup$(PY_LD_VER)_SRCS += dbbase.c
 pyDevSup$(PY_LD_VER)_SRCS += dbrec.c

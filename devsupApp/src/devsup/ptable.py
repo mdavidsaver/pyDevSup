@@ -17,7 +17,7 @@ __all__ = [
     'build'
 ]
 
-# Reason code to cause a record to read a new value from a table paramter
+# Reason code to cause a record to read a new value from a table parameter
 _INTERNAL = object()
 
 # action types
@@ -40,7 +40,7 @@ def _add_action(self, act, fn):
 class Parameter(object):
     """Define a parameter in a table.
 
-    When a sub-class of TableBase is instancianted, parameters become
+    When a sub-class of TableBase is instantiated, parameters become
     py:class:`_ParamInstance` instances.
 
     >>> class MyTable(TableBase):
@@ -100,7 +100,7 @@ class Parameter(object):
 class ParameterGroup(object):
     """A helper for defining actions on groups of parameters
 
-    When a sub-class of TableBase is instancianted, parameter groups become
+    When a sub-class of TableBase is instantiated, parameter groups become
     py:class:`_ParamGroupInstance` instances.
 
     >>> class MyTable(TableBase):
@@ -116,7 +116,7 @@ class ParameterGroup(object):
         self.params, self.name = params, name
     def onproc(self, fn):
         """Decorator run a member function action whenever
-        a device support attached to any paramter in the group processes.
+        a device support attached to any parameter in the group processes.
         
         >>> class MyTable(TableBase):
             A, B = Parameter(), Parameter()
@@ -133,7 +133,7 @@ class ParameterGroup(object):
         "Decorator to run an action when any parameters has an invalid value"
         return _add_action(self, (any, lambda p:not p.isvalid), fn)
     def oncondition(self, fmap, freduce=all):
-        """Decorator for a custom condtion.
+        """Decorator for a custom condition.
         
         The condition is specified in two parts, a map function, and a reduce function.
         The map function is applied to each parameter in the group.  Then a list
@@ -265,7 +265,7 @@ class TableBase(object):
     
     Sub-class this and populate with :py:class:`Parameter` and  :py:class:`ParameterGroup`.
     
-    When a table is instanciated it must be given a unique name.
+    #When a table is instantiated it must be given a unique name.
     
     >>> class MyTable(TableBase):
         ...
@@ -282,7 +282,7 @@ class TableBase(object):
         self._parameters = {}
 
         # Find Parameters and ParameterGroup in the class dictionary
-        # and place approprate things in the instance dictionary
+        # and place appropriate things in the instance dictionary
         rparams = {}
         rgroups = {}
         for k,v in self.__class__.__dict__.items():

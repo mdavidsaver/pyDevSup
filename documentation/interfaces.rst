@@ -55,7 +55,7 @@ and the string "some other string".
   of the methods which all Python device support instances must provide.
   These methods will be called during the course of IOC processing.
 
-  Execptions raised by these methods are printed to the IOC console,
+  Exceptions raised by these methods are printed to the IOC console,
   but will otherwise be ignored.
 
   The module :mod:`devsup.interfaces` provides a Zope Interface
@@ -76,7 +76,7 @@ and the string "some other string".
     :param reason: ``None`` or an object provided when processing was requested.
 
     This method is called whenever the associated record needs to be updated
-    in responce to a request.  The source of this request is typically determined
+    in response to a request.  The source of this request is typically determined
     by the record's SCAN field.
 
     The actions taken by this method will depend heavily on the application.
@@ -120,7 +120,7 @@ and the string "some other string".
         def allowScan(self, record):
           return self.a_scan.add(record)
 
-    Which is most cases can be abbriviated to ::
+    Which in most cases can be abbriviated to ::
 
       class MySup(object):
         def __init__(self):

@@ -53,29 +53,28 @@ class _Record(object):
     def scan(self, sync=False, reason=None, force=0):
         """Scan this record.
         
-        :param sync: scan in current thread (``True``), or queue (``False``).
+        :param sync: scan in current thread (``True``), or queue to a worker (``False``).
         :param reason: Reason object passed to :meth:`process <DeviceSupport.process>` (sync=True only)
         :param force: Record processing condtion (0=Passive, 1=Force, 2=I/O Intr)
         :throws: ``RuntimeError`` when ``sync=True``, but ``force`` prevents scanning.
         
-        If ``sync`` is False then a
-        scan request is queued to run in another thread..
-        If ``sync`` is True then the record
-        is scannined immidately on the current thread.
+        If ``sync`` is False then a scan request is queued to run in another thread..
+        If ``sync`` is True then the record is scanned immediately on the current thread.
         
         For ``reason`` argument must be used in conjunction with ``sync=True``
         on records with Python device support.  This provides a means
         of providing extra contextual information to the record's
         :meth:`process <DeviceSupport.process>` method.
         
-        ``force`` is used to decide if the record will actuall be processed,
+        ``force`` is used to decide if the record will actually be processed,
         ``force=0`` will only process records with SCAN=Passive.
         ``force=1`` will process any record if at all possible.
         ``force=2`` will only process records with Python device support and
         SCAN=I/O Intr.
         
-        It is **never** safe to use ``sync=True`` while holding record locks,
-        including from within a *process* method.
+        ..  important::
+          It is **never** safe to use ``sync=True`` while holding record locks,
+          including from within a *process* method.
         """
 
     def asyncStart(self):
@@ -154,7 +153,7 @@ class _Field(object):
     def putval(self, val):
         """Update the field value
         
-        Must be an Int, Float or str.  Strings will be truncated to 39 charactors.
+        Must be an Int, Float or str.  Strings will be truncated to 39 characters.
         """
 
     def getarray(self):
@@ -179,11 +178,11 @@ class _Field(object):
         """Set the number of active elements in field's array.
 
         Requires that the underlying field be an array.
-        Must be less than the maximum length of the field.
+        Must be greater than one and less than or equal to the maximum length of the field.
         """
 
     def getAlarm(self):
-        """Returns a tuple (severity, status) with the condtion of the linked field.
+        """Returns a tuple (severity, status) with the condition of the linked field.
         
         Only works for fields of type DBF_INLINK.
         """

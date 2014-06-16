@@ -15,6 +15,7 @@ Contents:
 .. toctree::
    :maxdepth: 4
 
+   gettingstarted
    environment
    devsup
    interfaces

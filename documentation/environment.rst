@@ -62,8 +62,8 @@ The following should be added to individual EPICS Makefiles. ::
   include $(TOP)/configure/RULES
   include $(PYDEVSUP)/configure/RULES_PY
 
-This will add or ammend several make variables.  The ``USR_*FLAGS`` variables
-may be extended with approprate flags for building python modules.  The ``PY_VER``
+This will add or amend several make variables.  The ``USR_*FLAGS`` variables
+may be extended with appropriate flags for building python modules.  The ``PY_VER``
 variable is defined with the Python version number found in install directories (eg "2.7").
 The ``PY_LD_VER`` variable is defined with the python library version number (eg "3.2mu"),
 which may be the same as ``PY_VER``.
@@ -94,7 +94,7 @@ Additional .py files can be installed as follows. ::
 Building extensions
 -------------------
 
-For convienance, additional Python extensions can be build by the EPICS
+For convenience, additional Python extensions can be build by the EPICS
 build system.  In this example the extension name is "_myextname" and
 the resulting library is expected to provide the an initialization function
 named "init_myextname". ::

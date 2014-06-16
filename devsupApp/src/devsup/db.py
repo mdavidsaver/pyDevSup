@@ -23,7 +23,7 @@ def getRecord(name):
     full record name.
     
     The result is cached so the future calls will return the same instance.
-    This is the prefered way to get :class:`Record` instances.
+    This is the preferred way to get :class:`Record` instances.
     
     >>> R = getRecord("my:record:name")
     Record("my:record:name")
@@ -38,7 +38,7 @@ def getRecord(name):
 class IOScanListBlock(object):
     """A list of records which will be processed together.
     
-    This convienence class to handle the accounting to
+    This convenience class to handle the accounting to
     maintain a list of records.
     """
     def __init__(self):
@@ -218,7 +218,7 @@ class Record(_dbapi._Record):
         """Lookup field in this record
         
         :rtype: :class:`Field`
-        :throws: KeyError for non-existant fields.
+        :throws: KeyError for non-existent fields.
         
         The returned object is cached so future calls will
         return the same instance.
@@ -248,6 +248,9 @@ class Record(_dbapi._Record):
         
         Has not effect if the TSE field is not set to -2.
         All inputs must be referenced to the posix epoch.
+        
+        If a datetime is provided, it must use the local system
+        timezone.
         """
         if hasattr(ts, 'timetuple'):
             ts = time.mktime(ts.timetuple())
@@ -296,7 +299,7 @@ class Field(_dbapi._Field):
         """Get timestamp of link target.
         
         Only works for DBF_INLINK fields.
-        Returns the time in seconds since the posix epoch.
+        Returns the time in seconds since the POSIX epoch.
         
         :rtype: float
         """

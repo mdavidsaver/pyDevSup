@@ -16,12 +16,12 @@ devsup Package
 
 .. module:: devsup.db
 
-.. autofunction:: devsup.db.getRecord
+.. autofunction:: getRecord
 
 :class:`Record` Class
 ^^^^^^^^^^^^^^^^^^^^^
 
-.. class:: devsup.db.Record
+.. class:: Record
 
     Allows access to a single record instance.
     *Record* instances can be created for any record in
@@ -65,7 +65,7 @@ devsup Package
 :class:`Field` Class
 ^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: devsup.db.Field
+.. autoclass:: Field
 
     .. automethod:: name
 
@@ -77,18 +77,22 @@ devsup Package
 
     .. automethod:: getarray
 
+    .. automethod:: getarraylen
+
+    .. automethod:: putarraylen
+    
     .. automethod:: fieldinfo
     
     .. automethod:: getTime
     
     .. automethod:: getAlarm
 
-.. autoclass:: devsup.db.IOScanListBlock
+.. autoclass:: IOScanListBlock
     :members:
     :inherited-members:
     :undoc-members:
     
-.. autoclass:: devsup.db.IOScanListThread
+.. autoclass:: IOScanListThread
     :members: add, interrupt
 
 

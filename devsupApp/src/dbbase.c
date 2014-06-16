@@ -118,7 +118,11 @@ PyMODINIT_FUNC init_dbbase(void)
     if(!mod)
         goto fail;
 
+#if PY_MAJOR_VERSION >= 3 || (PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION>=7)
     obj = PyCapsule_New(pdbbase, "pdbbase", NULL);
+#else
+    obj = PyCObject_FromVoidPtrAndDesc(pdbbase, "pdbbase", NULL);
+#endif
     if(!obj)
         goto fail;
     PyModule_AddObject(mod, "pdbbase", obj);

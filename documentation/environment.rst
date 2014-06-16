@@ -27,9 +27,10 @@ PYTHONPATH
 
 The interpreter search path is automatically prefixed with the following additional paths:
 
-* ``$(EPICS_BASE)/python<PY_VER>/$(EPICS_ARCH)``
-* ``$(PYDEV_BASE)/python<PY_VER>/$(EPICS_ARCH)``
+* ``${PWD}``
 * ``$(TOP)/python<PY_VER>/$(EPICS_ARCH)``
+* ``$(PYDEV_BASE)/python<PY_VER>/$(EPICS_ARCH)``
+* ``$(EPICS_BASE)/python<PY_VER>/$(EPICS_ARCH)``
 
 The environment variables ``EPICS_BASE``, ``PYDEV_BASE``, ``TOP``, and ``EPICS_ARCH``
 will be used if set.  Compile time defaults are selected for

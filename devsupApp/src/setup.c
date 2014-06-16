@@ -371,7 +371,19 @@ static void setupPyPath(void)
     Py_XDECREF(mod);
 
     if(path) {
+        PyObject *cur;
+        char cwd[PATH_MAX];
+
         insertDefaultPath(path);
+
+        /* prepend current directory */
+        if(getcwd(cwd, sizeof(cwd)-1)) {
+            cwd[sizeof(cwd)-1] = '\0';
+            cur = PyString_FromString(cwd);
+            if(cur)
+                PyList_Insert(path, 0, cur);
+            Py_XDECREF(cur);
+        }
     }
     Py_XDECREF(path);
 }

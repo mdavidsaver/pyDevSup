@@ -271,13 +271,11 @@ PyMODINIT_FUNC init_dbconstants(void)
 #endif
     if(vertup)
         PyModule_AddObject(mod, "epicsver", vertup);
-    Py_XDECREF(vertup);
 
     /* pyDevSup version */
     vertup = Py_BuildValue("(ii)", 0, 2);
     if(vertup)
         PyModule_AddObject(mod, "pydevver", vertup);
-    Py_XDECREF(vertup);
 
     MODINIT_RET(mod);
 }

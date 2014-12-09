@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import traceback
+from functools import wraps
 from collections import defaultdict
 
 try:
@@ -11,6 +12,7 @@ except ImportError:
 __all__ = [
     "hooknames",
     "addHook",
+    "initHook",
     "debugHooks",
 ]
 
@@ -37,6 +39,18 @@ def addHook(state, func):
     sid = _dbapi._hooks[state]
     _hooktable[sid].append(func)
 
+
+def initHook(state):
+    """Decorator for initHook functions
+
+    @initHook("AfterIocRunning")
+    def myfn():
+        # do stuff
+    """
+    def _add(fn):
+        addHook(state, fn)
+        return fn
+    return _add
 
 def debugHooks():
     """Install debugging print to hooks

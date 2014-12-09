@@ -1,0 +1,119 @@
+record(ai, "$(P)Rate:Store-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_float metrics.0.dataRateGBPerDay")
+    field(SCAN, "I/O Intr")
+    field(PREC, "2")
+    field(EGU , "GB/day")
+    field(TSE , "-2")
+    field(HOPR, "50")
+    field(LOPR, "0")
+    field(HIHI, "15")
+    field(HIGH, "11")
+    field(LOW , "9")
+    field(LOLO, "0.1")
+    field(HHSV, "MAJOR")
+    field(HSV , "MINOR")
+    field(LSV , "MINOR")
+    field(LLSV, "INVALID")
+    info("autosaveFields_pass0", "HOPR LOPR HIHI HIGH LOW LOLO")
+}
+
+record(ai, "$(P)Rate:Event-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_float metrics.0.eventRate")
+    field(SCAN, "I/O Intr")
+    field(PREC, "2")
+    field(EGU , "evt/s")
+    field(TSE , "-2")
+    field(HOPR, "50000")
+    field(LOPR, "0")
+    field(HIHI, "10000")
+    field(HIGH, "7000")
+    field(LOW , "5000")
+    field(LOLO, "1")
+    field(HHSV, "MAJOR")
+    field(HSV , "MINOR")
+    field(LSV , "MINOR")
+    field(LLSV, "INVALID")
+    info("autosaveFields_pass0", "HOPR LOPR HIHI HIGH LOW LOLO")
+}
+
+record(ai, "$(P)Time:Write-I") {
+    field(DESC, "Engine write thread")
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_float metrics.0.secondsConsumedByWritter")
+    field(SCAN, "I/O Intr")
+    field(PREC, "2")
+    field(EGU , "s")
+    field(TSE , "-2")
+    field(HOPR, "10")
+    field(LOPR, "0")
+    field(HIHI, "5")
+    field(HIGH, "2")
+    field(LOW , "0.2")
+    field(LOLO, "0.1")
+    field(HHSV, "MAJOR")
+    field(HSV , "MINOR")
+    field(LSV , "MINOR")
+    field(LLSV, "INVALID")
+    info("autosaveFields_pass0", "HOPR LOPR HIHI HIGH LOW LOLO")
+}
+
+record(longin, "$(P)Cnt:Conn-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_int metrics.0.connectedPVCount")
+    field(SCAN, "I/O Intr")
+    field(TSE , "-2")
+}
+
+record(longin, "$(P)Cnt:Disconn-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_int metrics.0.disconnectedPVCount")
+    field(SCAN, "I/O Intr")
+    field(TSE , "-2")
+    field(HOPR, "10000")
+    field(LOPR, "0")
+    field(HIHI, "10")
+    field(HIGH, "1")
+    field(LOW , "0")
+    field(HHSV, "MAJOR")
+    field(HSV , "MINOR")
+    info("autosaveFields_pass0", "HOPR LOPR HIHI HIGH")
+}
+
+record(stringin, "$(P)Status-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_string metrics.0.status")
+    field(SCAN, "I/O Intr")
+    field(TSE , "-2")
+}
+
+record(longin, "$(P)Cnt:Type-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_length typechange.0.")
+    field(SCAN, "I/O Intr")
+    field(TSE , "-2")
+    field(HOPR, "10000")
+    field(LOPR, "0")
+    field(HIHI, "10")
+    field(HIGH, "1")
+    field(LOW , "0")
+    field(HHSV, "MAJOR")
+    field(HSV , "MINOR")
+    info("autosaveFields_pass0", "HOPR LOPR HIHI HIGH")
+}
+
+record(longin, "$(P)Cnt:Never-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_length neverconn.0.")
+    field(SCAN, "I/O Intr")
+    field(TSE , "-2")
+    field(HOPR, "10000")
+    field(LOPR, "0")
+    field(HIHI, "10")
+    field(HIGH, "1")
+    field(LOW , "0")
+    field(HHSV, "MAJOR")
+    field(HSV , "MINOR")
+    info("autosaveFields_pass0", "HOPR LOPR HIHI HIGH")
+}

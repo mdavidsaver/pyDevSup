@@ -254,12 +254,10 @@ class Record(_dbapi._Record):
         """
         if hasattr(ts, 'timetuple'):
             ts = time.mktime(ts.timetuple())
-
-        try:
+        elif isinstance(ts, float):
+            sec, nsec = int(ts), int(ts*1e9)%1000000000
+        else:
             sec, nsec = ts
-        except TypeError:
-            sec = int(ts)
-            nsec = int(ts*1e9)%1000000000
 
         super(Record, self).setTime(sec, nsec)
 

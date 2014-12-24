@@ -1,0 +1,31 @@
+record(stringin, "$(P)Name:$(N)-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_string storage.$(N).name")
+    field(SCAN, "I/O Intr")
+    field(TSE , "-2")
+}
+
+record(ai, "$(P)Size:$(N)-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_string storage.$(N).available_space")
+    field(SCAN, "I/O Intr")
+    field(TSE , "-2")
+}
+
+record(ai, "$(P)Pcnt:$(N)-I") {
+    field(DTYP, "Python Device")
+    field(INP , "@bplreport fetch_string storage.$(N).available_space_percent")
+    field(SCAN, "I/O Intr")
+    field(TSE , "-2")
+    field(HOPR, "100")
+    field(LOPR, "0")
+    field(HIHI, "95")
+    field(HIGH, "80")
+    field(LOW , "10")
+    field(LOLO, "0.1")
+    field(HHSV, "MAJOR")
+    field(HSV , "MINOR")
+    field(LSV , "MINOR")
+    field(LLSV, "INVALID")
+    info("autosaveFields_pass0", "HOPR LOPR HIHI HIGH LOW LOLO")
+}

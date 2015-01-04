@@ -153,6 +153,7 @@ retry:
             Py_DECREF(tuple);
             goto fail;
         }
+        Py_DECREF(tuple); /* PyList_Append() takes a reference */
 
         buf += evtsize;
         ret -= evtsize;

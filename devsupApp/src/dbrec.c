@@ -73,25 +73,24 @@ static PyObject* pyRecord_rtype(pyRecord *self)
 
 static PyObject* pyRecord_info(pyRecord *self, PyObject *args)
 {
-    long ret;
     const char *name;
-    PyObject *def = NULL;
+    PyObject *ret = NULL;
     DBENTRY entry;
 
-    if(!PyArg_ParseTuple(args, "s|O", &name, &def))
+    if(!PyArg_ParseTuple(args, "s|O", &name, &ret))
         return NULL;
+    Py_XINCREF(ret);
 
     dbCopyEntryContents(&self->entry, &entry);
-    ret = dbFindInfo(&entry, name);
+    if(!dbFindInfo(&entry, name)) {
+        Py_XDECREF(ret);
+        ret = PyString_FromString(dbGetInfoString(&entry));
+    }
     dbFinishEntry(&entry);
 
     if(!ret)
-        return PyString_FromString(dbGetInfoString(&entry));
-
-    Py_XINCREF(def);
-    if(!def)
         PyErr_SetNone(PyExc_KeyError);
-    return def;
+    return ret;
 }
 
 static PyObject* pyRecord_infos(pyRecord *self)
@@ -116,6 +115,8 @@ static PyObject* pyRecord_infos(pyRecord *self)
             break;
         }
     }
+
+    dbFinishEntry(&entry);
 
     return dict;
 }

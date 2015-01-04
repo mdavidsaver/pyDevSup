@@ -129,7 +129,7 @@ class ReportScanner(StoppableThread):
 
         rtime = iso2sec(report.getISOTime())
         report._updatetime = rtime
-        print('update',report.getISOTime(),rtime,self.lastUpdate)
+        #print('update',report.getISOTime(),rtime,self.lastUpdate)
 
         if self.lastUpdate is not None:
           if self.lastUpdate >= rtime:
@@ -147,7 +147,7 @@ class ReportScanner(StoppableThread):
 
         self.lastUpdate = rtime
 
-      except (socket.error, urllib2.URLError) as e:
+      except Exception as e:
         print("download error for",self.station,":",e)
         self.updatePeriod = self.initPeriod
 

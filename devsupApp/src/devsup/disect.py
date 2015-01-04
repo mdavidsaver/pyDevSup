@@ -1,13 +1,7 @@
 """Python reference counter statistics.
 """
-import sys, gc, inspect, weakref, time
-from UserDict import UserDict
+import sys, gc, inspect, time
 from types import InstanceType
-
-# a special container which we can recognize and avoid
-# including in output sets, which might create reference loops
-class _StatsDict(weakref.WeakKeyDictionary):
-  pass
 
 class StatsDelta(object):
   """GC statistics tracking.
@@ -18,10 +12,12 @@ class StatsDelta(object):
   """
   def __init__(self):
     self.reset()
+
   def reset(self):
     """Reset internal statistics counters
     """
     self.stats, self.ntypes = None, None
+
   def collect(self, file=sys.stderr):
     """Collect stats and print results to file
 
@@ -44,6 +40,13 @@ class StatsDelta(object):
         print >>file,' ',T,cur[T]
 
       first = True
+      for T in Sprev-Scur: # collected types
+        if first:
+          print >>file,'Cleaned Types'
+          first=False
+        print >>file,' ',T,-prev[T]
+
+      first = True
       for T in Scur&Sprev:
         if cur[T]==prev[T]:
           continue
@@ -52,24 +55,32 @@ class StatsDelta(object):
           first=False
         print >>file,' ',T,cur[T],'delta',cur[T]-prev[T]
 
+    else: # first call
+      print >>file,"All Types"
+      for T,C in cur.iteritems():
+        print >>file,' ',T,C
+
     self.stats, self.ntypes = cur, len(cur)
     #gc.collect()
 
 def gcstats():
   """Count the number of instances of each type/class
 
-  :returns: A WeakKeyDictionary mapping type to an integer number of references
+  :returns: A dict() mapping type (as a string) to an integer number of references
   """
   all = gc.get_objects()
   _stats = {}
 
   for obj in all:
     K = type(obj)
-    if K in [_StatsDict, StatsDelta]:
+    if K is StatsDelta:
       continue # avoid counting ourselves
 
     elif K is InstanceType: # instance of an old-style class
       K = getattr(obj, '__class__', K)
+
+    # Track types as strings to avoid holding references
+    K = str(K)
 
     try:
       _stats[K] += 1
@@ -81,8 +92,7 @@ def gcstats():
   # This would otherwise prevent the list from being free'd
   del all
 
-  # use a weakref to allow types to be GC'd
-  return _StatsDict(_stats)
+  return _stats
 
 class _StatsThread(object):
   def __init__(self, period, file):

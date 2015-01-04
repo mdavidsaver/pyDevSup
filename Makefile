@@ -19,3 +19,5 @@ UNINSTALL_DIRS += $(wildcard $(INSTALL_LOCATION)/python*)
 #useful targets includ: doc-html and doc-clean
 doc-%:
 	PYTHONPATH=$$PWD/python$(PY_VER)/$(EPICS_HOST_ARCH) $(MAKE) -C documentation $*
+
+doc: doc-html

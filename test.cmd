@@ -21,3 +21,6 @@ dbLoadRecords("db/test.db","P=md:")
 dbLoadRecords("db/test6.db","P=tst:,TNAME=tsum")
 
 iocInit()
+
+# Start Reference tracker
+py "from devsup import disect; disect.periodic(10)"

@@ -112,3 +112,8 @@ devsup Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`disect` Module
+--------------------
+
+.. automodule:: devsup.disect
+    :members:

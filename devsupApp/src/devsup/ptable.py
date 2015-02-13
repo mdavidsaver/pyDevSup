@@ -209,7 +209,7 @@ class _ParamGroupInstance(object):
                 return False
         return True
 
-class _ParamSup(object):
+class _ParamSupBase(object):
     def __init__(self, inst, rec, info):
         self.inst, self.info = inst, info
         # Determine which field to use to store the value
@@ -224,35 +224,47 @@ class _ParamSup(object):
     def allowScan(self, rec):
         if self.inst.scan:
             return self.inst.scan.add(rec)
-    def process(self, rec, reason=None):
-        with self.inst.table.lock:
-            if reason is _INTERNAL:
-                # sync table to record
-                self.inst.table.log.debug('-> %s (%s)', rec.NAME, self.inst.value)
-                nval = self.inst.value
-                if nval is not None:
-                    if self.vdata is None:
-                        self.vfld.putval(nval)
-                    else:
-                        if len(nval)>len(self.vdata):
-                            nval = nval[:len(self.vdata)]
-                        self.vdata[:len(nval)] = nval
-                        self.vfld.putarraylen(len(nval))
-                    if self.inst.alarm:
-                        rec.setSevr(self.inst.alarm)
-                else:
-                    # undefined value
-                    rec.setSevr(INVALID_ALARM, UDF_ALARM)
 
+class _ParamSupGet(_ParamSupBase):
+    def process(self, rec, reason=None):
+        """Read a value from the table into the record
+        """
+        with self.inst.table.lock:
+            nval, alrm = self.inst.value, self.inst.alarm
+            self.inst.table.log.debug('%s -> %s (%s)', self.inst.name, rec.NAME, nval)
+
+        if nval is not None:
+            if self.vdata is None:
+                self.vfld.putval(nval)
             else:
-                # sync record to table
-                self.inst.table.log.debug('<- %s (%s)', rec.NAME, rec.VAL)
-                if self.vdata is None:
-                    nval = self.vfld.getval()
-                else:
-                    # A copy is made which can be used without locking the record
-                    nval = self.vdata[:self.vfld.getarraylen()].copy()
-                
+                if len(nval)>len(self.vdata):
+                    nval = nval[:len(self.vdata)]
+                self.vdata[:len(nval)] = nval
+                self.vfld.putarraylen(len(nval))
+            if alrm:
+                rec.setSevr(alrm)
+        else:
+            # undefined value
+            rec.setSevr(INVALID_ALARM, UDF_ALARM)
+
+class _ParamSupSet(_ParamSupGet):
+    def process(self, rec, reason=None):
+        """Write a value from the record into the table
+        """
+        if reason is _INTERNAL:
+            # sync table to record
+            super(_ParamSupSet,self).process(rec,reason)
+
+        else:
+            # sync record to table
+            self.inst.table.log.debug('%s <- %s (%s)', self.inst.name, rec.NAME, rec.VAL)
+            if self.vdata is None:
+                nval = self.vfld.getval()
+            else:
+                # A copy is made which can be used without locking the record
+                nval = self.vdata[:self.vfld.getarraylen()].copy()
+
+            with self.inst.table.lock:
                 oval, self.inst.value = self.inst.value, nval
                 
                 # Execute actions
@@ -273,7 +285,8 @@ class TableBase(object):
     >>>
     """
     log = LOG
-    ParamSupport = _ParamSup
+    ParamSupportGet = _ParamSupGet
+    ParamSupportSet = _ParamSupSet
     def __init__(self, **kws):
         self.name = kws.pop('name')
         if self.name in _tables:
@@ -329,10 +342,20 @@ class TableBase(object):
         _tables[self.name] = self
 
 def build(rec, args):
-    parts = args.split(None,2)
-    table, param = parts[:2]
-    info = None if len(parts)<3 else parts[2]
+    """Device support pattern
+    
+    "@devsup.ptable <tablename> set|get <param> [optional]"
+    """
+    parts = args.split(None,3)
+    table, param = parts[0], parts[2]
+    info = None if len(parts)<4 else parts[3]
     T = _tables[table]
     P = T._parameters[param]
+    if parts[1]=='set':
+        return T.ParamSupportSet(P, rec, info)
+    elif parts[1]=='get':
+        return T.ParamSupportGet(P, rec, info)
+    else:
+        raise ValueError("Not set or get")
     T.log.debug("Attaching ptable '%s, %s' to %s", T.name, P.name, rec.NAME)
     return T.ParamSupport(P, rec, info)

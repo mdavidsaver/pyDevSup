@@ -1,22 +1,22 @@
 record(ao, "$(P):A") {
   field(DTYP, "Python Device")
-  field(OUT , "@devsup.ptable $(TNAME) A")
+  field(OUT , "@devsup.ptable $(TNAME) set A")
 }
 
 record(ao, "$(P):B") {
   field(DTYP, "Python Device")
-  field(OUT , "@devsup.ptable $(TNAME) B")
+  field(OUT , "@devsup.ptable $(TNAME) set B")
 }
 
 record(ao, "$(P):C") {
   field(DTYP, "Python Device")
-  field(OUT , "@$(TNAME) C")
+  field(OUT , "@$(TNAME) set C")
   info("pySupportMod", "devsup.ptable")
 }
 
 record(ai, "$(P):S") {
   field(DTYP, "Python Device")
-  field(INP , "@devsup.ptable $(TNAME) S")
+  field(INP , "@devsup.ptable $(TNAME) get S")
   field(SCAN, "I/O Intr")
   field(PINI, "YES")
 }

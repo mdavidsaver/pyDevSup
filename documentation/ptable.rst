@@ -39,4 +39,4 @@ Device Support
 ^^^^^^^^^^^^^^
 
 A general purpose device support is provided to access table parameters.
-The input/output link format is "@devsup.ptable <tablename> <param> [optional]"
+The input/output link format is "@devsup.ptable <tablename> set|get <param> [optional]"

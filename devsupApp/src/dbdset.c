@@ -12,13 +12,18 @@
 #include <dbStaticLib.h>
 #include <dbAccess.h>
 #include <devSup.h>
+#include <recSup.h>
 #include <recGbl.h>
 #include <alarm.h>
 #include <ellLib.h>
 #include <dbScan.h>
 #include <cantProceed.h>
+#include <registryFunction.h>
+#include <aSubRecord.h>
 
 #include "pydevsup.h"
+
+static int inshutdown;
 
 static ELLLIST devices = ELLLIST_INIT;
 
@@ -328,6 +333,7 @@ static long process_record(dbCommon *prec)
         fprintf(stderr, "%s: Exception in process_record\n", prec->name);
         PyErr_Print();
         PyErr_Clear();
+        (void)recGblSetSevr(prec, READ_ALARM, INVALID_ALARM);
     }
 
     /* always clear PACT if it was initially set */
@@ -378,11 +384,83 @@ static dset6 pydevsupComIn = {{6, (DEVSUPFUN)&report, (DEVSUPFUN)&init,
                                 (DEVSUPFUN)&get_iointr_info},
                                (DEVSUPFUN)&process_record2};
 
+static long python_asub(aSubRecord* prec)
+{
+    PyGILState_STATE pystate;
+    pyDevice *priv=prec->dpvt;
+    int pact = prec->pact;
+
+    if(inshutdown) {
+        return 0;
+    } else if(!priv) {
+        DBENTRY entry;
+        long ret;
+        const char *inpstr;
+
+        dbInitEntry(pdbbase, &entry);
+
+        ret = dbFindRecord(&entry, prec->name);
+        assert(ret==0); /* really shouldn't fail */
+
+        if(dbFindInfo(&entry, "pySupportLink")) {
+            fprintf(stderr, "%s: failed to initialize\n", prec->name);        
+            dbFinishEntry(&entry);
+            (void)recGblSetSevr(prec, INVALID_ALARM, READ_ALARM);
+            return 0;
+        }
+        inpstr = dbGetInfoString(&entry);
+
+        priv = callocMustSucceed(1, sizeof(*priv), "init_record");
+        priv->precord = (dbCommon*)prec;
+
+        pystate = PyGILState_Ensure();
+
+        prec->dpvt = priv;
+        if(parse_link((dbCommon*)prec, inpstr)) {
+            fprintf(stderr, "%s: failed to parse pySupportLink: %s\n", prec->name, inpstr);
+            PyErr_Print();
+            PyErr_Clear();
+            dbFinishEntry(&entry);
+            (void)recGblSetSevr(prec, INVALID_ALARM, READ_ALARM);
+            free(priv);
+        } else {
+            ellAdd(&devices, &priv->node);
+        }
+
+        dbFinishEntry(&entry);
+    } else
+        pystate = PyGILState_Ensure();
+
+    if(priv->support && process_common((dbCommon*)prec)) {
+        fprintf(stderr, "%s: Exception in process_record\n", prec->name);
+        PyErr_Print();
+        PyErr_Clear();
+        (void)recGblSetSevr(prec, INVALID_ALARM, READ_ALARM);
+    }
+
+    /* always clear PACT if it was initially set */
+    if(pact)
+        prec->pact = 0;
+
+    PyGILState_Release(pystate);
+    return 0;
+}
+
+/* uglyness to detect aSubRecord */
+extern rset aSubRSET;
+
 int isPyRecord(dbCommon *prec)
 {
-    return prec->dset==(dset*)&pydevsupComSpec
+    if(prec->dset==(dset*)&pydevsupComSpec
             || prec->dset==(dset*)&pydevsupComIn
-            || prec->dset==(dset*)&pydevsupComOut;
+            || prec->dset==(dset*)&pydevsupComOut)
+        return 1;
+    if(prec->rset==&aSubRSET) {
+        aSubRecord *psub = (aSubRecord*)prec;
+        if(psub->sadr==python_asub)
+            return 1;
+    }
+    return 0;
 }
 
 int canIOScanRecord(dbCommon *prec)
@@ -397,6 +475,7 @@ int canIOScanRecord(dbCommon *prec)
 void pyDBD_cleanup(void)
 {
     ELLNODE *cur;
+    inshutdown = 1;
     while((cur=ellGet(&devices))!=NULL) {
         pyDevice *priv=(pyDevice*)cur;
 
@@ -425,3 +504,5 @@ void pyDBD_cleanup(void)
 epicsExportAddress(dset, pydevsupComSpec);
 epicsExportAddress(dset, pydevsupComIn);
 epicsExportAddress(dset, pydevsupComOut);
+
+epicsRegisterFunction(python_asub);

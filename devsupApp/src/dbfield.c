@@ -18,18 +18,18 @@
 #include "pydevsup.h"
 
 #ifdef HAVE_NUMPY
-static int dbf2np_map[DBF_MENU+1] = {
-    NPY_BYTE,
-    NPY_BYTE,
-    NPY_UBYTE,
-    NPY_INT16,
-    NPY_UINT16,
-    NPY_INT32,
-    NPY_UINT32,
-    NPY_FLOAT32,
-    NPY_FLOAT64,
-    NPY_INT16,
-    NPY_INT16,
+static const int dbf2np_map[DBF_MENU+1] = {
+    NPY_BYTE,    // DBF_STRING
+    NPY_BYTE,    // DBF_CHAR
+    NPY_UBYTE,   // DBF_UCHAR
+    NPY_INT16,   // DBF_SHORT
+    NPY_UINT16,  // DBF_USHORT
+    NPY_INT32,   // DBF_LONG
+    NPY_UINT32,  // DBF_ULONG
+    NPY_FLOAT32, // DBF_FLOAT
+    NPY_FLOAT64, // DBF_DOUBLE
+    NPY_INT16,   // DBF_ENUM
+    NPY_INT16,   // DBF_MENU
 };
 static PyArray_Descr* dbf2np[DBF_MENU+1];
 #endif
@@ -76,11 +76,141 @@ static PyObject* pyField_fldinfo(pyField *self)
     return Py_BuildValue("hhk", dbf, fsize, nelm);
 }
 
+static PyObject* build_array(PyObject* obj, void *data, unsigned short ftype, unsigned long nelem, int flags)
+{
+#ifdef HAVE_NUMPY
+    PyArray_Descr *desc;
+    int ndims = 1;
+    npy_intp dims[2] = {nelem, 0};
+
+    if(ftype>DBF_MENU) {
+        PyErr_SetString(PyExc_TypeError, "Can not map field type to numpy type");
+        return NULL;
+
+    } else if(ftype==DBF_STRING) {
+        ndims = 2;
+        dims[1] = MAX_STRING_SIZE;
+        // element type is NPY_CHAR
+    }
+
+    desc = dbf2np[ftype];
+    Py_XINCREF(desc);
+    return PyArray_NewFromDescr(&PyArray_Type, desc, ndims, dims, NULL, data, flags, (PyObject*)obj);
+#else
+    PyErr_SetNone(PyExc_NotImplementedError);
+    return NULL;
+#endif
+}
+
+static int assign_array(DBADDR *paddr, PyObject *arr)
+{
+#ifdef HAVE_NUMPY
+    void *rawfield = paddr->pfield;
+    rset *prset;
+    PyObject *aval;
+    unsigned elemsize = dbValueSize(paddr->field_type);
+    unsigned long maxlen = paddr->no_elements, insize;
+    PyArray_Descr *desc = dbf2np[paddr->field_type];
+
+    if(paddr->field_type==DBF_STRING &&
+        (PyArray_NDIM(arr)!=2 || PyArray_DIM(arr,0)>maxlen || PyArray_DIM(arr,1)!=MAX_STRING_SIZE))
+    {
+        PyErr_Format(PyExc_ValueError, "String array has incorrect shape or is too large");
+        return 1;
+
+    } else if(PyArray_NDIM(arr)!=1 || PyArray_DIM(arr,0)>maxlen) {
+        PyErr_Format(PyExc_ValueError, "Array has incorrect shape or is too large");
+        return 1;
+    }
+
+    insize = PyArray_DIM(arr, 0);
+
+    if(paddr->special==SPC_DBADDR &&
+       (prset=dbGetRset(paddr)) &&
+       prset->get_array_info)
+    {
+        /* array */
+        char *datasave=paddr->pfield;
+        long noe, off;
+        if(prset->get_array_info(paddr, &noe, &off)) {
+            PyErr_Format(PyExc_ValueError, "Error fetching array info for %s.%s",
+                     paddr->precord->name,
+                     paddr->pfldDes->name);
+            return 1;
+        }
+
+        rawfield = paddr->pfield;
+        /* get_array_info can modify pfield in >3.15.0.1 */
+        paddr->pfield = datasave;
+    }
+
+    Py_XINCREF(desc);
+    if(!(aval = PyArray_FromAny(arr, desc, 1, 2, NPY_CARRAY, arr)))
+        return 1;
+
+    if(elemsize!=PyArray_ITEMSIZE(aval)) {
+        PyErr_Format(PyExc_AssertionError, "item size mismatch %u %u",
+                    elemsize, (unsigned)PyArray_ITEMSIZE(aval) );
+        return 1;
+    }
+
+    memcpy(rawfield, PyArray_GETPTR1(aval, 0), insize*elemsize);
+
+    Py_DECREF(aval);
+
+    if(paddr->special==SPC_DBADDR &&
+       (prset=dbGetRset(paddr)) &&
+       prset->get_array_info)
+    {
+        if(prset->put_array_info(paddr, insize)) {
+            PyErr_Format(PyExc_ValueError, "Error setting array info for %s.%s",
+                         paddr->precord->name,
+                         paddr->pfldDes->name);
+            return 1;
+        }
+    }
+
+    return 0;
+#else
+    PyErr_SetNone(PyExc_NotImplementedError);
+    return 1;
+#endif
+}
+
 static PyObject* pyField_getval(pyField *self)
 {
+    void *rawfield = self->addr.pfield;
+    rset *prset;
+
+    if(self->addr.special==SPC_DBADDR &&
+       (prset=dbGetRset(&self->addr)) &&
+       prset->get_array_info)
+    {
+        /* array */
+        char *datasave=self->addr.pfield;
+        long noe, off;
+        if(prset->get_array_info(&self->addr, &noe, &off))
+            return PyErr_Format(PyExc_ValueError, "Error fetching array info for %s.%s",
+                     self->addr.precord->name,
+                     self->addr.pfldDes->name);
+        else if(noe<1) {
+            PyErr_SetString(PyExc_IndexError, "zero length array");
+            return NULL;
+        }
+
+        rawfield = self->addr.pfield;
+        /* get_array_info can modify pfield in >3.15.0.1 */
+        self->addr.pfield = datasave;
+
+        if(self->addr.no_elements>1) {
+            return build_array((PyObject*)self, rawfield, self->addr.field_type,
+                               noe, NPY_CARRAY_RO);
+        }
+    }
+
     switch(self->addr.field_type)
     {
-#define OP(FTYPE, CTYPE, FN) case DBF_##FTYPE: return FN(*(CTYPE*)self->addr.pfield)
+#define OP(FTYPE, CTYPE, FN) case DBF_##FTYPE: return FN(*(CTYPE*)rawfield)
     OP(CHAR,  epicsInt8,   PyInt_FromLong);
     OP(UCHAR, epicsUInt8,  PyInt_FromLong);
     OP(ENUM,  epicsEnum16, PyInt_FromLong);
@@ -93,7 +223,7 @@ static PyObject* pyField_getval(pyField *self)
     OP(DOUBLE,epicsFloat64,PyFloat_FromDouble);
 #undef OP
     case DBF_STRING:
-        return PyString_FromString((char*)self->addr.pfield);
+        return PyString_FromString((char*)rawfield);
     default:
         exc_wrong_ftype(self);
         return NULL;
@@ -103,9 +233,16 @@ static PyObject* pyField_getval(pyField *self)
 static PyObject* pyField_putval(pyField *self, PyObject* args)
 {
     PyObject *val;
+    void *rawfield;
+    rset *prset;
 
     if(!PyArg_ParseTuple(args, "O", &val))
         return NULL;
+
+    if(self->addr.field_type>DBF_MENU) {
+        PyErr_SetString(PyExc_TypeError, "field type write not supported");
+        return NULL;
+    }
 
     if(val==Py_None) {
         PyErr_Format(PyExc_ValueError, "Can't assign None to %s.%s",
@@ -114,9 +251,35 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
         return NULL;
     }
 
+#ifdef HAVE_NUMPY
+    if(PyArray_Check(val)) { /* assign from array */
+        if(assign_array(&self->addr, val))
+            return NULL;
+        Py_RETURN_NONE;
+    }
+#endif
+
+    if(self->addr.special==SPC_DBADDR &&
+       (prset=dbGetRset(&self->addr)) &&
+       prset->get_array_info)
+    {
+        /* writing scalar to array */
+        char *datasave=self->addr.pfield;
+        long noe, off; /* ignored */
+        if(prset->get_array_info(&self->addr, &noe, &off))
+            return PyErr_Format(PyExc_ValueError, "Error fetching array info for %s.%s",
+                     self->addr.precord->name,
+                     self->addr.pfldDes->name);
+        rawfield = self->addr.pfield;
+        /* get_array_info can modify pfield in >3.15.0.1 */
+        self->addr.pfield = datasave;
+
+    } else
+        rawfield = self->addr.pfield;
+
     switch(self->addr.field_type)
     {
-#define OP(FTYPE, CTYPE, FN) case DBF_##FTYPE: *(CTYPE*)self->addr.pfield = FN(val); break
+#define OP(FTYPE, CTYPE, FN) case DBF_##FTYPE: *(CTYPE*)rawfield = FN(val); break
     OP(CHAR,  epicsInt8,   PyInt_AsLong);
     OP(UCHAR, epicsUInt8,  PyInt_AsLong);
     OP(ENUM,  epicsEnum16, PyInt_AsLong);
@@ -130,7 +293,7 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
 #undef OP
     case DBF_STRING: {
         const char *fld;
-        char *dest=self->addr.pfield;
+        char *dest=rawfield;
 #if PY_MAJOR_VERSION >= 3
         PyObject *data = PyUnicode_AsEncodedString(val, "ascii", "Encoding error:");
         if(!data)
@@ -154,17 +317,25 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
         exc_wrong_ftype(self);
         return NULL;
     }
+
+
+    if(self->addr.special==SPC_DBADDR &&
+       (prset=dbGetRset(&self->addr)) &&
+       prset->get_array_info)
+    {
+        if(prset->put_array_info(&self->addr, 1))
+            return PyErr_Format(PyExc_ValueError, "Error setting array info for %s.%s",
+                     self->addr.precord->name,
+                     self->addr.pfldDes->name);
+    }
+
     Py_RETURN_NONE;
 }
 
 static PyObject *pyField_getarray(pyField *self)
 {
-#ifdef HAVE_NUMPY
     rset *prset;
-    int flags = NPY_CARRAY;
     char *data;
-    npy_intp dims[1] = {self->addr.no_elements};
-    PyArray_Descr *desc;
 
     if(self->addr.special==SPC_DBADDR &&
        (prset=dbGetRset(&self->addr)) &&
@@ -180,20 +351,7 @@ static PyObject *pyField_getarray(pyField *self)
     } else
         data = self->addr.pfield;
 
-    if(self->addr.field_type>DBF_MENU) {
-        PyErr_SetString(PyExc_TypeError, "Can not map field type to numpy type");
-        return NULL;
-    } else if(self->addr.field_type==DBF_STRING)
-        dims[0] *= self->addr.field_size;
-
-    desc = dbf2np[self->addr.field_type];
-    Py_XINCREF(desc);
-    return PyArray_NewFromDescr(&PyArray_Type, desc, 1, dims, NULL, data, flags, (PyObject*)self);
-
-#else
-    PyErr_SetNone(PyExc_NotImplementedError);
-    return NULL;
-#endif
+    return build_array((PyObject*)self, data, self->addr.field_type, self->addr.no_elements, NPY_CARRAY);
 }
 
 static PyObject *pyField_getlen(pyField *self)

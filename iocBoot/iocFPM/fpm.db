@@ -1,0 +1,133 @@
+## Load test data
+#record(waveform, "TST:datain") {
+#    field(DTYP, "Python Device")
+#    field(INP , "@$(FNAME=)")
+#    field(FTVL, "DOUBLE")
+#    field(NELM, "$(NELM=1000)")
+#    field(PINI, "YES")
+#    info("pySupportMod", "loadnp")
+#}
+
+record(longout, "$(P)StartPoint-SP") {
+    field(DESC, "# of samples to skip")
+    field(VAL , "419")
+    field(PINI, "YES")
+    info(autosaveFields_pass0, "VAL")
+}
+
+record(ao, "$(P)PeakThreshold-SP") {
+    field(VAL , "0.01")
+    field(EGU , "V")
+    field(PINI, "YES")
+    field(PREC, "3")
+    info(autosaveFields_pass0, "VAL")
+}
+
+record(ao, "$(P)Offset-SP") {
+    field(VAL , "0.05")
+    field(PINI, "YES")
+    field(PREC, "3")
+    info(autosaveFields_pass0, "VAL")
+}
+
+record(aSub, "$(P)FPM-Calc_") {
+    field(PINI, "RUNNING")
+    field(SNAM, "python_asub")
+
+    field(EFLG, "ALWAYS")
+
+    field(INPA, "$(INPA=TST:datain CP MSI)")
+    field(INPB, "$(P)StartPoint-SP")
+    field(INPC, "$(P)PeakThreshold-SP")
+    field(INPD, "$(INPD=1.0)")
+    field(INPE, "$(P)Offset-SP")
+
+    field(OUTA, "$(P)BunchQ-Wf PP MSI")
+    field(OUTB, "$(P)Bucket-I PP MSI")
+    field(OUTC, "$(P)K:Run-I.A PP MSI")
+    field(OUTD, "$(P)NbrBunches-I PP") # No MSI
+    field(OUTE, "$(P)SumQ-I PP MSI")
+    field(OUTF, "$(P)MinQ-I PP MSI")
+    field(OUTG, "$(P)MaxQ-I PP MSI")
+    field(OUTH, "$(P)MinQBunchNbr-I PP MSI")
+    field(OUTI, "$(P)MaxQBunchNbr-I PP MSI")
+    field(OUTJ, "$(P)B2BMaxVar-I PP MSI")
+    field(OUTK, "$(P)TTQ-Wf PP MSI")
+
+    field(FTA , "DOUBLE") # input data
+    field(FTB , "LONG")   # num. samples to skip
+    field(FTC , "DOUBLE") # beam threshold
+    field(FTD , "DOUBLE") # input scale
+
+    field(FTVA, "DOUBLE") # output fill array
+    field(FTVB, "DOUBLE") # output phase
+    field(FTVC, "DOUBLE") # runtime
+    field(FTVD, "LONG")   # num. with beam
+    field(FTVE, "DOUBLE") # sum
+    field(FTVF, "DOUBLE") # min val
+    field(FTVG, "DOUBLE") # max val
+    field(FTVH, "DOUBLE") # min bucket
+    field(FTVI, "DOUBLE") # max bucket
+    field(FTVJ, "DOUBLE") # % variation
+    field(FTVK, "DOUBLE") # charge by turn
+
+    field(NOA , "$(NELM=1000)")
+    field(NOVA, "1320")
+    field(NOVB, "16")
+    field(NOVK, "100") # must be >= num. of turns
+
+    info(pySupportLink, "fpm test")
+}
+
+record(waveform, "$(P)BunchQ-Wf") {
+    field(FTVL, "DOUBLE")
+    field(NELM, "1320")
+    field(EGU , "mA")
+}
+
+record(waveform, "$(P)Bucket-I") {
+    field(FTVL, "DOUBLE")
+    field(NELM, "16")
+    field(EGU , "V")
+}
+
+record(calc, "$(P)K:Run-I") {
+    field(PREC, "3")
+    field(EGU , "ms")
+    field(CALC, "A*1000")
+}
+
+record(longin, "$(P)NbrBunches-I") {
+}
+
+record(ai, "$(P)SumQ-I") {
+    field(PREC, "3")
+    field(EGU , "mA")
+}
+
+record(ai, "$(P)MinQ-I") {
+    field(PREC, "3")
+    field(EGU , "mA")
+}
+
+record(ai, "$(P)MaxQ-I") {
+    field(PREC, "3")
+    field(EGU , "mA")
+}
+
+record(longin, "$(P)MinQBunchNbr-I") {
+}
+
+record(longin, "$(P)MaxQBunchNbr-I") {
+}
+
+record(ai, "$(P)B2BMaxVar-I") {
+    field(PREC, "3")
+    field(EGU , "%")
+}
+
+record(waveform, "$(P)TTQ-Wf") {
+    field(FTVL, "DOUBLE")
+    field(NELM, "100") # must be >= num. of turns
+    field(EGU , "mA")
+}

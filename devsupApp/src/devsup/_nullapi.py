@@ -140,20 +140,29 @@ class _Field(object):
         """
 
     def getval(self):
-        """Fetch the current field value as a scalar.
+        """Fetch the current field value as a scalar or numpy.ndarray.
         
-        :rtype: int, float, or str
-        
+        :rtype: int, float, str, or ndarray
+
         Returned type depends of field DBF type.
         An ``int`` is returned for CHAR, SHORT, LONG, and ENUM.
         A ``float`` is returned for FLOAT and DOUBLE.
         A ``str`` is returned for STRING.
+        A ``numpy.ndarray`` is returned for array fields.
+        This array is read-only and has the size of the present valid values.
+
+        .. important::
+          It is only safe to read this ndarray while the record
+          lock is held (ie within :meth:`process <DeviceSupport.process>`).
         """
 
     def putval(self, val):
         """Update the field value
         
-        Must be an Int, Float or str.  Strings will be truncated to 39 characters.
+        Must be an Int, Float, str, or numpy.ndarray.
+        Strings will be truncated to 39 characters.
+        Arrays must have a size less than or equal to the max element count.
+        Arrays are converted as necessary to the field's native type.
         """
 
     def getarray(self):
@@ -164,7 +173,7 @@ class _Field(object):
         
         .. important::
           It is only safe to read or write to this ndarray while the record
-          lock is held (ie withing :meth:`process <DeviceSupport.process>`).
+          lock is held (ie within :meth:`process <DeviceSupport.process>`).
         """
 
     def getarraylen(self):

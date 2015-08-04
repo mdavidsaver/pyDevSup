@@ -295,10 +295,10 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
         const char *fld;
         char *dest=rawfield;
 #if PY_MAJOR_VERSION >= 3
-        PyObject *data = PyUnicode_AsEncodedString(val, "ascii", "Encoding error:");
+        PyObject *data = PyUnicode_AsASCIIString(val);
         if(!data)
             return NULL;
-        fld = PyUnicode_AS_DATA(data);
+        fld = PyBytes_AS_STRING(data);
 #else
         fld = PyString_AsString(val);
 #endif

@@ -1,0 +1,44 @@
+Source: pydevsup
+Section: libdevel
+Priority: extra
+Maintainer: Michael Davidsaver <mdavidsaver@gmail.com>
+Build-Depends: debhelper (>= 9), dh-python, epics-debhelper (>= 8.13~),
+               epics-dev,
+               epics-synapps-dev | epics-autosave-dev,
+               epics-synapps-dev | epics-iocstats-dev,
+               python-all-dev,  python-numpy,
+               python3-all-dev, python3-numpy,
+Standards-Version: 3.9.6
+XS-Python-Version: >= 2.7
+XS-Python3-Version: >= 3.4
+Homepage: http://mdavidsaver.github.io/pyDevSup/
+Vcs-Git: https://github.com/mdavidsaver/pyDevSup.git
+Vcs-Browser: https://github.com/mdavidsaver/pyDevSup
+
+Package: epics-pydevsup
+Architecture: any
+Depends: libpydevsup1.0 (= ${binary:Version}),
+         ${shlibs:Depends}, ${misc:Depends},
+         ${epics:Depends},
+Description: EPICS device support in Python
+ An IOC and support module allowing device support to be written in Python
+ .
+ This package contains the softIocPy2.* executable
+
+Package: epics-pydevsup-dev
+Architecture: any
+Depends: epics-pydevsup (= ${binary:Version}),
+         ${shlibs:Depends}, ${misc:Depends},
+         ${epics:Depends},
+Description: EPICS device support in Python
+ An IOC and support module allowing device support to be written in Python
+ .
+ This package contains headers and libraries needed at build time.
+
+Package: libpydevsup1.0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+Description: EPICS device support in Python
+ An IOC and support module allowing device support to be written in Python
+ .
+ This package contains runtime libraries

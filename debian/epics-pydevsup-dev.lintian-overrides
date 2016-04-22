@@ -1,0 +1,2 @@
+# -debug targets not stripped
+epics-pydevsup-dev: unstripped-binary-or-object

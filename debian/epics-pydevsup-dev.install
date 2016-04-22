@@ -1,0 +1,7 @@
+usr/lib/epics/dbd/pyDevSup.dbd
+usr/lib/epics/lib/linux-*/libpyDevSup*.a
+usr/lib/epics/lib/linux-*/libpyDevSup*.so
+usr/lib/epics/lib/linux-*-debug/libpyDevSup*.so.*
+
+usr/lib/epics/configure/*_PY etc/epics/configure
+usr/lib/epics/configure/os/* etc/epics/configure/os

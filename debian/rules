@@ -1,0 +1,34 @@
+#!/usr/bin/make -f
+
+# Don't want to enable conditional deps. by default
+# but do want to build then for packaging
+EXTRA=AUTOSAVE=/usr/lib/epics
+
+export DH_VERBOSE=1
+
+%:
+	dh $@ --with epics -Sepicsmake --parallel
+
+override_dh_auto_configure:
+
+# since we do special gymnastics to build for multiple python version
+# just do all the work in the install phase
+override_dh_auto_build:
+
+override_dh_auto_test:
+
+override_dh_auto_install:
+	dh_auto_build -- PY_VER=2.7 $(EXTRA)
+	dh_auto_install -- PY_VER=2.7 $(EXTRA)
+	dh_auto_clean -- PY_VER=2.7 $(EXTRA)
+	dh_auto_build -- PY_VER=3.4 $(EXTRA)
+	dh_auto_install -- PY_VER=3.4 $(EXTRA)
+	dh_auto_clean -- PY_VER=3.4 $(EXTRA)
+	rm debian/tmp/usr/lib/epics/db/test*.db
+
+override_dh_install:
+	dh_install --fail-missing
+
+override_dh_makeshlibs:
+	dh_makeshlibs -pepics-pydevsup-dev -n
+	dh_makeshlibs --remaining-packages

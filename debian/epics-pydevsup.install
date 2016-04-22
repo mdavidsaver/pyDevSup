@@ -1,0 +1,6 @@
+usr/lib/epics/bin/linux-*-debug/softIocPy*
+usr/lib/epics/bin/linux-*/softIocPy* usr/bin
+usr/lib/epics/dbd/softIocPy.dbd
+usr/lib/epics/python*
+usr/lib/epics/db
+iocBoot/ioc* usr/share/doc/epics-pydevsup

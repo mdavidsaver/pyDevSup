@@ -1,0 +1,4 @@
+# -debug not stripped
+epics-pydevsup: unstripped-binary-or-object
+# too lazy
+epics-pydevsup: binary-without-manpage

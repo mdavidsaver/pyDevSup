@@ -31,6 +31,8 @@ pyDevSup$(PY_LD_VER)_SRCS += dbrec.c
 pyDevSup$(PY_LD_VER)_SRCS += dbfield.c
 pyDevSup$(PY_LD_VER)_SRCS += dbdset.c
 
+pyDevSup$(PY_LD_VER)_LIBS += $(EPICS_BASE_IOC_LIBS)
+
 
 PROD_IOC = softIocPy$(PY_VER)
 PRODNAME = $(addsuffix $(EXE),$(PROD))

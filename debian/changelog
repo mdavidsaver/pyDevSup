@@ -1,3 +1,9 @@
+pydevsup (1.1) unstable; urgency=low
+
+  * FIX: omit deps on autosave, iocstats
+
+ -- Daron Chabot <chabot@frib.msu.edu>  Fri, 12 May 2017 14:07:33 -0400
+
 pydevsup (1.0) unstable; urgency=medium
 
   * initial

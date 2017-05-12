@@ -2,7 +2,7 @@
 
 # Don't want to enable conditional deps. by default
 # but do want to build then for packaging
-EXTRA=AUTOSAVE=/usr/lib/epics
+EXTRA=AUTOSAVE=/usr/lib/epics SKIP_DB_INSTALL=YES
 
 export DH_VERBOSE=1
 

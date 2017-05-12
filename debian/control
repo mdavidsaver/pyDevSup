@@ -4,8 +4,6 @@ Priority: extra
 Maintainer: Michael Davidsaver <mdavidsaver@gmail.com>
 Build-Depends: debhelper (>= 9), dh-python, epics-debhelper (>= 8.13~),
                epics-dev,
-               epics-synapps-dev | epics-autosave-dev,
-               epics-synapps-dev | epics-iocstats-dev,
                python-all-dev,  python-numpy,
                python3-all-dev, python3-numpy,
 Standards-Version: 3.9.6

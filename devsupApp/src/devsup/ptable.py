@@ -3,7 +3,7 @@
 import logging
 LOG = logging.getLogger(__name__)
 
-import threading
+import threading, inspect
 
 _tables = {}
 
@@ -298,7 +298,7 @@ class TableBase(object):
         # and place appropriate things in the instance dictionary
         rparams = {}
         rgroups = {}
-        for k,v in self.__class__.__dict__.items():
+        for k,v in inspect.getmembers(self):
             if isinstance(v, Parameter):
                 scan = None
                 if not v.name:
@@ -324,7 +324,7 @@ class TableBase(object):
                 P._groups.add(G)
 
         # second pass to attach actions
-        for k,v in self.__class__.__dict__.items():
+        for k,v in inspect.getmembers(self):
             if hasattr(v, '_ptable_action'):
                 for src,cond,cmeth in v._ptable_action:
                     # src is instance parameter or group

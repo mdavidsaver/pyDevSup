@@ -9,7 +9,12 @@ export DH_VERBOSE=1
 %:
 	dh $@ --with epics -Sepicsmake --parallel
 
+override_dh_auto_clean:
+	rm -f configure/RELEASE.local
+	dh_auto_clean
+
 override_dh_auto_configure:
+	echo "EPICS_BASE=/usr/lib/epics" > configure/RELEASE.local
 
 # since we do special gymnastics to build for multiple python version
 # just do all the work in the install phase

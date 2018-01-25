@@ -19,7 +19,7 @@ os/CONFIG_PY$(PY_VER).Common.$(T_A): $(TOP)/makehelper.py
 	[ -d $(dir $@) ] || $(MKDIR) $(dir $@)
 	$(PYTHON) $< $@
 
-ifeq ($(BASE_3_15), YES)
+ifdef BASE_3_15
 realclean: py_clean
 else
 realclean:: py_clean

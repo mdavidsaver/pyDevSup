@@ -33,6 +33,10 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 # logging of remote settings changes
 #CAPUTLOG=$(EPICS_BASE)
 
-# EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/usr/lib/epics
+## Required Modules ##
 
+# EPICS_BASE usually appears last so other apps can override stuff:
+#EPICS_BASE=/usr/lib/epics
+
+-include $(TOP)/configure/RELEASE.local
+-include $(TOP)/../RELEASE.local

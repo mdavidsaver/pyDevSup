@@ -254,7 +254,7 @@ class Record(_dbapi._Record):
         """
         if hasattr(ts, 'timetuple'):
             ts = time.mktime(ts.timetuple())
-        elif isinstance(ts, float):
+        if isinstance(ts, float):
             sec, nsec = int(ts), int(ts*1e9)%1000000000
         else:
             sec, nsec = ts

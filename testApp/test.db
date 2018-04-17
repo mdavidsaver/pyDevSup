@@ -46,3 +46,11 @@ record(ai, "$(P):A-RB") {
   field(DTYP, "Python Device")
   field(INP , "@test5 hello none")
 }
+
+
+record(longin, "$(P)li:time") {
+  field(DTYP, "Python Device")
+  field(INP , "@timetest")
+  field(SCAN, "1 second")
+  field(TSEL, "-2")
+}

@@ -19,7 +19,7 @@
 
 #ifdef HAVE_NUMPY
 static const int dbf2np_map[DBF_MENU+1] = {
-    NPY_BYTE,    // DBF_STRING
+    NPY_STRING,  // DBF_STRING
     NPY_BYTE,    // DBF_CHAR
     NPY_UBYTE,   // DBF_UCHAR
     NPY_INT16,   // DBF_SHORT
@@ -81,19 +81,18 @@ static PyObject* build_array(PyObject* obj, void *data, unsigned short ftype, un
 #ifdef HAVE_NUMPY
     PyArray_Descr *desc;
     int ndims = 1;
-    npy_intp dims[2] = {nelem, 0};
+    npy_intp dims[1] = {nelem};
 
     if(ftype>DBF_MENU) {
         PyErr_SetString(PyExc_TypeError, "Can not map field type to numpy type");
         return NULL;
-
-    } else if(ftype==DBF_STRING) {
-        ndims = 2;
-        dims[1] = MAX_STRING_SIZE;
-        // element type is NPY_CHAR
     }
 
     desc = dbf2np[ftype];
+    if(ftype==DBF_STRING) {
+        desc->elsize = MAX_STRING_SIZE;
+    }
+
     Py_XINCREF(desc);
     return PyArray_NewFromDescr(&PyArray_Type, desc, ndims, dims, NULL, data, flags, (PyObject*)obj);
 #else

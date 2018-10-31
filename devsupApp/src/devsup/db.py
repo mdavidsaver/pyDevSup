@@ -277,7 +277,11 @@ class Record(_dbapi._Record):
         except ValueError:
             super(Record, self).__setattr__(name, val)
         else:
-            F.putval(val)
+            if len(F) > 1:
+                F.getarray().flat = val
+                F.putarraylen(len(val))
+            else:
+                F.putval(val)
 
 
     def __repr__(self):

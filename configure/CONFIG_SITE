@@ -37,7 +37,7 @@ PY_VER=2.7
 
 # Module will be build against this version of the
 # Python interpreter
-#PYTHON = python$(PY_VER)
+PYTHON ?= python$(PY_VER)
 
 -include $(TOP)/configure/CONFIG_SITE.local
 -include $(TOP)/../CONFIG_SITE.local

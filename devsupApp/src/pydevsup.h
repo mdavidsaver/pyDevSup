@@ -20,6 +20,8 @@ initHookState pyInitLastState;
 PyObject* pyDBD_setup(PyObject *unused);
 PyObject* pyDBD_cleanup(PyObject *unused);
 
+int pyUTest_prepare(PyObject *module);
+
 int pyField_prepare(PyObject *module);
 
 int pyRecord_prepare(PyObject *module);

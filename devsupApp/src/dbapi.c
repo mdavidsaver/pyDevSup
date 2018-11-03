@@ -194,9 +194,9 @@ PyObject *py_dbReadDatabase(PyObject *unused, PyObject *args, PyObject *kws)
     }
 
     Py_BEGIN_ALLOW_THREADS {
-        if(fname)
+        if(fname) {
             status = dbReadDatabase(&pdbbase, fname, path, sub);
-        else {
+        } else {
             FILE *ff = fdopen(fd, "r");
             status = dbReadDatabaseFP(&pdbbase, ff, path, sub);
             // dbReadDatabaseFP() has called fclose()
@@ -213,11 +213,23 @@ PyObject *py_dbReadDatabase(PyObject *unused, PyObject *args, PyObject *kws)
 }
 
 static
-PyObject *py_iocInit(PyObject *unused)
+PyObject *py_iocInit(PyObject *unused, PyObject *args, PyObject *kws)
 {
+    static char* names[] = {"isolate", NULL};
+    PyObject *pyisolate = Py_True;
+    int isolate, ret;
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "|O", names, &pyisolate))
+        return NULL;
+
+    isolate = PyObject_IsTrue(pyisolate);
     Py_BEGIN_ALLOW_THREADS {
-        iocInit();
+        ret = isolate ? iocBuildIsolated() : iocBuild();
+        if(!ret)
+            ret = iocRun();
     } Py_END_ALLOW_THREADS
+
+    if(ret)
+        return PyErr_Format(PyExc_RuntimeError, "Error %d", ret);
 
     Py_RETURN_NONE;
 }
@@ -225,6 +237,7 @@ PyObject *py_iocInit(PyObject *unused)
 static
 PyObject *py_pyDevSupCommon(PyObject *unused)
 {
+    static int once;
     Py_BEGIN_ALLOW_THREADS {
         pyDevSupCommon_registerRecordDeviceDriver(pdbbase);
     } Py_END_ALLOW_THREADS
@@ -258,7 +271,7 @@ static struct PyModuleDef dbapimodule = {
 
 PyMODINIT_FUNC init_dbapi(void)
 {
-    PyObject *mod = NULL, *hookdict, *vertup, *obj;
+    PyObject *mod = NULL, *hookdict, *vertup;
     pystate *st;
 
     pyDevReasonID = epicsThreadPrivateCreate();
@@ -354,18 +367,11 @@ PyMODINIT_FUNC init_dbapi(void)
     if(vertup)
         PyModule_AddObject(mod, "pydevver", vertup);
 
-#if PY_MAJOR_VERSION >= 3 || (PY_MAJOR_VERSION == 2 && PY_MINOR_VERSION>=7)
-    obj = PyCapsule_New(pdbbase, "pdbbase", NULL);
-#else
-    obj = PyCObject_FromVoidPtrAndDesc(pdbbase, "pdbbase", NULL);
-#endif
-    if(!obj)
-        goto fail;
-    PyModule_AddObject(mod, "pdbbase", obj);
-
     if(pyField_prepare(mod))
         goto fail;
     if(pyRecord_prepare(mod))
+        goto fail;
+    if(pyUTest_prepare(mod))
         goto fail;
 
     MODINIT_RET(mod);

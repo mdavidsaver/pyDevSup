@@ -39,5 +39,7 @@ PY_VER=2.7
 # Python interpreter
 PYTHON ?= python$(PY_VER)
 
+USR_CPPFLAGS += -DUSE_TYPED_RSET
+
 -include $(TOP)/configure/CONFIG_SITE.local
 -include $(TOP)/../CONFIG_SITE.local

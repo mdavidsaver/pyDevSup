@@ -24,8 +24,11 @@ _dbapi_SRCS += dbapi.c
 _dbapi_SRCS += dbrec.c
 _dbapi_SRCS += dbfield.c
 _dbapi_SRCS += dbdset.c
+_dbapi_SRCS += utest.c
 
 _dbapi_SRCS += pyDevSupCommon_registerRecordDeviceDriver.cpp
+
+_dbapi_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 PY += devsup/__init__.py
 PY += devsup/_nullapi.py
@@ -36,6 +39,9 @@ PY += devsup/interfaces.py
 PY += devsup/util.py
 PY += devsup/disect.py
 PY += devsup/ptable.py
+
+PY += devsup/test/__init__.py
+PY += devsup/test/test_db.py
 
 #===========================
 
@@ -52,3 +58,20 @@ pyconfig:
 	@echo "Library path: $(PY_LIBDIRS)"
 	@echo "USR_CPPFLAGS: $(USR_CPPFLAGS)"
 	@echo "USR_LDFLAGS: $(USR_LDFLAGS)"
+
+ifneq (,$(T_A))
+nose:
+	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(PYTHON) -m nose -P devsup $(NOSEFLAGS)
+
+# bounce back down to the sphinx generated Makefile
+# aren't Makefiles fun...
+sphinx:
+	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(MAKE) -C $(TOP)/documentation html
+
+sh:
+	echo "export PYTHONPATH=\$${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" > $(OUTPUT)
+
+ipython:
+	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(PYTHON) -c "import sys; sys.argv[0] = '$(PYTHON)'; from IPython.terminal.ipapp import launch_new_instance; launch_new_instance()"
+
+endif

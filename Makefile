@@ -18,8 +18,16 @@ include $(TOP)/configure/RULES_TOP
 
 UNINSTALL_DIRS += $(wildcard $(INSTALL_LOCATION)/python*)
 
-#useful targets includ: doc-html and doc-clean
-doc-%:
-	PYTHONPATH=$$PWD/python$(PY_VER)/$(EPICS_HOST_ARCH) $(MAKE) -C documentation $*
+# jump to a sub-directory where CONFIG_PY has been included
+# can't include CONFIG_PY here as it may not exist yet
+nose sphinx sh ipython: all
+	$(MAKE) -C devsupApp/src/O.$(EPICS_HOST_ARCH) $@ PYTHON=$(PYTHON)
 
-doc: doc-html
+sphinx-clean:
+	$(MAKE) -C documentation clean PYTHON=$(PYTHON)
+
+sphinx-commit: sphinx
+	touch documentation/_build/html/.nojekyll
+	./commit-gh.sh documentation/_build/html
+
+.PHONY: nose sphinx sphinx-commit sphinx-clean

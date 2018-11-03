@@ -22,16 +22,11 @@ from ._dbapi import (EPICS_VERSION_STRING,
 
 __all__ = []
 
-_ready = [False]
-
 def _init(iocMain=False):
-    if _ready[0]:
-        return
-    _ready[0] = True
-
     if not iocMain:
         # we haven't read/register base.dbd
-        _dbapi.dbReadDatabase(os.path.join(XEPICS_BASE, "dbd", "base.dbd"))
+        _dbapi.dbReadDatabase(os.path.join(XEPICS_BASE, "dbd", "base.dbd"),
+                              path=os.path.join(XEPICS_BASE, "dbd"))
         _dbapi._dbd_rrd_base()
 
     with tempfile.NamedTemporaryFile() as F:

@@ -17,12 +17,10 @@
 
 initHookState pyInitLastState;
 
-PyMODINIT_FUNC init_dbbase(void);
-
-void pyDBD_cleanup(void);
+PyObject* pyDBD_setup(PyObject *unused);
+PyObject* pyDBD_cleanup(PyObject *unused);
 
 int pyField_prepare(PyObject *module);
-void pyField_cleanup(void);
 
 int pyRecord_prepare(PyObject *module);
 

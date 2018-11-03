@@ -569,12 +569,3 @@ int pyField_prepare(PyObject *module)
     return 0;
 }
 
-void pyField_cleanup(void)
-{
-    size_t i;
-
-    for(i=0; i<=DBF_MENU; i++) {
-        Py_XDECREF(dbf2np[i]);
-        dbf2np[i] = NULL;
-    }
-}

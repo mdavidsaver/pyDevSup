@@ -3,7 +3,6 @@
 py "import logging"
 py "logging.basicConfig(level=logging.DEBUG)"
 
-py "import devsup; print devsup.HAVE_DBAPI"
 py "import sys; sys.path.insert(0,'${PWD}/testApp')"
 py "print sys.path"
 
@@ -23,4 +22,4 @@ dbLoadRecords("db/test6.db","P=tst:,TNAME=tsum")
 iocInit()
 
 # Start Reference tracker
-py "from devsup import disect; disect.periodic(10)"
+#py "from devsup import disect; disect.periodic(10)"

@@ -4,10 +4,7 @@ import traceback
 from functools import wraps
 from collections import defaultdict
 
-try:
-    import _dbapi
-except ImportError:
-    import devsup._nullapi as _dbapi
+from . import _dbapi
 
 __all__ = [
     "hooknames",

@@ -10,6 +10,25 @@ include $(TOP)/configure/CONFIG_PY
 #=============================
 # Build the IOC application
 
+USR_CPPFLAGS += -I$(TOP)/devsupApp/src
+
+LIBRARY = pyDevSup$(PY_LD_VER)
+
+SHRLIB_VERSION = 0
+
+DBD += pyDevSup.dbd
+
+pyDevSup$(PY_LD_VER)_SYS_LIBS += python$(PY_LD_VER)
+
+pyDevSup$(PY_LD_VER)_LIBS += $(EPICS_BASE_IOC_LIBS)
+
+setup_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
+setup_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
+setup_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
+setup_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
+
+pyDevSup$(PY_LD_VER)_SRCS += setup.c
+
 PROD_IOC = softIocPy$(PY_VER)
 PRODNAME = $(addsuffix $(EXE),$(PROD))
 

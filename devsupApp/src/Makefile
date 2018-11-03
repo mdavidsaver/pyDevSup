@@ -1,35 +1,31 @@
 TOP=../..
 
 include $(TOP)/configure/CONFIG
-PYMODULE = NO
 include $(TOP)/configure/CONFIG_PY
 #----------------------------------------
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
 
-#=============================
-# Build the IOC application
+INSTALL_SHRLIB = $(PY_INSTALL_DIR)/devsup
 
-LIBRARY = pyDevSup$(PY_LD_VER)
+LOADABLE_LIBRARY_HOST += _dbapi
 
-SHRLIB_VERSION = 0
+TARGETS += $(COMMON_DIR)/pyDevSupCommon.dbd
+DBDDEPENDS_FILES += pyDevSupCommon.dbd$(DEP)
 
-DBD += pyDevSup.dbd
+pyDevSupCommon_DBD += base.dbd
 
-pyDevSup$(PY_LD_VER)_SYS_LIBS += python$(PY_LD_VER)
+dbapi_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
+dbapi_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
+dbapi_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
+dbapi_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
 
-setup_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
-setup_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
-setup_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
-setup_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
+_dbapi_SRCS += dbapi.c
+_dbapi_SRCS += dbrec.c
+_dbapi_SRCS += dbfield.c
+_dbapi_SRCS += dbdset.c
 
-pyDevSup$(PY_LD_VER)_SRCS += setup.c
-pyDevSup$(PY_LD_VER)_SRCS += dbbase.c
-pyDevSup$(PY_LD_VER)_SRCS += dbrec.c
-pyDevSup$(PY_LD_VER)_SRCS += dbfield.c
-pyDevSup$(PY_LD_VER)_SRCS += dbdset.c
-
-pyDevSup$(PY_LD_VER)_LIBS += $(EPICS_BASE_IOC_LIBS)
+_dbapi_SRCS += pyDevSupCommon_registerRecordDeviceDriver.cpp
 
 PY += devsup/__init__.py
 PY += devsup/_nullapi.py

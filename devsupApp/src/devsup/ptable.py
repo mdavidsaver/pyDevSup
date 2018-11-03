@@ -7,8 +7,8 @@ import threading, inspect
 
 _tables = {}
 
-from devsup.db import IOScanListThread
-from devsup import INVALID_ALARM, UDF_ALARM
+from .db import IOScanListThread
+from . import INVALID_ALARM, UDF_ALARM
 
 __all__ = [
     'Parameter',

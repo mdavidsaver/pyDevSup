@@ -19,6 +19,8 @@
 #include <dbScan.h>
 #include <cantProceed.h>
 #include <registryFunction.h>
+#include <iocshRegisterCommon.h>
+#include <registryCommon.h>
 #include <aSubRecord.h>
 
 #include "pydevsup.h"
@@ -471,8 +473,28 @@ int canIOScanRecord(dbCommon *prec)
     return !!priv->scanobj;
 }
 
+static
+const dset* pydsets[] = {
+    &pydevsupComSpec.com,
+    &pydevsupComIn.com,
+    &pydevsupComOut.com,
+};
+
+static const char* pydsetnames[] = {
+    "pydevsupComSpec",
+    "pydevsupComIn",
+    "pydevsupComOut",
+};
+
+PyObject* pyDBD_setup(PyObject *unused)
+{
+    registerDevices(pdbbase, NELEMENTS(pydsets), pydsetnames, pydsets);
+    registryFunctionAdd("python_asub", (REGISTRYFUNCTION)&python_asub);
+    Py_RETURN_NONE;
+}
+
 /* Called with GIL locked */
-void pyDBD_cleanup(void)
+PyObject* pyDBD_cleanup(PyObject *unused)
 {
     ELLNODE *cur;
     inshutdown = 1;
@@ -497,12 +519,5 @@ void pyDBD_cleanup(void)
 
         free(priv);
     }
+    Py_RETURN_NONE;
 }
-
-#include <epicsExport.h>
-
-epicsExportAddress(dset, pydevsupComSpec);
-epicsExportAddress(dset, pydevsupComIn);
-epicsExportAddress(dset, pydevsupComOut);
-
-epicsRegisterFunction(python_asub);

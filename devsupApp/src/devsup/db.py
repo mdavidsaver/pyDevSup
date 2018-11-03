@@ -3,10 +3,7 @@ import threading, sys, traceback, time
 
 from devsup.util import Worker, importmod
 
-try:
-    import _dbapi
-except ImportError:
-    import _nullapi as _dbapi
+from . import _dbapi
 
 _rec_cache = {}
 _no_such_field = object()

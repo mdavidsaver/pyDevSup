@@ -23,7 +23,7 @@ class IOCHelper(unittest.TestCase):
 
         if self.db is not None:
             with tempfile.NamedTemporaryFile() as F:
-                F.write(self.db)
+                F.write(self.db.encode('ascii'))
                 F.flush()
                 _dbapi.dbReadDatabase(F.name)
 
@@ -159,7 +159,8 @@ class TestField(IOCHelper):
 
             rec.VAL = ["zero", "", "one", "This is a really long string which should be truncated", "", "last"]
 
-            assert_array_equal(rec.VAL, ["zero", "", "one", "This is a really long string which shoul", "", "last"])
+            assert_array_equal(rec.VAL,
+                                numpy.asarray(["zero", "", "one", "This is a really long string which shoul", "", "last"], dtype='S40'))
 
 
 class TestDset(IOCHelper):

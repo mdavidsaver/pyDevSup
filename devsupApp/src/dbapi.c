@@ -269,7 +269,11 @@ static struct PyModuleDef dbapimodule = {
 };
 #endif
 
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit__dbapi(void)
+#else
 PyMODINIT_FUNC init_dbapi(void)
+#endif
 {
     PyObject *mod = NULL, *hookdict, *vertup;
     pystate *st;

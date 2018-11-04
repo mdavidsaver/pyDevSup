@@ -15,6 +15,8 @@
 
 #endif
 
+struct dbCommon;
+
 initHookState pyInitLastState;
 
 PyObject* pyDBD_setup(PyObject *unused);
@@ -26,8 +28,8 @@ int pyField_prepare(PyObject *module);
 
 int pyRecord_prepare(PyObject *module);
 
-int isPyRecord(dbCommon *);
-int canIOScanRecord(dbCommon *);
+int isPyRecord(struct dbCommon *);
+int canIOScanRecord(struct dbCommon *);
 
 extern epicsThreadPrivateId pyDevReasonID;
 

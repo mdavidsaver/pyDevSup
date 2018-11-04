@@ -5,14 +5,21 @@
 
 #include <Python.h>
 
-#include <dbUnitTest.h>
+#include <epicsVersion.h>
 #include <dbEvent.h>
 #include <iocInit.h>
 #include <errlog.h>
 
+#if EPICS_VERSION>3 || (EPICS_VERSION==3 && EPICS_REVISION>=15)
+#  include <dbUnitTest.h>
+#  define HAVE_DBTEST
+#endif
+
 #include "pydevsup.h"
 
+#ifdef HAVE_DBTEST
 static dbEventCtx testEvtCtx;
+#endif
 
 typedef struct {
     PyObject_HEAD
@@ -39,6 +46,7 @@ static PyObject* utest_prepare(PyObject *unused)
 
 static PyObject* utest_init(PyObject *unused)
 {
+#ifdef HAVE_DBTEST
     int ret;
     if(testEvtCtx)
         return PyErr_Format(PyExc_RuntimeError, "Missing testIocShutdownOk()");
@@ -71,10 +79,14 @@ static PyObject* utest_init(PyObject *unused)
         return PyErr_Format(PyExc_RuntimeError, "db_start_events fails with %d", ret);
     }
     Py_RETURN_NONE;
+#else
+    return PyErr_Format(PyExc_RuntimeError, "Requires Base >=3.15");
+#endif
 }
 
 static PyObject* utest_shutdown(PyObject *unused)
 {
+#ifdef HAVE_DBTEST
     Py_BEGIN_ALLOW_THREADS {
         //testIocShutdownOk();
         db_close_events(testEvtCtx);
@@ -82,15 +94,22 @@ static PyObject* utest_shutdown(PyObject *unused)
         iocShutdown();
     } Py_END_ALLOW_THREADS
     Py_RETURN_NONE;
+#else
+    return PyErr_Format(PyExc_RuntimeError, "Requires Base >=3.15");
+#endif
 }
 
 static PyObject* utest_cleanup(PyObject *unused)
 {
+#ifdef HAVE_DBTEST
     Py_BEGIN_ALLOW_THREADS {
         testdbCleanup();
         errlogFlush();
     } Py_END_ALLOW_THREADS
     Py_RETURN_NONE;
+#else
+    return PyErr_Format(PyExc_RuntimeError, "Requires Base >=3.15");
+#endif
 }
 
 static PyMethodDef UTest_methods[] = {

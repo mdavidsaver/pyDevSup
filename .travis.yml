@@ -14,16 +14,19 @@ install:
  - ./build-deps.sh
 script:
  - make PYTHON=`which python` -j2
+ - if [ "$TEST" = "YES" ]; then make PYTHON=`which python` -j2 nose; fi
 matrix:
   include:
   - python: "2.7"
-    env: BRBASE=3.16 PROF=deb8
-  - python: "2.7"
-    env: BRBASE=3.16 PROF=deb8 CMPLR=clang
+    env: BRBASE=7.0 PROF=deb8 TEST=YES
   - python: "3.4"
-    env: BRBASE=3.16 PROF=deb8
+    env: BRBASE=7.0 PROF=deb8 TEST=YES
+  - python: "3.5"
+    env: BRBASE=7.0 PROF=deb9 TEST=YES
   - python: "3.6"
-    env: BRBASE=3.16 PROF=deb9
+    env: BRBASE=7.0 PROF=deb9 TEST=YES
+  - python: "2.7"
+    env: BRBASE=3.16 PROF=deb8
   - python: "2.7"
     env: BRBASE=3.15 PROF=deb8
   - python: "2.7"

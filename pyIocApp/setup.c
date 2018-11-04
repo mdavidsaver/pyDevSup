@@ -33,6 +33,13 @@ static void cleanupPy(void *junk)
     /* special "fake" hook for shutdown */
     //pyhook((initHookState)9999);
 
+    if(PyRun_SimpleString("import devsup\n"
+                          "devsup._fini(iocMain=True)\n"
+    )) {
+        PyErr_Print();
+        PyErr_Clear();
+    }
+
     Py_Finalize(); // calls python atexit hooks
 }
 
@@ -118,7 +125,7 @@ static void pySetupReg(void)
     setupPyPath();
 
     if(PyRun_SimpleString("import devsup\n"
-                          "devsup._init(True)\n"
+                          "devsup._init(iocMain=True)\n"
     )) {
         PyErr_Print();
         PyErr_Clear();

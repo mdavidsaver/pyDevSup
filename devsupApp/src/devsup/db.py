@@ -338,5 +338,8 @@ def processLink(name, lstr):
         modname, args = parts[0], parts[1] if len(parts)>1 else None
     else:
         args = lstr
+    modname, _sep, attr = modname.partition('|')
     mod = importmod(modname)
+    if attr:
+        mod = getattr(mod, attr)
     return rec, mod.build(rec, args)

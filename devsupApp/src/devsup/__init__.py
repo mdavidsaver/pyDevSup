@@ -57,7 +57,5 @@ device(aao, INST_IO, pydevsupComOut, "Python Device")
         _dbapi.dbReadDatabase(F.name)
     _dbapi._dbd_setup()
 
-@atexit.register
-def _fini():
-    print("ATEXIT")
+def _fini(iocMain=False):
     _dbapi._dbd_cleanup()

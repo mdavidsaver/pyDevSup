@@ -192,10 +192,6 @@ static PyObject* pyField_getval(pyField *self)
             return PyErr_Format(PyExc_ValueError, "Error fetching array info for %s.%s",
                      self->addr.precord->name,
                      self->addr.pfldDes->name);
-        else if(noe<1) {
-            PyErr_SetString(PyExc_IndexError, "zero length array");
-            return NULL;
-        }
 
         rawfield = self->addr.pfield;
         /* get_array_info can modify pfield in >3.15.0.1 */
@@ -388,8 +384,8 @@ static PyObject *pyField_setlen(pyField *self, PyObject *args)
         return NULL;
     }
 
-    if(len<1 || len > self->addr.no_elements) {
-        PyErr_Format(PyExc_ValueError, "Requested length %ld out of range [1,%lu)",
+    if(len > self->addr.no_elements) {
+        PyErr_Format(PyExc_ValueError, "Requested length %ld out of range [0,%lu)",
                         (long)len, (unsigned long)self->addr.no_elements);
         return NULL;
     }

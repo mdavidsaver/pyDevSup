@@ -260,6 +260,76 @@ class Record(_dbapi._Record):
 
         super(Record, self).setTime(sec, nsec)
 
+    def scan(self, *args, **kws):
+        """scan(sync=False, reason=None, force=0)
+        Scan this record.
+        
+        :param sync: scan in current thread (``True``), or queue to a worker (``False``).
+        :param reason: Reason object passed to :meth:`process <DeviceSupport.process>` (sync=True only)
+        :param force: Record processing condtion (0=Passive, 1=Force, 2=I/O Intr)
+        :throws: ``RuntimeError`` when ``sync=True``, but ``force`` prevents scanning.
+        
+        If ``sync`` is False then a scan request is queued to run in another thread..
+        If ``sync`` is True then the record is scanned immediately on the current thread.
+        
+        For ``reason`` argument must be used in conjunction with ``sync=True``
+        on records with Python device support.  This provides a means
+        of providing extra contextual information to the record's
+        :meth:`process <DeviceSupport.process>` method.
+        
+        ``force`` is used to decide if the record will actually be processed,
+        ``force=0`` will only process records with SCAN=Passive.
+        ``force=1`` will process any record if at all possible.
+        ``force=2`` will only process records with Python device support and
+        SCAN=I/O Intr.
+        
+        ..  important::
+          It is **never** safe to use ``sync=True`` while holding record locks,
+          including from within a *process* method.
+        """
+        return _dbapi._Record.scan(self, *args, **kws)
+
+    def asyncStart(self):
+        """Start asynchronous processing
+        
+        This method may be called from a device support
+        :meth:`process <DeviceSupport.process>` method
+        to indicate that processing will continue
+        later.
+        
+        ..  important::
+          This method is **only** safe to call within a *process* method.
+        """
+        return _dbapi._Record.asyncStart(self)
+
+    def asyncFinish(self, reason=None):
+        """Indicate that asynchronous processing can complete
+        
+        Similar to :meth:`scan`.  Used to conclude asynchronous
+        process started with :meth:`asyncStart`.
+        
+        Processing is completed on the current thread.
+        
+        ..  important::
+          This method should **never** be called within
+          a :meth:`process <DeviceSupport.process>` method,
+          or any other context where a Record lock is held.
+          Doing so will result in a deadlock.
+
+        Typically a *reason* will be passed to *process* as a way
+        of indicating that this is the completion of an async action. ::
+        
+          AsyncDone = object()
+          class MySup(object):
+            def process(record, reason):
+              if reason is AsyncDone:
+                record.VAL = ... # store result
+              else:
+                threading.Timer(1.0, record.asyncFinish, kwargs={'reason':AsyncDone})
+                record.asyncStart()
+        """
+        return _dbapi._Record.asyncStart(self, reason=reason)
+
     def __getattr__(self, name):
         try:
             F = self.field(name)

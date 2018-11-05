@@ -42,7 +42,7 @@ def initHook(state):
 
     @initHook("AfterIocRunning")
     def myfn():
-        # do stuff
+        pass
     """
     def _add(fn):
         addHook(state, fn)

@@ -445,25 +445,28 @@ static PyObject *pyField_len(pyField *self)
 
 static PyMethodDef pyField_methods[] = {
     {"name", (PyCFunction)pyField_name, METH_NOARGS,
-     "Return Names (\"record\",\"field\")"},
+     "name() -> (recname, fldname)\n"},
     {"fieldinfo", (PyCFunction)pyField_fldinfo, METH_NOARGS,
-     "Field type info\nReturn (type, size, #elements"},
+     "fieldinfo() -> (dbf, elem_size, elem_count"},
     {"getval", (PyCFunction)pyField_getval, METH_NOARGS,
-     "Returns scalar version of field value"},
+     "getval() -> object\n"},
     {"putval", (PyCFunction)pyField_putval, METH_VARARGS,
-     "Sets field value from a scalar"},
+     "putval(object)\n"},
     {"getarray", (PyCFunction)pyField_getarray, METH_NOARGS,
+     "getarray() -> numpy.ndarray\n"
      "Return a numpy ndarray refering to this field for in-place operations."},
     {"getarraylen", (PyCFunction)pyField_getlen, METH_NOARGS,
+     "getarraylen() -> int\n"
      "Return current number of valid elements for array fields."},
     {"putarraylen", (PyCFunction)pyField_setlen, METH_VARARGS,
+     "putarraylen(int)\n"
      "Set number of valid elements for array fields."},
     {"getTime", (PyCFunction)pyField_getTime, METH_NOARGS,
-     "Return link target timestamp as a tuple (sec, nsec)."},
+     "getTime() -> (sec, nsec)."},
     {"getAlarm", (PyCFunction)pyField_getAlarm, METH_NOARGS,
-     "Return link target alarm condtions as a tuple (severity, status)."},
+     "getAlarm() -> (severity, status)."},
     {"__len__", (PyCFunction)pyField_len, METH_NOARGS,
-     "Maximum number of elements storable in this field"},
+     "Maximum number of elements storable in this field."},
     {NULL, NULL, 0, NULL}
 };
 

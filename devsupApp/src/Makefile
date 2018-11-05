@@ -31,7 +31,6 @@ _dbapi_SRCS += pyDevSupCommon_registerRecordDeviceDriver.cpp
 _dbapi_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 PY += devsup/__init__.py
-PY += devsup/_nullapi.py
 PY += devsup/db.py
 PY += devsup/dset.py
 PY += devsup/hooks.py

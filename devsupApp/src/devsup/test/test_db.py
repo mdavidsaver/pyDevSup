@@ -33,6 +33,7 @@ class IOCHelper(unittest.TestCase):
     def tearDown(self):
         self.iocShutdown();
         print("testdbCleanup()")
+        _dbapi.initHookAnnounce(9999) # our magic/fake AtExit hook
         _dbapi._UTest.testdbCleanup()
 
     def iocInit(self):

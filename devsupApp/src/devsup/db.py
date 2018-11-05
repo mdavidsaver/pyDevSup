@@ -328,7 +328,7 @@ class Record(_dbapi._Record):
                 threading.Timer(1.0, record.asyncFinish, kwargs={'reason':AsyncDone})
                 record.asyncStart()
         """
-        return _dbapi._Record.asyncStart(self, reason=reason)
+        return _dbapi._Record.asyncFinish(self, reason=reason)
 
     def __getattr__(self, name):
         try:

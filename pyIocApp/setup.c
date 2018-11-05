@@ -30,9 +30,6 @@ static void cleanupPy(void *junk)
 
     PyEval_RestoreThread(state);
 
-    /* special "fake" hook for shutdown */
-    //pyhook((initHookState)9999);
-
     if(PyRun_SimpleString("import devsup\n"
                           "devsup._fini(iocMain=True)\n"
     )) {
@@ -117,8 +114,6 @@ static void setupPyPath(void)
 
 static void pySetupReg(void)
 {
-    PyGILState_STATE state;
-
     Py_Initialize();
     PyEval_InitThreads();
 

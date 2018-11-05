@@ -81,4 +81,6 @@ device(aao, INST_IO, pydevsupComOut, "Python Device")
     _dbapi._dbd_setup()
 
 def _fini(iocMain=False):
+    if iocMain:
+        _dbapi.initHookAnnounce(9999) # our magic/fake AtExit hook
     _dbapi._dbd_cleanup()

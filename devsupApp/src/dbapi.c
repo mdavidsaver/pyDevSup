@@ -153,6 +153,21 @@ fail:
 }
 
 static
+PyObject* py_announce(PyObject *unused, PyObject *args, PyObject *kws)
+{
+    static char* names[] = {"state", NULL};
+    int state;
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "i", names, &state))
+        return NULL;
+
+    Py_BEGIN_ALLOW_THREADS {
+        initHookAnnounce((initHookState)state);
+    } Py_END_ALLOW_THREADS
+
+    Py_RETURN_NONE;
+}
+
+static
 PyObject *py_iocsh(PyObject *unused, PyObject *args, PyObject *kws)
 {
     int ret;
@@ -237,7 +252,6 @@ PyObject *py_iocInit(PyObject *unused, PyObject *args, PyObject *kws)
 static
 PyObject *py_pyDevSupCommon(PyObject *unused)
 {
-    static int once;
     Py_BEGIN_ALLOW_THREADS {
         pyDevSupCommon_registerRecordDeviceDriver(pdbbase);
     } Py_END_ALLOW_THREADS
@@ -246,6 +260,8 @@ PyObject *py_pyDevSupCommon(PyObject *unused)
 }
 
 static struct PyMethodDef dbapimethod[] = {
+    {"initHookAnnounce", (PyCFunction)py_announce, METH_VARARGS|METH_KEYWORDS,
+     "initHookAnnounce(state)\n"},
     {"iocsh", (PyCFunction)py_iocsh, METH_VARARGS|METH_KEYWORDS,
      "Execute IOC shell script or command"},
     {"dbReadDatabase", (PyCFunction)py_dbReadDatabase, METH_VARARGS|METH_KEYWORDS,

@@ -10,43 +10,10 @@ from ..db import getRecord
 from .. import _dbapi
 from .. import _init
 
-# short-circuit warning from _dbapi._init()
-os.environ['TOP'] = _dbapi.XPYDEV_BASE
+from .util import IOCHelper
 
-class IOCHelper(unittest.TestCase):
-    db = None
-    autostart = running = False
-    def setUp(self):
-        print("testdbPrepare()")
-        _dbapi._UTest.testdbPrepare()
-        _init(iocMain=False) # load base.dbd
-
-        if self.db is not None:
-            with tempfile.NamedTemporaryFile() as F:
-                F.write(self.db.encode('ascii'))
-                F.flush()
-                _dbapi.dbReadDatabase(F.name)
-
-        if self.autostart:
-            self.iocInit()
-
-    def tearDown(self):
-        self.iocShutdown();
-        print("testdbCleanup()")
-        _dbapi.initHookAnnounce(9999) # our magic/fake AtExit hook
-        _dbapi._UTest.testdbCleanup()
-
-    def iocInit(self):
-        if not self.running:
-            print("testIocInitOk")
-            _dbapi._UTest.testIocInitOk()
-            self.running = True
-
-    def iocShutdown(self):
-        if self.running:
-            print("testIocShutdownOk")
-            _dbapi._UTest.testIocShutdownOk()
-            self.running = False
+# short-circuit warning from base_registerRecordDeviceDriver()
+os.environ['TOP'] = _dbapi.XPYDEV_BASE # external code use devsup.XPYDEV_BASE
 
 class TestScan(IOCHelper):
     db = """
@@ -90,7 +57,6 @@ class TestField(IOCHelper):
             field(NELM, "10")
         }
     """
-    autostart = True
 
     def test_ai(self):
         rec = getRecord("rec:ai")
@@ -171,7 +137,6 @@ class TestDset(IOCHelper):
             field(INP , "@devsup.test.test_db|TestDset foo bar")
         }
     """
-    autostart = True
 
     class Increment(object):
         def process(self, rec, reason):

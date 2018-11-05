@@ -40,6 +40,7 @@ PY += devsup/disect.py
 PY += devsup/ptable.py
 
 PY += devsup/test/__init__.py
+PY += devsup/test/util.py
 PY += devsup/test/test_db.py
 
 #===========================

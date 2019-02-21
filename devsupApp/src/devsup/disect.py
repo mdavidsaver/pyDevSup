@@ -57,7 +57,7 @@ class StatsDelta(object):
 
     else: # first call
       print >>file,"All Types"
-      for T,C in cur.iteritems():
+      for T,C in cur.items():
         print >>file,' ',T,C
 
     self.stats, self.ntypes = cur, len(cur)
@@ -117,7 +117,7 @@ def periodic(period=60.0, file=sys.stderr):
   T.start()
 
 if __name__=='__main__':
-  #for T,C in gcstats().iteritems():
+  #for T,C in gcstats().items():
   #  print T,C
   gc.set_debug(gc.DEBUG_COLLECTABLE|gc.DEBUG_INSTANCES|gc.DEBUG_OBJECTS)
   S=StatsDelta()

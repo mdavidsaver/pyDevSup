@@ -317,7 +317,7 @@ class TableBase(object):
                 setattr(self, k, G)
 
         # Populate groups with parameters
-        for g,G in rgroups.iteritems():
+        for g,G in rgroups.items():
             ps = G._params = [rparams[v] for v in g.params]
             # reverse mapping from parameter to group(s)
             for P in ps:

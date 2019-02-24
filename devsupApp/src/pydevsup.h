@@ -15,8 +15,6 @@
 
 #endif
 
-initHookState pyInitLastState;
-
 PyMODINIT_FUNC init_dbbase(void);
 
 void pyDBD_cleanup(void);

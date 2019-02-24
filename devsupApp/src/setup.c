@@ -24,6 +24,8 @@
 
 #include "pydevsup.h"
 
+initHookState pyInitLastState;
+
 typedef struct {
     const initHookState state;
     const char * const name;

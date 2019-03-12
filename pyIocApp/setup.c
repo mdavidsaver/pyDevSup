@@ -114,7 +114,7 @@ static void setupPyPath(void)
 
 static void pySetupReg(void)
 {
-    Py_Initialize();
+    Py_InitializeEx(0);
     PyEval_InitThreads();
 
     setupPyPath();

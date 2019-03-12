@@ -25,7 +25,7 @@ pyDevSup$(PY_LD_VER)_LIBS += $(EPICS_BASE_IOC_LIBS)
 setup_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
 setup_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
 setup_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
-setup_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
+setup_CPPFLAGS += -DPYDIR=\"python$(PY_LD_VER)\"
 
 pyDevSup$(PY_LD_VER)_SRCS += setup.c
 

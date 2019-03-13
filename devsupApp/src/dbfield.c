@@ -192,10 +192,6 @@ static PyObject* pyField_getval(pyField *self)
             return PyErr_Format(PyExc_ValueError, "Error fetching array info for %s.%s",
                      self->addr.precord->name,
                      self->addr.pfldDes->name);
-        else if(noe<1) {
-            PyErr_SetString(PyExc_IndexError, "zero length array");
-            return NULL;
-        }
 
         rawfield = self->addr.pfield;
         /* get_array_info can modify pfield in >3.15.0.1 */
@@ -388,8 +384,8 @@ static PyObject *pyField_setlen(pyField *self, PyObject *args)
         return NULL;
     }
 
-    if(len<1 || len > self->addr.no_elements) {
-        PyErr_Format(PyExc_ValueError, "Requested length %ld out of range [1,%lu)",
+    if(len > self->addr.no_elements) {
+        PyErr_Format(PyExc_ValueError, "Requested length %ld out of range [0,%lu)",
                         (long)len, (unsigned long)self->addr.no_elements);
         return NULL;
     }
@@ -449,25 +445,28 @@ static PyObject *pyField_len(pyField *self)
 
 static PyMethodDef pyField_methods[] = {
     {"name", (PyCFunction)pyField_name, METH_NOARGS,
-     "Return Names (\"record\",\"field\")"},
+     "name() -> (recname, fldname)\n"},
     {"fieldinfo", (PyCFunction)pyField_fldinfo, METH_NOARGS,
-     "Field type info\nReturn (type, size, #elements"},
+     "fieldinfo() -> (dbf, elem_size, elem_count"},
     {"getval", (PyCFunction)pyField_getval, METH_NOARGS,
-     "Returns scalar version of field value"},
+     "getval() -> object\n"},
     {"putval", (PyCFunction)pyField_putval, METH_VARARGS,
-     "Sets field value from a scalar"},
+     "putval(object)\n"},
     {"getarray", (PyCFunction)pyField_getarray, METH_NOARGS,
+     "getarray() -> numpy.ndarray\n"
      "Return a numpy ndarray refering to this field for in-place operations."},
     {"getarraylen", (PyCFunction)pyField_getlen, METH_NOARGS,
+     "getarraylen() -> int\n"
      "Return current number of valid elements for array fields."},
     {"putarraylen", (PyCFunction)pyField_setlen, METH_VARARGS,
+     "putarraylen(int)\n"
      "Set number of valid elements for array fields."},
     {"getTime", (PyCFunction)pyField_getTime, METH_NOARGS,
-     "Return link target timestamp as a tuple (sec, nsec)."},
+     "getTime() -> (sec, nsec)."},
     {"getAlarm", (PyCFunction)pyField_getAlarm, METH_NOARGS,
-     "Return link target alarm condtions as a tuple (severity, status)."},
+     "getAlarm() -> (severity, status)."},
     {"__len__", (PyCFunction)pyField_len, METH_NOARGS,
-     "Maximum number of elements storable in this field"},
+     "Maximum number of elements storable in this field."},
     {NULL, NULL, 0, NULL}
 };
 
@@ -569,12 +568,3 @@ int pyField_prepare(PyObject *module)
     return 0;
 }
 
-void pyField_cleanup(void)
-{
-    size_t i;
-
-    for(i=0; i<=DBF_MENU; i++) {
-        Py_XDECREF(dbf2np[i]);
-        dbf2np[i] = NULL;
-    }
-}

@@ -27,11 +27,7 @@ class WfSup(object):
         x=self.x[:N]
 
         # calculate inplace: uniform(0.5,2.0)*sin(pha*x)+2
-        val[:] = x
-        val[:] *= pha
-        np.sin(val, out=val)
-        val[:]*=uniform(0.5,2.0)
-        val[:]+=2
+        val[:] = np.sin(x*pha)*uniform(0.5,2.0) + 2
 
         self.fld.putarraylen(N)
 

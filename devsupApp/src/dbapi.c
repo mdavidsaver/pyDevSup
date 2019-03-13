@@ -1,6 +1,3 @@
-/* Global interpreter setup
- */
-
 /* python has its own ideas about which version to support */
 #undef _POSIX_C_SOURCE
 #undef _XOPEN_SOURCE
@@ -21,10 +18,14 @@
 #include <epicsThread.h>
 #include <epicsExit.h>
 #include <alarm.h>
+#include <iocsh.h>
+#include <iocInit.h>
 
 #include "pydevsup.h"
 
 initHookState pyInitLastState;
+
+extern int pyDevSupCommon_registerRecordDeviceDriver(DBBASE *pbase);
 
 typedef struct {
     const initHookState state;
@@ -104,6 +105,20 @@ void pyfile(const char* file)
     PyGILState_Release(state);
 }
 
+
+
+static const iocshArg argCode = {"python code", iocshArgString};
+static const iocshArg argFile = {"file", iocshArgString};
+
+static const iocshArg* const codeArgs[] = {&argCode};
+static const iocshArg* const fileArgs[] = {&argFile};
+
+static const iocshFuncDef codeDef = {"py", 1, codeArgs};
+static const iocshFuncDef fileDef = {"pyfile", 1, fileArgs};
+
+static void codeRun(const iocshArgBuf *args){py(args[0].sval);}
+static void fileRun(const iocshArgBuf *args){pyfile(args[0].sval);}
+
 initHookState pyInitLastState = (initHookState)-1;
 
 static void pyhook(initHookState state)
@@ -139,28 +154,160 @@ fail:
     PyGILState_Release(gilstate);
 }
 
+static
+PyObject* py_announce(PyObject *unused, PyObject *args, PyObject *kws)
+{
+    static char* names[] = {"state", NULL};
+    int state;
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "i", names, &state))
+        return NULL;
+
+    Py_BEGIN_ALLOW_THREADS {
+        initHookAnnounce((initHookState)state);
+    } Py_END_ALLOW_THREADS
+
+    Py_RETURN_NONE;
+}
+
+static
+PyObject *py_iocsh(PyObject *unused, PyObject *args, PyObject *kws)
+{
+    int ret;
+    static char* names[] = {"script", "cmd", NULL};
+    char *script=NULL, *cmd=NULL;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "|ss", names, &script, &cmd))
+        return NULL;
+
+    if(!(!script ^ !cmd)) {
+        PyErr_SetString(PyExc_ValueError, "iocsh requires a script file name or command string");
+        return NULL;
+    }
+
+    Py_BEGIN_ALLOW_THREADS {
+        if(script)
+            ret = iocsh(script);
+        else
+            ret = iocshCmd(cmd);
+    } Py_END_ALLOW_THREADS
+
+    return PyInt_FromLong(ret);
+}
+
+static
+PyObject *py_dbReadDatabase(PyObject *unused, PyObject *args, PyObject *kws)
+{
+    long status;
+    static char* names[] = {"name", "fp", "path", "sub", NULL};
+    char *fname=NULL, *path=NULL, *sub=NULL;
+    int fd=-1;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "|siss", names, &fname, &fd, &path, &sub))
+        return NULL;
+
+    if(!((!fname) ^ (fd<0))) {
+        PyErr_SetString(PyExc_ValueError, "dbReadDatabase requires a file name or descriptor");
+        return NULL;
+    }
+
+    Py_BEGIN_ALLOW_THREADS {
+        if(fname) {
+            status = dbReadDatabase(&pdbbase, fname, path, sub);
+        } else {
+            FILE *ff = fdopen(fd, "r");
+            status = dbReadDatabaseFP(&pdbbase, ff, path, sub);
+            // dbReadDatabaseFP() has called fclose()
+        }
+    } Py_END_ALLOW_THREADS
+
+    if(status) {
+        char buf[30];
+        errSymLookup(status, buf, sizeof(buf));
+        PyErr_SetString(PyExc_RuntimeError, buf);
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+static
+PyObject *py_iocInit(PyObject *unused, PyObject *args, PyObject *kws)
+{
+    static char* names[] = {"isolate", NULL};
+    PyObject *pyisolate = Py_True;
+    int isolate, ret;
+    if(!PyArg_ParseTupleAndKeywords(args, kws, "|O", names, &pyisolate))
+        return NULL;
+
+    isolate = PyObject_IsTrue(pyisolate);
+    Py_BEGIN_ALLOW_THREADS {
+        ret = isolate ? iocBuildIsolated() : iocBuild();
+        if(!ret)
+            ret = iocRun();
+    } Py_END_ALLOW_THREADS
+
+    if(ret)
+        return PyErr_Format(PyExc_RuntimeError, "Error %d", ret);
+
+    Py_RETURN_NONE;
+}
+
+static
+PyObject *py_pyDevSupCommon(PyObject *unused)
+{
+    Py_BEGIN_ALLOW_THREADS {
+        pyDevSupCommon_registerRecordDeviceDriver(pdbbase);
+    } Py_END_ALLOW_THREADS
+
+    Py_RETURN_NONE;
+}
+
+static struct PyMethodDef dbapimethod[] = {
+    {"initHookAnnounce", (PyCFunction)py_announce, METH_VARARGS|METH_KEYWORDS,
+     "initHookAnnounce(state)\n"},
+    {"iocsh", (PyCFunction)py_iocsh, METH_VARARGS|METH_KEYWORDS,
+     "Execute IOC shell script or command"},
+    {"dbReadDatabase", (PyCFunction)py_dbReadDatabase, METH_VARARGS|METH_KEYWORDS,
+     "Load EPICS database file"},
+    {"iocInit", (PyCFunction)py_iocInit, METH_NOARGS,
+     "Initialize IOC"},
+    {"_dbd_setup", (PyCFunction)pyDBD_setup, METH_NOARGS, ""},
+    {"_dbd_rrd_base", (PyCFunction)py_pyDevSupCommon, METH_NOARGS, ""},
+    {"_dbd_cleanup", (PyCFunction)pyDBD_cleanup, METH_NOARGS, ""},
+    {NULL}
+};
+
+
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef dbapimodule = {
   PyModuleDef_HEAD_INIT,
-    "_dbapi",
+    "devsup._dbapi",
     NULL,
     -1,
-    NULL
+    &dbapimethod
 };
 #endif
 
-/* initialize "magic" builtin module */
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit__dbapi(void)
+#else
 PyMODINIT_FUNC init_dbapi(void)
+#endif
 {
-    PyObject *mod = NULL, *hookdict;
+    PyObject *mod = NULL, *hookdict, *vertup;
     pystate *st;
+
+    pyDevReasonID = epicsThreadPrivateCreate();
+
+    iocshRegister(&codeDef, &codeRun);
+    iocshRegister(&fileDef, &fileRun);
+    initHookRegister(&pyhook);
 
     import_array();
 
 #if PY_MAJOR_VERSION >= 3
     mod = PyModule_Create(&dbapimodule);
 #else
-    mod = Py_InitModule("_dbapi", NULL);
+    mod = Py_InitModule("devsup._dbapi", dbapimethod);
 #endif
     if(!mod)
         goto fail;
@@ -179,43 +326,6 @@ PyMODINIT_FUNC init_dbapi(void)
             goto fail;
         }
     }
-
-    if(pyField_prepare(mod))
-        goto fail;
-    if(pyRecord_prepare(mod))
-        goto fail;
-
-    MODINIT_RET(mod);
-
-fail:
-    fprintf(stderr, "Failed to initialize builtin _dbapi module!\n");
-    Py_XDECREF(mod);
-    MODINIT_RET(NULL);
-}
-
-
-#if PY_MAJOR_VERSION >= 3
-static struct PyModuleDef constantsmodule = {
-  PyModuleDef_HEAD_INIT,
-    "_dbconstants",
-    NULL,
-    -1,
-    NULL
-};
-#endif
-
-/* initialize "magic" builtin module */
-PyMODINIT_FUNC init_dbconstants(void)
-{
-    PyObject *mod = NULL, *vertup;
-
-#if PY_MAJOR_VERSION >= 3
-    mod = PyModule_Create(&constantsmodule);
-#else
-    mod = Py_InitModule("_dbconstants", NULL);
-#endif
-    if(!mod)
-        MODINIT_RET(NULL);
 
     PyModule_AddIntMacro(mod, NO_ALARM);
     PyModule_AddIntMacro(mod, MINOR_ALARM);
@@ -279,150 +389,17 @@ PyMODINIT_FUNC init_dbconstants(void)
     if(vertup)
         PyModule_AddObject(mod, "pydevver", vertup);
 
+    if(pyField_prepare(mod))
+        goto fail;
+    if(pyRecord_prepare(mod))
+        goto fail;
+    if(pyUTest_prepare(mod))
+        goto fail;
+
     MODINIT_RET(mod);
-}
 
-static void cleanupPy(void *junk)
-{
-    PyThreadState *state = PyGILState_GetThisThreadState();
-
-    PyEval_RestoreThread(state);
-
-    /* special "fake" hook for shutdown */
-    pyhook((initHookState)9999);
-
-    pyDBD_cleanup();
-
-    pyField_cleanup();
-
-    Py_Finalize();
-
-    epicsThreadPrivateDelete(pyDevReasonID);
-}
-
-/* Initialize the interpreter environment
- */
-static void setupPyInit(void)
-{
-    PyImport_AppendInittab("_dbapi", init_dbapi);
-    PyImport_AppendInittab("_dbconstants", init_dbconstants);
-    PyImport_AppendInittab("_dbbase", init_dbbase);
-
-    Py_Initialize();
-    PyEval_InitThreads();
-
-    (void)PyEval_SaveThread();
-
-    epicsAtExit(&cleanupPy, NULL);
-}
-
-static void extendPath(PyObject *list,
-                       const char *base,
-                       const char *archdir)
-{
-    PyObject *mod, *ret;
-
-    mod = PyImport_ImportModule("os.path");
-    if(!mod)
-        return;
-
-    ret = PyObject_CallMethod(mod, "join", "sss", base, PYDIR, archdir);
-    if(ret && !PySequence_Contains(list, ret)) {
-        PyList_Insert(list, 0, ret);
-    }
-    Py_XDECREF(ret);
-    Py_DECREF(mod);
-    if(PyErr_Occurred()) {
-        PyErr_Print();
-        PyErr_Clear();
-    }
-}
-
-static void insertDefaultPath(PyObject *list)
-{
-    const char *basedir, *pydevdir, *top, *arch;
-
-    basedir = getenv("EPICS_BASE");
-    if(!basedir)
-        basedir = XEPICS_BASE;
-    pydevdir = getenv("PYDEV_BASE");
-    if(!pydevdir)
-        pydevdir = XPYDEV_BASE;
-    top = getenv("TOP");
-    arch = getenv("ARCH");
-    if(!arch)
-        arch = XEPICS_ARCH;
-
-    assert(PyList_Check(list));
-    assert(PySequence_Check(list));
-    extendPath(list, basedir, arch);
-    extendPath(list, pydevdir, arch);
-    if(top)
-        extendPath(list, top, arch);
-}
-
-static void setupPyPath(void)
-{
-    PyObject *mod, *path = NULL;
-
-    mod = PyImport_ImportModule("sys");
-    if(mod)
-        path = PyObject_GetAttrString(mod, "path");
+fail:
+    fprintf(stderr, "Failed to initialize builtin _dbapi module!\n");
     Py_XDECREF(mod);
-
-    if(path) {
-        PyObject *cur;
-        char cwd[PATH_MAX];
-
-        insertDefaultPath(path);
-
-        /* prepend current directory */
-        if(getcwd(cwd, sizeof(cwd)-1)) {
-            cwd[sizeof(cwd)-1] = '\0';
-            cur = PyString_FromString(cwd);
-            if(cur)
-                PyList_Insert(path, 0, cur);
-            Py_XDECREF(cur);
-        }
-    }
-    Py_XDECREF(path);
+    MODINIT_RET(NULL);
 }
-
-
-#include <iocsh.h>
-
-static const iocshArg argCode = {"python code", iocshArgString};
-static const iocshArg argFile = {"file", iocshArgString};
-
-static const iocshArg* const codeArgs[] = {&argCode};
-static const iocshArg* const fileArgs[] = {&argFile};
-
-static const iocshFuncDef codeDef = {"py", 1, codeArgs};
-static const iocshFuncDef fileDef = {"pyfile", 1, fileArgs};
-
-static void codeRun(const iocshArgBuf *args){py(args[0].sval);}
-static void fileRun(const iocshArgBuf *args){pyfile(args[0].sval);}
-
-static void pySetupReg(void)
-{
-    PyGILState_STATE state;
-
-    pyDevReasonID = epicsThreadPrivateCreate();
-
-    setupPyInit();
-    iocshRegister(&codeDef, &codeRun);
-    iocshRegister(&fileDef, &fileRun);
-    initHookRegister(&pyhook);
-
-    state = PyGILState_Ensure();
-    init_dbapi();
-    setupPyPath();
-    if(PyErr_Occurred()) {
-        PyErr_Print();
-        PyErr_Clear();
-    }
-    PyGILState_Release(state);
-}
-
-#include <epicsExport.h>
-epicsExportRegistrar(pySetupReg);

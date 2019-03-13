@@ -1,28 +1,86 @@
-try:
-    import _dbapi
-    HAVE_DBAPI = True
-except ImportError:
-    import devsup._nullapi as _dbapi
-    HAVE_DBAPI = False
+import os
+import atexit
+import tempfile
 
-try:
-    from _dbconstants import *
-except ImportError:
-    EPICS_VERSION_STRING = "EPICS 0.0.0.0-0"
-    EPICS_DEV_SNAPSHOT = ""
-    EPICS_SITE_VERSION = "0"
-    EPICS_VERSION = 0
-    EPICS_REVISION = 0
-    EPICS_MODIFICATION = 0
-    EPICS_PATCH_LEVEL = 0
+from . import _dbapi
 
-    XEPICS_ARCH = "nullos-nullarch"
-    XPYDEV_BASE = "invaliddir"
-    XEPICS_BASE = "invaliddir"
-
-    epicsver = (0,0,0,0,"0","")
-    pydevver = (0,0)
-
-    INVALID_ALARM = UDF_ALARM = 0
+from ._dbapi import (EPICS_VERSION_STRING,
+                     EPICS_DEV_SNAPSHOT,
+                     EPICS_SITE_VERSION,
+                     EPICS_VERSION,
+                     EPICS_REVISION,
+                     EPICS_MODIFICATION,
+                     EPICS_PATCH_LEVEL,
+                     XEPICS_ARCH,
+                     XPYDEV_BASE,
+                     XEPICS_BASE,
+                     epicsver,
+                     pydevver,
+                     NO_ALARM,
+                     MINOR_ALARM,
+                     MAJOR_ALARM,
+                     READ_ALARM,
+                     WRITE_ALARM,
+                     HIHI_ALARM,
+                     HIGH_ALARM,
+                     LOLO_ALARM,
+                     LOW_ALARM,
+                     STATE_ALARM,
+                     COS_ALARM,
+                     COMM_ALARM,
+                     TIMEOUT_ALARM,
+                     HW_LIMIT_ALARM,
+                     CALC_ALARM,
+                     SCAN_ALARM,
+                     LINK_ALARM,
+                     SOFT_ALARM,
+                     BAD_SUB_ALARM,
+                     UDF_ALARM,
+                     DISABLE_ALARM,
+                     SIMM_ALARM,
+                     READ_ACCESS_ALARM,
+                     WRITE_ACCESS_ALARM,
+                     INVALID_ALARM,
+                    )
 
 __all__ = []
+
+def _init(iocMain=False):
+    if not iocMain:
+        # we haven't read/register base.dbd
+        _dbapi.dbReadDatabase(os.path.join(XEPICS_BASE, "dbd", "base.dbd"),
+                              path=os.path.join(XEPICS_BASE, "dbd"))
+        _dbapi._dbd_rrd_base()
+
+    with tempfile.NamedTemporaryFile() as F:
+        F.write("""
+device(longin, INST_IO, pydevsupComIn, "Python Device")
+device(longout, INST_IO, pydevsupComOut, "Python Device")
+
+device(ai, INST_IO, pydevsupComIn, "Python Device")
+device(ao, INST_IO, pydevsupComOut, "Python Device")
+
+device(stringin, INST_IO, pydevsupComIn, "Python Device")
+device(stringout, INST_IO, pydevsupComOut, "Python Device")
+
+device(bi, INST_IO, pydevsupComIn, "Python Device")
+device(bo, INST_IO, pydevsupComOut, "Python Device")
+
+device(mbbi, INST_IO, pydevsupComIn, "Python Device")
+device(mbbo, INST_IO, pydevsupComOut, "Python Device")
+
+device(mbbiDirect, INST_IO, pydevsupComIn, "Python Device")
+device(mbboDirect, INST_IO, pydevsupComOut, "Python Device")
+
+device(waveform, INST_IO, pydevsupComIn, "Python Device")
+device(aai, INST_IO, pydevsupComIn, "Python Device")
+device(aao, INST_IO, pydevsupComOut, "Python Device")
+""".encode('ascii'))
+        F.flush()
+        _dbapi.dbReadDatabase(F.name)
+    _dbapi._dbd_setup()
+
+def _fini(iocMain=False):
+    if iocMain:
+        _dbapi.initHookAnnounce(9999) # our magic/fake AtExit hook
+    _dbapi._dbd_cleanup()

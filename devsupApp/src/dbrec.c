@@ -293,23 +293,32 @@ static PyObject *pyRecord_exit(pyRecord *self, PyObject *args)
 
 static PyMethodDef pyRecord_methods[] = {
     {"name", (PyCFunction)pyRecord_name, METH_NOARGS,
-     "Return record name string"},
+     "name() -> str\n\n"
+     "Record name. ::\n"
+     "\n"
+     "    R = getRecord(\"my:record:name\")\n"
+     "    assert R.name()==\"my:record:name\"\n"},
     {"rtype", (PyCFunction)pyRecord_rtype, METH_NOARGS,
+     "rtype() -> str\n"
      "Return record type name string"},
     {"isPyRecord", (PyCFunction)pyRecord_ispyrec, METH_NOARGS,
+     "isPyRecord() -> bool\n"
      "Is this record using Python Device."},
     {"info", (PyCFunction)pyRecord_info, METH_VARARGS,
-     "Lookup info name\ninfo(name, def=None)"},
+     "info(key [,default]) -> str\n"
+     "Lookup info by name\n"
+     ":rtype: str\n"
+     ":throws: KeyError\n"},
     {"infos", (PyCFunction)pyRecord_infos, METH_NOARGS,
+     "infos() -> {'name':'value'}\n"
      "Return a dictionary of all infos for this record."},
     {"setSevr", (PyCFunction)pyRecord_setSevr, METH_VARARGS|METH_KEYWORDS,
+     "setSevr(sevr=INVALID_ALARM, stat=COMM_ALARM)\n"
      "Set alarm new alarm severity/status.  Record must be locked!"},
     {"setTime", (PyCFunction)pyRecord_setTime, METH_VARARGS,
      "Set record timestamp if TSE==-2.  Record must be locked!"},
     {"scan", (PyCFunction)pyRecord_scan, METH_VARARGS|METH_KEYWORDS,
-     "scan(sync=False)\nScan this record.  If sync is False then"
-     "a scan request is queued.  If sync is True then the record"
-     "is scannined immidately on the current thread."},
+     "scan(sync=False, reason=None, force=0)\n"},
     {"asyncStart", (PyCFunction)pyRecord_asyncStart, METH_NOARGS,
      "Begin an asynchronous action.  Record must be locked!"},
     {"asyncFinish", (PyCFunction)pyRecord_asyncFinish, METH_VARARGS|METH_KEYWORDS,

@@ -1,80 +1,36 @@
 TOP=../..
 
 include $(TOP)/configure/CONFIG
-PYMODULE = NO
 include $(TOP)/configure/CONFIG_PY
 #----------------------------------------
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
 
-#=============================
-# Build the IOC application
+INSTALL_SHRLIB = $(PY_INSTALL_DIR)/devsup
 
-LIBRARY = pyDevSup$(PY_LD_VER)
+LOADABLE_LIBRARY_HOST += _dbapi
 
-SHRLIB_VERSION = 0
+TARGETS += $(COMMON_DIR)/pyDevSupCommon.dbd
+DBDDEPENDS_FILES += pyDevSupCommon.dbd$(DEP)
 
-DBD += pyDevSup.dbd
+pyDevSupCommon_DBD += base.dbd
 
-pyDevSup$(PY_LD_VER)_SYS_LIBS += python$(PY_LD_VER)
+dbapi_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
+dbapi_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
+dbapi_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
+dbapi_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
 
-setup_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
-setup_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
-setup_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
-setup_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
+_dbapi_SRCS += dbapi.c
+_dbapi_SRCS += dbrec.c
+_dbapi_SRCS += dbfield.c
+_dbapi_SRCS += dbdset.c
+_dbapi_SRCS += utest.c
 
-devsupMain_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
+_dbapi_SRCS += pyDevSupCommon_registerRecordDeviceDriver.cpp
 
-pyDevSup$(PY_LD_VER)_SRCS += setup.c
-pyDevSup$(PY_LD_VER)_SRCS += dbbase.c
-pyDevSup$(PY_LD_VER)_SRCS += dbrec.c
-pyDevSup$(PY_LD_VER)_SRCS += dbfield.c
-pyDevSup$(PY_LD_VER)_SRCS += dbdset.c
-
-pyDevSup$(PY_LD_VER)_LIBS += $(EPICS_BASE_IOC_LIBS)
-
-
-PROD_IOC = softIocPy$(PY_VER)
-PRODNAME = $(addsuffix $(EXE),$(PROD))
-
-# softIocPy.dbd will be created and installed
-DBD += softIocPy.dbd
-
-# softIocPy.dbd will be made up from these files:
-softIocPy_DBD += base.dbd
-softIocPy_DBD += pyDevSup.dbd
-
-softIocPy_DBD += system.dbd
-
-softIocPy$(PY_VER)_LIBS += pyDevSup$(PY_LD_VER)
-
-# softIocPy_registerRecordDeviceDriver.cpp derives from softIocPy.dbd
-softIocPy$(PY_VER)_SRCS += softIocPy_registerRecordDeviceDriver.cpp
-
-# Build the main IOC entry point on workstation OSs.
-softIocPy$(PY_VER)_SRCS_DEFAULT += devsupMain.cpp
-
-ifneq ($(DEVIOCSTATS),)
-softIocPy_DBD += devIocStats.dbd
-softIocPy$(PY_VER)_LIBS += devIocStats
-endif
-
-ifneq ($(AUTOSAVE),)
-softIocPy_DBD += asSupport.dbd
-softIocPy$(PY_VER)_LIBS += autosave
-endif
-
-ifneq ($(CAPUTLOG),)
-softIocPy_DBD += caPutLog.dbd
-softIocPy$(PY_VER)_LIBS += caPutLog
-endif
-
-# Finally link to the EPICS Base libraries
-softIocPy$(PY_VER)_LIBS += $(EPICS_BASE_IOC_LIBS)
-
+_dbapi_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 PY += devsup/__init__.py
-PY += devsup/_nullapi.py
 PY += devsup/db.py
 PY += devsup/dset.py
 PY += devsup/hooks.py
@@ -82,6 +38,10 @@ PY += devsup/interfaces.py
 PY += devsup/util.py
 PY += devsup/disect.py
 PY += devsup/ptable.py
+
+PY += devsup/test/__init__.py
+PY += devsup/test/util.py
+PY += devsup/test/test_db.py
 
 #===========================
 
@@ -98,3 +58,20 @@ pyconfig:
 	@echo "Library path: $(PY_LIBDIRS)"
 	@echo "USR_CPPFLAGS: $(USR_CPPFLAGS)"
 	@echo "USR_LDFLAGS: $(USR_LDFLAGS)"
+
+ifneq (,$(T_A))
+nose:
+	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(PYTHON) -m nose -P devsup $(NOSEFLAGS)
+
+# bounce back down to the sphinx generated Makefile
+# aren't Makefiles fun...
+sphinx:
+	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(MAKE) -C $(TOP)/documentation html
+
+sh:
+	echo "export PYTHONPATH=\$${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" > $(OUTPUT)
+
+ipython:
+	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(PYTHON) -c "import sys; sys.argv[0] = '$(PYTHON)'; from IPython.terminal.ipapp import launch_new_instance; launch_new_instance()"
+
+endif

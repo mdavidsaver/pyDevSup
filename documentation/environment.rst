@@ -108,7 +108,7 @@ In somefile.c ::
   PyMODINIT_FUNC init_myextname(void)
 
 Installing for several Python versions
-------------------------------------
+--------------------------------------
 
 The recipe for building and installing the pyDevSup module
 for several python version side by side is ::

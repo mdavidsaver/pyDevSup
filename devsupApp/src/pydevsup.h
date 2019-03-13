@@ -15,17 +15,19 @@
 
 #endif
 
-PyMODINIT_FUNC init_dbbase(void);
+struct dbCommon;
 
-void pyDBD_cleanup(void);
+PyObject* pyDBD_setup(PyObject *unused);
+PyObject* pyDBD_cleanup(PyObject *unused);
+
+int pyUTest_prepare(PyObject *module);
 
 int pyField_prepare(PyObject *module);
-void pyField_cleanup(void);
 
 int pyRecord_prepare(PyObject *module);
 
-int isPyRecord(dbCommon *);
-int canIOScanRecord(dbCommon *);
+int isPyRecord(struct dbCommon *);
+int canIOScanRecord(struct dbCommon *);
 
 extern epicsThreadPrivateId pyDevReasonID;
 

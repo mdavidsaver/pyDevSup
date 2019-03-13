@@ -26,13 +26,6 @@ Contents:
    interfaces
    ptable
 
-Release History
----------------
-
-* v0.2 (June 2014)
- * Initial release
-
-
 Indices and tables
 ==================
 

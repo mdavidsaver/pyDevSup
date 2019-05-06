@@ -26,6 +26,12 @@
 
 static void cleanupPy(void *junk)
 {
+    /* safe because exit hooks are only run once, from a single thread */
+    static int done;
+
+    if(done) return;
+    done = 1;
+
     PyThreadState *state = PyGILState_GetThisThreadState();
 
     PyEval_RestoreThread(state);
@@ -112,6 +118,15 @@ static void setupPyPath(void)
     Py_XDECREF(path);
 }
 
+static void cleanupPrep(initHookState state)
+{
+    /* register a second time to better our chances of running
+     * first on exit.  eg. before cacExitHandler()
+     */
+    if(state==initHookAfterIocRunning)
+        epicsAtExit(&cleanupPy, NULL);
+}
+
 static void pySetupReg(void)
 {
     Py_InitializeEx(0);
@@ -128,7 +143,10 @@ static void pySetupReg(void)
 
     (void)PyEval_SaveThread();
 
+    /* register first time to ensure cleanupPy is run at least once */
     epicsAtExit(&cleanupPy, NULL);
+
+    initHookRegister(&cleanupPrep);
 }
 
 #include <epicsExport.h>

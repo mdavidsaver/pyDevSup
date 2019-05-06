@@ -123,7 +123,7 @@ static void cleanupPrep(initHookState state)
     /* register a second time to better our chances of running
      * first on exit.  eg. before cacExitHandler()
      */
-    if(state==initHookAfterIocRunning)
+    if(state==initHookAfterInitDevSup)
         epicsAtExit(&cleanupPy, NULL);
 }
 

@@ -2,4 +2,4 @@
 # and I'm too lazy to make a seprate package for
 # each.  Changing names with SONAME changes is
 # bad enough
-libpydevsup1.0: package-name-doesnt-match-sonames
+libpydevsup1.1: package-name-doesnt-match-sonames

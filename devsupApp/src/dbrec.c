@@ -272,7 +272,9 @@ static PyObject *pyRecord_asyncFinish(pyRecord *self, PyObject *args, PyObject *
 
 static PyObject *pyRecord_enter(pyRecord *self)
 {
-    dbScanLock(self->entry.precnode->precord);
+    Py_BEGIN_ALLOW_THREADS {
+        dbScanLock(self->entry.precnode->precord);
+    } Py_END_ALLOW_THREADS
 
     Py_INCREF(self);
     return (PyObject*)self;
@@ -282,8 +284,10 @@ static PyObject *pyRecord_exit(pyRecord *self, PyObject *args)
 {
     PyObject *t, *v, *tb;
 
-    /* always unlock, regardless of arguments */
-    dbScanUnlock(self->entry.precnode->precord);
+    Py_BEGIN_ALLOW_THREADS {
+        /* always unlock, regardless of arguments */
+        dbScanUnlock(self->entry.precnode->precord);
+    } Py_END_ALLOW_THREADS
 
     if(!PyArg_ParseTuple(args, "OOO", &t, &v, &tb))
         return NULL;

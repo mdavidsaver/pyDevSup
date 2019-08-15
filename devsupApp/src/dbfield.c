@@ -17,6 +17,10 @@
 
 #include "pydevsup.h"
 
+#if EPICS_VERSION>3 || (EPICS_VERSION==3 && EPICS_REVISION>=16)
+#  define HAVE_INT64
+#endif
+
 #ifdef HAVE_NUMPY
 static const int dbf2np_map[DBF_MENU+1] = {
     NPY_STRING,  // DBF_STRING
@@ -26,6 +30,10 @@ static const int dbf2np_map[DBF_MENU+1] = {
     NPY_UINT16,  // DBF_USHORT
     NPY_INT32,   // DBF_LONG
     NPY_UINT32,  // DBF_ULONG
+#ifdef HAVE_INT64
+    NPY_INT64,   // DBF_INT64
+    NPY_UINT64,  // DBF_UINT64
+#endif
     NPY_FLOAT32, // DBF_FLOAT
     NPY_FLOAT64, // DBF_DOUBLE
     NPY_INT16,   // DBF_ENUM
@@ -214,6 +222,10 @@ static PyObject* pyField_getval(pyField *self)
     OP(USHORT,epicsUInt16, PyInt_FromLong);
     OP(LONG,  epicsInt32,  PyInt_FromLong);
     OP(ULONG, epicsUInt32, PyInt_FromLong);
+#ifdef HAVE_INT64
+    OP(INT64,  epicsInt64,  PyLong_FromLongLong);
+    OP(UINT64, epicsUInt64, PyLong_FromLongLong);
+#endif
     OP(FLOAT, epicsFloat32,PyFloat_FromDouble);
     OP(DOUBLE,epicsFloat64,PyFloat_FromDouble);
 #undef OP
@@ -283,6 +295,10 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
     OP(USHORT,epicsUInt16, PyInt_AsLong);
     OP(LONG,  epicsInt32,  PyInt_AsLong);
     OP(ULONG, epicsUInt32, PyInt_AsLong);
+#ifdef HAVE_INT64
+    OP(INT64,  epicsInt32,  PyLong_AsLongLong);
+    OP(UINT64, epicsUInt32, PyLong_AsLongLong);
+#endif
     OP(FLOAT, epicsFloat32,PyFloat_AsDouble);
     OP(DOUBLE,epicsFloat64,PyFloat_AsDouble);
 #undef OP

@@ -1,7 +1,12 @@
 """Python reference counter statistics.
 """
+from __future__ import print_function
+
 import sys, gc, inspect, time
-from types import InstanceType
+try:
+    from types import InstanceType
+except ImportError:
+    pass # py3
 
 class StatsDelta(object):
   """GC statistics tracking.
@@ -30,35 +35,35 @@ class StatsDelta(object):
       Nprev = self.ntypes # may be less than len(prev)
 
       if Ncur!=Nprev:
-        print >>file,"# Types %d -> %d"%(Nprev,Ncur)
+        print("# Types %d -> %d"%(Nprev,Ncur), file=file)
 
       Scur, Sprev, first = set(cur), set(prev), True
       for T in Scur-Sprev: # new types
         if first:
-          print >>file,'New Types'
+          print('New Types', file=file)
           first=False
-        print >>file,' ',T,cur[T]
+        print(' ',T,cur[T], file=file)
 
       first = True
       for T in Sprev-Scur: # collected types
         if first:
-          print >>file,'Cleaned Types'
+          print('Cleaned Types', file=file)
           first=False
-        print >>file,' ',T,-prev[T]
+        print(' ',T,-prev[T], file=file)
 
       first = True
       for T in Scur&Sprev:
         if cur[T]==prev[T]:
           continue
         if first:
-          print >>file,'Known Types'
+          print('Known Types', file=file)
           first=False
-        print >>file,' ',T,cur[T],'delta',cur[T]-prev[T]
+        print(' ',T,cur[T],'delta',cur[T]-prev[T], file=file)
 
     else: # first call
-      print >>file,"All Types"
+      print("All Types", file=file)
       for T,C in cur.items():
-        print >>file,' ',T,C
+        print(' ',T,C, file=file)
 
     self.stats, self.ntypes = cur, len(cur)
     #gc.collect()
@@ -76,7 +81,7 @@ def gcstats():
     if K is StatsDelta:
       continue # avoid counting ourselves
 
-    elif K is InstanceType: # instance of an old-style class
+    elif InstanceType is not None and K is InstanceType: # instance of an old-style class
       K = getattr(obj, '__class__', K)
 
     # Track types as strings to avoid holding references
@@ -119,9 +124,9 @@ def periodic(period=60.0, file=sys.stderr):
 if __name__=='__main__':
   #for T,C in gcstats().items():
   #  print T,C
-  gc.set_debug(gc.DEBUG_COLLECTABLE|gc.DEBUG_INSTANCES|gc.DEBUG_OBJECTS)
+  gc.set_debug(gc.DEBUG_COLLECTABLE)
   S=StatsDelta()
   while True:
-    print 'Iteration'
+    print('Iteration')
     S.collect()
     #gc.collect()

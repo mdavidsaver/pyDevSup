@@ -3,6 +3,8 @@
 Some general purpose device supports
 """
 
+from __future__ import print_function
+
 import logging
 _log = logging.getLogger(__name__)
 
@@ -49,9 +51,9 @@ class AsyncOffload(object):
 
             @initHook('AtIocExit')
             def _exit():
-                print 'stop worker for', rec.NAME
+                print('stop worker for', rec.NAME)
                 self.worker.join()
-    
+
             self.worker.start()
 
         assert self.worker is not None, "Offload requires a worker thread"

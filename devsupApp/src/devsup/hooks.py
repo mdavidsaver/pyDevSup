@@ -27,7 +27,7 @@ def addHook(state, func):
     which they were added (except for 'AtIocExit').
     
     >>> def show():
-    ...     print 'State Occurred'
+    ...     print('State Occurred')
     >>> addHook("AfterIocRunning", show)
     
     An additional special hook 'AtIocExit' may be used

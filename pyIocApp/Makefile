@@ -42,6 +42,7 @@ softIocPy_DBD += pyDevSup.dbd
 softIocPy_DBD += system.dbd
 
 softIocPy$(PY_VER)_LIBS += pyDevSup$(PY_LD_VER)
+softIocPy$(PY_VER)_SYS_LIBS += python$(PY_LD_VER)
 
 # softIocPy_registerRecordDeviceDriver.cpp derives from softIocPy.dbd
 softIocPy$(PY_VER)_SRCS += softIocPy_registerRecordDeviceDriver.cpp

@@ -1,5 +1,4 @@
-sudo: false
-dist: trusty
+dist: xenial
 language: python
 compiler:
   - gcc
@@ -13,7 +12,7 @@ install:
  - pip install -r requirements-${PROF}.txt
  - ./build-deps.sh
 script:
- - make PYTHON=`which python` -j2
+ - make PYTHON=`which python` -j2 CMD_CPPFLAGS="-Wall -Werror=implicit-function-declaration"
  - if [ "$TEST" = "YES" ]; then make PYTHON=`which python` -j2 nose; fi
 matrix:
   include:
@@ -25,6 +24,8 @@ matrix:
     env: BRBASE=7.0 PROF=deb9 TEST=YES
   - python: "3.6"
     env: BRBASE=7.0 PROF=deb9 TEST=YES
+  - python: "3.7"
+    env: BRBASE=7.0 PROF=deb10 TEST=YES
   - python: "2.7"
     env: BRBASE=3.16 PROF=deb8 TEST=YES
   - python: "2.7"

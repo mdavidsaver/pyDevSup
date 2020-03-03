@@ -10,6 +10,8 @@
 #include <stdio.h>
 
 #include <epicsVersion.h>
+#include <errlog.h>
+#include <errMdef.h>
 #include <dbCommon.h>
 #include <dbAccess.h>
 #include <dbStaticLib.h>
@@ -240,7 +242,15 @@ PyObject *py_iocInit(PyObject *unused, PyObject *args, PyObject *kws)
 
     isolate = PyObject_IsTrue(pyisolate);
     Py_BEGIN_ALLOW_THREADS {
-        ret = isolate ? iocBuildIsolated() : iocBuild();
+        if(isolate) {
+#if EPICS_VERSION_INT<VERSION_INT(3,15,0,0)
+            return PyErr_Format(PyExc_RuntimeError, "iocInit(isolate=True) requires Base>=3.15");
+#else
+            ret = iocBuildIsolated();
+#endif
+        } else {
+            ret = iocBuild();
+        }
         if(!ret)
             ret = iocRun();
     } Py_END_ALLOW_THREADS

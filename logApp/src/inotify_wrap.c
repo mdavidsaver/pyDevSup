@@ -117,12 +117,12 @@ retry:
         }
         PyErr_SetFromErrno(PyExc_OSError);
         goto fail;
-    } else if(ret<EVTMINSIZE) {
+    } else if((size_t)ret<EVTMINSIZE) {
         PyErr_Format(PyExc_OSError, "The unthinkable has happened in INotify_read");
         goto fail;
     }
 
-    while(ret>=EVTMINSIZE) {
+    while((size_t)ret>=EVTMINSIZE) {
         PyObject *tuple;
         struct inotify_event *evt=buf;
         ssize_t evtsize;

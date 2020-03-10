@@ -1,4 +1,13 @@
-pydevsup (1.1) UNRELEASED; urgency=medium
+pydevsup (1.2) unstable; urgency=medium
+
+  * New release
+  * Fix handling of U/INT64 in Base >= 3.16
+  * Fix build for Base 3.14
+  * py3 fixes
+
+ -- Michael Davidsaver <mdavidsaver@gmail.com>  Tue, 10 Mar 2020 16:42:31 -0700
+
+pydevsup (1.1) unstable; urgency=medium
 
   * New release
 

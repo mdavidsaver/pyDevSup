@@ -1,0 +1,172 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Getting Started &#8212; pyDevSup 1.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Runtime Environment" href="environment.html" />
+    <link rel="prev" title="pydevsup documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="counter">
+<h2>Counter<a class="headerlink" href="#counter" title="Permalink to this headline">¶</a></h2>
+<p>Consider a simple EPICS database with one record.  Call it <a class="reference download internal" download="" href="_downloads/8448e14ce92335cc4e41dfe02a9a2f20/cntrec.db"><code class="xref download docutils literal notranslate"><span class="pre">cntrec.db</span></code></a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="n">record</span><span class="p">(</span><span class="n">longin</span><span class="p">,</span> <span class="s2">&quot;test:count&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">field</span><span class="p">(</span><span class="n">DTYP</span><span class="p">,</span> <span class="s2">&quot;Python Device&quot;</span><span class="p">)</span>
+    <span class="n">field</span><span class="p">(</span><span class="n">INP</span> <span class="p">,</span> <span class="s2">&quot;@cntmod&quot;</span><span class="p">)</span>
+    <span class="n">field</span><span class="p">(</span><span class="n">SCAN</span><span class="p">,</span> <span class="s2">&quot;1 second&quot;</span><span class="p">)</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+<p>This is creating a single record which will use the “Python Device” support code (aka this package).
+It will attempt to scan (call the process method) one a second.
+The <em>INP</em> field is parsed and the first work identifies the Python module which will provide
+the logic behind this record (everything after the first word is passed to the module <a class="reference internal" href="interfaces.html#build" title="build"><code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code></a> function.</p>
+<p>Now create <a class="reference download internal" download="" href="_downloads/c18ed2ccec63de3c22913ab7d1553ad3/cntmod.py"><code class="xref download docutils literal notranslate"><span class="pre">cntmod.py</span></code></a> with the following.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MySupport</span><span class="p">:</span>
+  <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">,</span> <span class="n">link</span><span class="p">):</span>
+    <span class="k">pass</span>
+  <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">):</span>
+    <span class="k">pass</span>
+  <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
+    <span class="n">rec</span><span class="o">.</span><span class="n">VAL</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">VAL</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">build</span> <span class="o">=</span> <span class="n">MySupport</span>
+</pre></div>
+</div>
+<p>This module is expected to provide a special callable <a class="reference internal" href="interfaces.html#build" title="build"><code class="xref py py-func docutils literal notranslate"><span class="pre">build()</span></code></a>.
+We also provide a constructor and method <a class="reference internal" href="interfaces.html#DeviceSupport.detach" title="DeviceSupport.detach"><code class="xref py py-meth docutils literal notranslate"><span class="pre">detach</span></code></a>
+which don’t do anything.
+The <a class="reference internal" href="interfaces.html#DeviceSupport.process" title="DeviceSupport.process"><code class="xref py py-meth docutils literal notranslate"><span class="pre">process</span></code></a> method increments the <em>VAL</em> field of the attached <a class="reference internal" href="devsup.html#devsup.db.Record" title="devsup.db.Record"><code class="xref py py-class docutils literal notranslate"><span class="pre">Record</span></code></a>.</p>
+<p>Start this IOC with.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./bin/linux-x86_64/softIocPy2.7 -d cntrec.db
+Starting iocInit
+...
+iocRun: All initialization complete
+epics&gt;dbl
+test:count
+epics&gt;
+</pre></div>
+</div>
+<p>Now in another terminal run.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ camonitor test:count
+...
+test:count                     2014-06-16 16:48:22.891825 9
+test:count                     2014-06-16 16:48:23.891967 10
+test:count                     2014-06-16 16:48:24.892137 11
+test:count                     2014-06-16 16:48:25.892286 12
+</pre></div>
+</div>
+<p>It may be necessary to run <em>export EPICS_CA_ADDR_LIST=localhost</em> first.</p>
+</div>
+<div class="section" id="additional-examples-and-applications">
+<h2>Additional examples and applications<a class="headerlink" href="#additional-examples-and-applications" title="Permalink to this headline">¶</a></h2>
+<p>This module comes with several examples in <em>testApp</em> as well as three complete applications.</p>
+<dl class="docutils">
+<dt>logApp</dt>
+<dd>Observes a line based text file as new lines are appended.
+Writes each line to a charactor array PV.
+Special handling of caPutLog files.</dd>
+<dt>pidMonApp</dt>
+<dd>Monitors the PID file created by a UNIX daemon.</dd>
+<dt>weatherApp</dt>
+<dd>Retreives weather reports via the <em>pymetar</em> module.</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pyDevSup</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#counter">Counter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-examples-and-applications">Additional examples and applications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">Runtime Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html#build-environment">Build Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devsup.html">devsup Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Support Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptable.html">ptable Package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">pydevsup documentation</a></li>
+      <li>Next: <a href="environment.html" title="next chapter">Runtime Environment</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Michael Davidsaver.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/gettingstarted.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

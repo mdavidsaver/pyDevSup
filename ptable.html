@@ -1,0 +1,321 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ptable Package &#8212; pyDevSup 1.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Support Modules" href="interfaces.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-devsup.ptable">
+<span id="ptable-package"></span><h1>ptable Package<a class="headerlink" href="#module-devsup.ptable" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="#module-devsup.ptable" title="devsup.ptable"><code class="xref py py-mod docutils literal notranslate"><span class="pre">devsup.ptable</span></code></a> module provides the means to define a Parameter Table,
+which is something like a dictionary (parameter name &lt;-&gt; dict key)
+where a parameter may be associated (attached) with zero or more EPICS records.</p>
+<p>Changes to a parameter may be reflected in the attached records.
+A change in an attached record will update the parameter value,
+and optionally, involve some functions (actions) to make some use of the new value.</p>
+<p>The basis of all tables is the <a class="reference internal" href="#devsup.ptable.TableBase" title="devsup.ptable.TableBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TableBase</span></code></a> class.  User code
+will typically sub-class <a class="reference internal" href="#devsup.ptable.TableBase" title="devsup.ptable.TableBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">TableBase</span></code></a>.</p>
+<div class="section" id="defining-parameters">
+<h2>Defining Parameters<a class="headerlink" href="#defining-parameters" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="devsup.ptable.Parameter">
+<em class="property">class </em><code class="descclassname">devsup.ptable.</code><code class="descname">Parameter</code><span class="sig-paren">(</span><em>name=None</em>, <em>iointr=False</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.Parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a parameter in a table.</p>
+<p>When a sub-class of TableBase is instantiated, parameters become
+py:class:<cite>_ParamInstance</cite> instances.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyTable</span><span class="p">(</span><span class="n">TableBase</span><span class="p">):</span>
+<span class="go">    A = Parameter()</span>
+<span class="go">    B = Parameter(name=&#39;bb&#39;)</span>
+<span class="go">    C = Parameter(iointr=True)</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Defines a table with three parameters.  The second ‘B’ defines a different
+parameter name and attribute name.  The parameter name ‘bb’ will be used
+in .db files, which self.B will be used for access from the table instance.</p>
+<p>When _iointr_ is True, then attached device support may use SCAN=’I/O Intr’,
+which is triggered with the method self.B.notify().</p>
+<p>This class has several methods which may be used decorate member functions
+as actions when the value of a parameter is (possibly) changed.</p>
+<dl class="method">
+<dt id="devsup.ptable.Parameter.isnotvalid">
+<code class="descname">isnotvalid</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.Parameter.isnotvalid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to run an action when the value is <em>not</em> valid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="devsup.ptable.Parameter.isvalid">
+<code class="descname">isvalid</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.Parameter.isvalid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to run an action when the value is valid</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="devsup.ptable.Parameter.onchange">
+<code class="descname">onchange</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.Parameter.onchange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to run an action when the value of a parameter is changed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="devsup.ptable.Parameter.oncondition">
+<code class="descname">oncondition</code><span class="sig-paren">(</span><em>cond</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.Parameter.oncondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator which allows a custom condition function to be specified.</p>
+<p>This function will be invoked with two argument cond(newval,oldval)
+and is expected to retur a bool.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyTable</span><span class="p">(</span><span class="n">TableBase</span><span class="p">):</span>
+<span class="go">    A = Parameter()</span>
+<span class="go">    @A.oncondition(lambda n,o:n&lt;5)</span>
+<span class="go">    def action(self, oldval):</span>
+<span class="go">        print self.A.value,&#39;is less than 5&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="devsup.ptable.Parameter.onproc">
+<code class="descname">onproc</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.Parameter.onproc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator run a member function action whenever
+an attached device support processes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyTable</span><span class="p">(</span><span class="n">TableBase</span><span class="p">):</span>
+<span class="go">    A = Parameter()</span>
+<span class="go">    @A.onproc</span>
+<span class="go">    def action(self, oldval):</span>
+<span class="go">        print &#39;A changed from&#39;,oldval,&#39;to&#39;,self.A.value</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="devsup.ptable.ParameterGroup">
+<em class="property">class </em><code class="descclassname">devsup.ptable.</code><code class="descname">ParameterGroup</code><span class="sig-paren">(</span><em>params</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.ParameterGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper for defining actions on groups of parameters</p>
+<p>When a sub-class of TableBase is instantiated, parameter groups become
+py:class:<cite>_ParamGroupInstance</cite> instances.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyTable</span><span class="p">(</span><span class="n">TableBase</span><span class="p">):</span>
+<span class="go">    A = Parameter()</span>
+<span class="go">    B = Parameter(name=&#39;bb&#39;)</span>
+<span class="go">    grp = ParameterGroup([A,B])</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>This class has several methods which may be used decorate member functions
+as actions based on the value of parameters in this group.</p>
+<dl class="method">
+<dt id="devsup.ptable.ParameterGroup.allvalid">
+<code class="descname">allvalid</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.ParameterGroup.allvalid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to run an action when all parameters have valid values</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="devsup.ptable.ParameterGroup.anynotvalid">
+<code class="descname">anynotvalid</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.ParameterGroup.anynotvalid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to run an action when any parameters has an invalid value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="devsup.ptable.ParameterGroup.oncondition">
+<code class="descname">oncondition</code><span class="sig-paren">(</span><em>fmap</em>, <em>freduce=&lt;built-in function all&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.ParameterGroup.oncondition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for a custom condition.</p>
+<p>The condition is specified in two parts, a map function, and a reduce function.
+The map function is applied to each parameter in the group.  Then a list
+of the results is passed to the reduce function.  If not specified,
+the default reducing function is all (map func must return bool).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyTable</span><span class="p">(</span><span class="n">TableBase</span><span class="p">):</span>
+<span class="go">    A, B = Parameter(), Parameter()</span>
+<span class="go">    grp = ParameterGroup([A,B])    </span>
+<span class="go">    @grp.oncondition(lambda v:v&gt;5, any)</span>
+<span class="go">    def action(self):</span>
+<span class="go">        # either A or B is greater than 5</span>
+<span class="go">        print self.A.value, self.B.value</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="devsup.ptable.ParameterGroup.onproc">
+<code class="descname">onproc</code><span class="sig-paren">(</span><em>fn</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.ParameterGroup.onproc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator run a member function action whenever
+a device support attached to any parameter in the group processes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyTable</span><span class="p">(</span><span class="n">TableBase</span><span class="p">):</span>
+<span class="go">    A, B = Parameter(), Parameter()</span>
+<span class="go">    grp = ParameterGroup([A,B])    </span>
+<span class="go">    @grp.onproc</span>
+<span class="go">    def action(self):</span>
+<span class="go">        print self.A.value, self.B.value</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="devsup.ptable.TableBase">
+<em class="property">class </em><code class="descclassname">devsup.ptable.</code><code class="descname">TableBase</code><span class="sig-paren">(</span><em>**kws</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable.TableBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all parameter tables.</p>
+<p>Sub-class this and populate with <a class="reference internal" href="#devsup.ptable.Parameter" title="devsup.ptable.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a> and  <a class="reference internal" href="#devsup.ptable.ParameterGroup" title="devsup.ptable.ParameterGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterGroup</span></code></a>.</p>
+<p>#When a table is instantiated it must be given a unique name.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyTable</span><span class="p">(</span><span class="n">TableBase</span><span class="p">):</span>
+<span class="go">    ...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">=</span><span class="n">MyTable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;xyz&#39;</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="runtime-access">
+<h2>Runtime Access<a class="headerlink" href="#runtime-access" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="devsup.ptable._ParamInstance">
+<em class="property">class </em><code class="descclassname">devsup.ptable.</code><code class="descname">_ParamInstance</code><span class="sig-paren">(</span><em>table</em>, <em>name</em>, <em>scan</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable._ParamInstance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access to a parameter at runtime.</p>
+<dl class="method">
+<dt id="devsup.ptable._ParamInstance.addAction">
+<code class="descname">addAction</code><span class="sig-paren">(</span><em>fn</em>, <em>cond=None</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable._ParamInstance.addAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an arbitrary action at runtime</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="devsup.ptable._ParamInstance.isvalid">
+<code class="descname">isvalid</code><a class="headerlink" href="#devsup.ptable._ParamInstance.isvalid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is the parameter value valid (not None and no INVALID_ALARM)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="devsup.ptable._ParamInstance.notify">
+<code class="descname">notify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable._ParamInstance.notify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Notify attached records of parameter value change.
+A no-op unless Parameter(iointr=True)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="devsup.ptable._ParamInstance.value">
+<code class="descname">value</code><a class="headerlink" href="#devsup.ptable._ParamInstance.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The current parameter value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="devsup.ptable._ParamGroupInstance">
+<em class="property">class </em><code class="descclassname">devsup.ptable.</code><code class="descname">_ParamGroupInstance</code><span class="sig-paren">(</span><em>table</em>, <em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable._ParamGroupInstance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runtime access to a group of parameters.</p>
+<dl class="method">
+<dt id="devsup.ptable._ParamGroupInstance.addAction">
+<code class="descname">addAction</code><span class="sig-paren">(</span><em>fn</em>, <em>fmap</em>, <em>freduce=&lt;built-in function all&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable._ParamGroupInstance.addAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an arbitrary action at runtime</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="devsup.ptable._ParamGroupInstance.allValid">
+<code class="descname">allValid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#devsup.ptable._ParamGroupInstance.allValid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quick test if all parameters are valid</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="device-support">
+<h2>Device Support<a class="headerlink" href="#device-support" title="Permalink to this headline">¶</a></h2>
+<p>A general purpose device support is provided to access table parameters.
+The input/output link format is “&#64;devsup.ptable &lt;tablename&gt; set|get &lt;param&gt; [optional]”</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pyDevSup</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">Runtime Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html#build-environment">Build Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devsup.html">devsup Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Support Modules</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ptable Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#defining-parameters">Defining Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#runtime-access">Runtime Access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#device-support">Device Support</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="interfaces.html" title="previous chapter">Support Modules</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Michael Davidsaver.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/ptable.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

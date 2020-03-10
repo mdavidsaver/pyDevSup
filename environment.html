@@ -1,0 +1,230 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Runtime Environment &#8212; pyDevSup 1.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="devsup Package" href="devsup.html" />
+    <link rel="prev" title="Getting Started" href="gettingstarted.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="runtime-environment">
+<h1>Runtime Environment<a class="headerlink" href="#runtime-environment" title="Permalink to this headline">¶</a></h1>
+<p>The pyDevSup module initializes the interpreter during the registration
+phase of IOC startup with the <em>pySetupReg</em> registrar function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!../../bin/linux-x86_64/softIocPy2.7</span>
+<span class="c1"># Interpreter not started</span>
+<span class="n">dbLoadDatabase</span><span class="p">(</span><span class="s2">&quot;../../dbd/softIocPy.dbd&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">softIocPy_registerRecordDeviceDriver</span><span class="p">(</span><span class="n">pdbbase</span><span class="p">)</span>
+<span class="c1"># Interpreter started</span>
+</pre></div>
+</div>
+<p>An <em>epicsAtExit</em> cleanup handler is also registered at this time.</p>
+<p>Several IOC Shell functions are also registered.
+<em>py()</em> executes a line of python code.
+<em>pyfile()</em> reads and interprets a python script.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">py</span><span class="p">(</span><span class="s2">&quot;import mymod;)</span>
+<span class="n">py</span><span class="p">(</span><span class="s2">&quot;mymod.makeDev(&#39;one&#39;)&quot;</span><span class="p">)</span>
+<span class="n">py</span><span class="p">(</span><span class="s2">&quot;mymod.makeDev(&#39;two&#39;)&quot;</span><span class="p">)</span>
+
+<span class="n">pyfile</span><span class="p">(</span><span class="s2">&quot;myinit.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="pythonpath">
+<h2>PYTHONPATH<a class="headerlink" href="#pythonpath" title="Permalink to this headline">¶</a></h2>
+<p>The interpreter search path is automatically prefixed with the following additional paths:</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">${PWD}</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">$(TOP)/python&lt;PY_VER&gt;/$(EPICS_ARCH)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">$(PYDEV_BASE)/python&lt;PY_VER&gt;/$(EPICS_ARCH)</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">$(EPICS_BASE)/python&lt;PY_VER&gt;/$(EPICS_ARCH)</span></code></li>
+</ul>
+<p>The environment variables <code class="docutils literal notranslate"><span class="pre">EPICS_BASE</span></code>, <code class="docutils literal notranslate"><span class="pre">PYDEV_BASE</span></code>, <code class="docutils literal notranslate"><span class="pre">TOP</span></code>, and <code class="docutils literal notranslate"><span class="pre">EPICS_ARCH</span></code>
+will be used if set.  Compile time defaults are selected for
+<code class="docutils literal notranslate"><span class="pre">EPICS_BASE</span></code>, <code class="docutils literal notranslate"><span class="pre">PYDEV_BASE</span></code>, <code class="docutils literal notranslate"><span class="pre">EPICS_ARCH</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">TOP</span></code> is not set then the this entry is omitted.</p>
+<p>The default for <code class="docutils literal notranslate"><span class="pre">PYDEV_BASE</span></code> is the <code class="docutils literal notranslate"><span class="pre">$(INSTALL_LOCATION)</span></code> given when the
+pyDevSup module was built.</p>
+</div>
+</div>
+<div class="section" id="build-environment">
+<h1>Build Environment<a class="headerlink" href="#build-environment" title="Permalink to this headline">¶</a></h1>
+<p>When building IOCs or installing files, include <code class="docutils literal notranslate"><span class="pre">PYDEVSUP</span></code> in your <em>configure/RELEASE</em>
+file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PYDEVSUP</span><span class="o">=/</span><span class="nb">dir</span><span class="o">/</span><span class="n">where</span><span class="o">/</span><span class="n">pyDevSup</span><span class="o">/</span><span class="ow">is</span><span class="o">/</span><span class="n">installed</span>
+<span class="n">EPICS_BASE</span><span class="o">=/....</span>
+</pre></div>
+</div>
+<p>The default or preferred Python version can be specificed in <em>configure/CONFIG_SITE</em></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>PY_VER ?= 2.7
+</pre></div>
+</div>
+<p>The following should be added to individual EPICS Makefiles.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>TOP=../..
+include $(TOP)/configure/CONFIG
+include $(PYDEVSUP)/configure/CONFIG_PY
+...
+include $(TOP)/configure/RULES
+include $(PYDEVSUP)/configure/RULES_PY
+</pre></div>
+</div>
+<p>This will add or amend several make variables.  The <code class="docutils literal notranslate"><span class="pre">USR_*FLAGS</span></code> variables
+may be extended with appropriate flags for building python modules.  The <code class="docutils literal notranslate"><span class="pre">PY_VER</span></code>
+variable is defined with the Python version number found in install directories (eg “2.7”).
+The <code class="docutils literal notranslate"><span class="pre">PY_LD_VER</span></code> variable is defined with the python library version number (eg “3.2mu”),
+which may be the same as <code class="docutils literal notranslate"><span class="pre">PY_VER</span></code>.</p>
+<div class="section" id="include-pydevsup-in-your-ioc">
+<h2>Include pyDevSup in your IOC<a class="headerlink" href="#include-pydevsup-in-your-ioc" title="Permalink to this headline">¶</a></h2>
+<p>While the <em>softIocPyX.Y</em> executable(s) built as part of this module
+will be sufficient for many uses, it is also possible to
+include the pyDevSup modules in an IOC along with other drivers.
+This can be done in the usual way.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>PROD_IOC = myioc
+DBD += myioc.dbd
+...
+myioc_DBD += pyDevSup.dbd
+...
+myioc_LIBS += pyDevSup$(PY_LD_VER)
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-py-files">
+<h2>Installing .py files<a class="headerlink" href="#installing-py-files" title="Permalink to this headline">¶</a></h2>
+<p>Additional .py files can be installed as follows.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PY</span> <span class="o">+=</span> <span class="n">mymod</span><span class="o">/</span><span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+<span class="n">PY</span> <span class="o">+=</span> <span class="n">mymod</span><span class="o">/</span><span class="n">file1</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-extensions">
+<h2>Building extensions<a class="headerlink" href="#building-extensions" title="Permalink to this headline">¶</a></h2>
+<p>For convenience, additional Python extensions can be build by the EPICS
+build system.  In this example the extension name is “_myextname” and
+the resulting library is expected to provide the an initialization function
+named “init_myextname”.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LOADABLE_LIBRARY_HOST</span> <span class="o">=</span> <span class="n">_myextname</span>
+
+<span class="n">_myextname_SRCS</span> <span class="o">+=</span> <span class="n">somefile</span><span class="o">.</span><span class="n">c</span>
+</pre></div>
+</div>
+<p>In somefile.c</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">PyMODINIT_FUNC</span> <span class="n">init_myextname</span><span class="p">(</span><span class="n">void</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-for-several-python-versions">
+<h2>Installing for several Python versions<a class="headerlink" href="#installing-for-several-python-versions" title="Permalink to this headline">¶</a></h2>
+<p>The recipe for building and installing the pyDevSup module
+for several python version side by side is</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">PY_VER</span><span class="o">=</span><span class="mf">2.6</span>
+<span class="n">make</span> <span class="n">clean</span>
+<span class="n">make</span> <span class="n">PY_VER</span><span class="o">=</span><span class="mf">2.7</span>
+<span class="n">make</span> <span class="n">clean</span>
+<span class="n">make</span> <span class="n">PY_VER</span><span class="o">=</span><span class="mf">3.2</span>
+<span class="n">make</span> <span class="n">clean</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">PYTHON</span></code> make variable can be specified if the interpreter executable
+has a name other than <code class="docutils literal notranslate"><span class="pre">python$(PY_VER)</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pyDevSup</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Runtime Environment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pythonpath">PYTHONPATH</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#build-environment">Build Environment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#include-pydevsup-in-your-ioc">Include pyDevSup in your IOC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-py-files">Installing .py files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-extensions">Building extensions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-for-several-python-versions">Installing for several Python versions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="devsup.html">devsup Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="interfaces.html">Support Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ptable.html">ptable Package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="gettingstarted.html" title="previous chapter">Getting Started</a></li>
+      <li>Next: <a href="devsup.html" title="next chapter">devsup Package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Michael Davidsaver.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/environment.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

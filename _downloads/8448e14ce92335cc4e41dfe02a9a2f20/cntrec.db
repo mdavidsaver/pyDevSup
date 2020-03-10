@@ -1,0 +1,5 @@
+  record(longin, "test:count") {
+    field(DTYP, "Python Device")
+    field(INP , "@cntmod")
+    field(SCAN, "1 second")
+  }

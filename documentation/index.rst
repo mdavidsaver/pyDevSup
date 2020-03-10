@@ -13,7 +13,7 @@ The numpy package is also required.
 
 The source can be found at http://github.com/mdavidsaver/pyDevSup
 
-File releases are available at http://sourceforge.net/projects/epics/files/pyDevSup
+File releases are available at https://github.com/mdavidsaver/pyDevSup/releases
 
 Contents:
 

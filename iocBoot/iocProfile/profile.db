@@ -1,0 +1,136 @@
+# Macros
+#  P - common record prefix
+#  INP - Input PV name containing profile
+#  NELM - max. array size
+#  MAXPIXEL - Max pixel value camera is capable of
+
+record(bo, "$(P)Run-Sel") {
+    field(DTYP, "Raw Soft Channel")
+    field(PINI, "YES")
+    field(ZNAM, "Run")
+    field(ONAM, "Pause")
+    field(VAL , "0")
+    field(OUT , "$(P)Profile-Calc_.DISV PP")
+}
+
+record(mbbi, "$(P)Fit-Sts") {
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(ZRST, "Error")
+    field(ONST, "OK")
+    field(TWST, "Warning")
+    field(ZRSV, "MAJOR")
+    field(TWSV, "MINOR")
+}
+
+record(ai, "$(P)Time-I") {
+    field(DESC, "Calc time")
+    field(EGU , "ms")
+    field(PREC, "1")
+}
+
+record(ai, "$(P)Mean-I") {
+    field(DESC, "Fit mean")
+    field(EGU , "px")
+    field(PREC, "1")
+    field(VAL , "100") # default initial
+}
+
+record(ai, "$(P)Std-I") {
+    field(DESC, "Fit std. dev.")
+    field(EGU , "px")
+    field(PREC, "2")
+    field(VAL , "100") # default initial
+}
+
+record(aai, "$(P)Fit-I") {
+    field(FTVL, "DOUBLE")
+    field(NELM, "$(NELM=2048)")
+}
+
+record(aai, "$(P)Mark:X-I") {
+    field(FTVL, "DOUBLE")
+    field(NELM, "2")
+}
+
+record(aai, "$(P)Mark:Y-I") {
+    field(FTVL, "DOUBLE")
+    field(NELM, "2")
+}
+
+record(aSub, "$(P)Profile-Calc_") {
+    field(PINI, "RUNNING")
+    field(SNAM, "python_asub")
+    info(pySupportLink, "profile")
+
+    field(DISA, "1") # Pause
+
+    field(EFLG, "ALWAYS")
+
+    # Scaning starts here
+    field(INPA, "$(INP) MSI CP")
+    # copy timestamp of profile
+    field(TSEL, "$(INP).TIME CA")
+    # take previous fit as initial
+    field(INPB, "$(P)Mean-I NPP")
+    field(INPC, "$(P)Std-I NPP")
+    # maximum pixel value
+    field(INPD, "$(MAXPIXEL=1024)")
+
+    field(OUTA, "$(P)Fit-I PP MSS")
+    field(OUTB, "$(P)Mean-I PP MSS")
+    field(OUTC, "$(P)Std-I PP MSS")
+    field(OUTD, "$(P)Fit-Sts PP MSS")
+    field(OUTE, "$(P)Mark:X-I PP MSS")
+    field(OUTF, "$(P)Mark:Y-I PP MSS")
+    field(OUTG, "$(P)Time-I PP")
+    
+    field(FTA , "DOUBLE") # input profile datadata
+    field(FTB , "DOUBLE") # initial mean
+    field(FTC , "DOUBLE") # initial stddev
+    field(FTD , "ULONG")  # max pixel value
+
+    field(FTVA, "DOUBLE") # fit curve
+    field(FTVB, "DOUBLE") # fit mean
+    field(FTVC, "DOUBLE") # fit stddev
+    field(FTVD, "LONG")   # fit status
+    field(FTVE, "DOUBLE") # mean marker X
+    field(FTVF, "DOUBLE") # mean marker Y
+    field(FTVG, "DOUBLE") # execution time
+
+    field(NOA , "$(NELM=2048)")
+
+    field(NOVA, "$(NELM=2048)")
+    field(NOVE, "2")
+    field(NOVF, "2")
+
+    field(FLNK, "$(P)Cnt-I")
+}
+
+record(calc, "$(P)Cnt-I") {
+    field(CALC, "VAL+1")
+}
+
+record(calc, "$(P)Rate-I") {
+    field(DESC, "Update rate")
+    field(SCAN, "2 second")
+    field(INPA, "$(P)Cnt-I NPP")
+    field(INPB, "")
+    field(CALC, "C:=A-B;B:=A;C/2")
+    field(EGU , "Hz")
+    field(PREC, "1")
+}
+
+# auto-resize scale (and UI slider range) for mean and stddev
+record(longout, "$(P)Mean-I_") {
+    field(OMSL, "closed_loop")
+    field(DOL , "$(P)Profile-Calc_.NEVA CP")
+    field(OUT , "$(P)Mean-I.HOPR")
+}
+
+record(longout, "$(P)Std-I_") {
+    field(OMSL, "closed_loop")
+    field(DOL , "$(P)Profile-Calc_.NEVA CP")
+    field(OUT , "$(P)Std-I.HOPR")
+}

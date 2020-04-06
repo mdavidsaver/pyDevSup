@@ -49,6 +49,9 @@ class Dev(AsyncOffload):
 
         X = numpy.arange(len(profile)) # units of pixels
 
+        if istddev<=4:
+            istddev=4
+
         # initial fit parameters (offset, amplitude, mean, stddev)
         F0 = [
             profile.min(),

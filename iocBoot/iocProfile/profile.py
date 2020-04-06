@@ -45,7 +45,7 @@ class Dev(AsyncOffload):
         T0 = time.time()
         _log.debug('Process with %s elements', profile.shape)
         if len(profile)==0:
-            return {'result':0}
+            return {'result':0, 'fitted':[], 'markerx':[], 'markery':[]}
 
         X = numpy.arange(len(profile)) # units of pixels
 
@@ -76,12 +76,17 @@ class Dev(AsyncOffload):
         _log.debug('Fitting with bounds lower=%s upper=%s', lower, upper)
         _log.debug('Initial fit parameters=%s', F0)
 
-        res = least_squares(
-            error,
-            F0,
-            bounds=(lower, upper),
-            args=(X, profile),
-        )
+        try:
+            res = least_squares(
+                error,
+                F0,
+                bounds=(lower, upper),
+                args=(X, profile),
+            )
+        except ValueError:
+            # assume Infeasible
+            return {'result':0, 'fitted':[], 'markerx':[], 'markery':[]}
+
         _log.debug("Result %s %s %s", res.success, res.status, res.active_mask)
 
         Ff = res.x

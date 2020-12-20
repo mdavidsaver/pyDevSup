@@ -1,0 +1,98 @@
+name: pyDevSup
+
+# Trigger on pushes and PRs to any branch
+on: [push, pull_request]
+
+env:
+    SETUP_PATH: .ci-local:.ci
+    EPICS_TEST_IMPRECISE_TIMING: YES
+    CMP: gcc
+    BCFG: default
+
+jobs:
+  build-base:
+    name: ${{ matrix.base }}/${{ matrix.os }}/${{ matrix.python }}/${{ matrix.extra }}
+    runs-on: ${{ matrix.os }}
+    # Set environment variables from matrix parameters
+    env:
+      BASE: ${{ matrix.base }}
+      PROF: ${{ matrix.profile }}
+      EXTRA: ${{ matrix.extra }}
+      TEST: ${{ matrix.test }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            base: "7.0"
+            python: "2.7"
+            profile: deb8
+            test: yes
+
+          - os: ubuntu-20.04
+            base: "7.0"
+            python: "2.7"
+            profile: deb8
+            test: yes
+
+          - os: ubuntu-20.04
+            base: "7.0"
+            python: "3.5"
+            profile: deb9
+            test: yes
+
+          - os: ubuntu-20.04
+            base: "7.0"
+            python: "3.6"
+            profile: deb9
+            test: yes
+
+          - os: ubuntu-20.04
+            base: "7.0"
+            python: "3.7"
+            profile: deb10
+            test: yes
+
+          - os: ubuntu-16.04
+            base: "3.15"
+            python: "2.7"
+            profile: deb8
+            test: yes
+
+          - os: ubuntu-16.04
+            base: "3.14"
+            python: "2.7"
+            profile: deb8
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Cache EPICS Dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache
+        key: ${{ matrix.base }}/${{ matrix.os }}//${{ matrix.extra }}
+    - name: Set up Python ${{ matrix.python }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+    - name: More Setup Python
+      run: |
+        python --version
+        python -m pip --version
+        python -m pip install -r requirements-${PROF}.txt
+        cat <<EOF > configure/CONFIG_SITE.local
+        PYTHON=$(which python)
+        EOF
+        echo === configure/CONFIG_SITE.local ===
+        cat configure/CONFIG_SITE.local
+    - name: Prepare and compile dependencies
+      run: python .ci/cue.py prepare
+    - name: Build main module
+      run: python .ci/cue.py build
+    - name: Run main module tests
+      run: python .ci/cue.py test
+    - name: Collect and show test results
+      run: python .ci/cue.py test-results

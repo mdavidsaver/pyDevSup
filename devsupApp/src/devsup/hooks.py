@@ -58,7 +58,7 @@ def debugHooks():
         addHook(h, _showstate)
 
 def _runhook(sid):
-    name = _revnames[sid]
+    name = _revnames.get(sid) or 'initHook%d'%sid
     pop = -1 if name=='AtIocExit' else 0
     fns = _hooktable.get(sid)
     if fns is not None:

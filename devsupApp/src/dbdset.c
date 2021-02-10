@@ -449,7 +449,7 @@ static long python_asub(aSubRecord* prec)
 }
 
 /* uglyness to detect aSubRecord */
-extern rset aSubRSET;
+extern rset* pvar_rset_aSubRSET;
 
 int isPyRecord(dbCommon *prec)
 {
@@ -457,7 +457,7 @@ int isPyRecord(dbCommon *prec)
             || prec->dset==(dset*)&pydevsupComIn
             || prec->dset==(dset*)&pydevsupComOut)
         return 1;
-    if(prec->rset==&aSubRSET) {
+    if(prec->rset==pvar_rset_aSubRSET) {
         aSubRecord *psub = (aSubRecord*)prec;
         if(psub->sadr==python_asub)
             return 1;

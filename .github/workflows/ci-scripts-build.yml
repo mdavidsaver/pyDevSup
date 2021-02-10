@@ -93,6 +93,5 @@ jobs:
     - name: Build main module
       run: python .ci/cue.py build
     - name: Run main module tests
-      run: python .ci/cue.py test
-    - name: Collect and show test results
-      run: python .ci/cue.py test-results
+      if: matrix.test
+      run: python .ci/cue.py build nose

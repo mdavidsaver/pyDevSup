@@ -29,6 +29,7 @@ _dbapi_SRCS += utest.c
 _dbapi_SRCS += pyDevSupCommon_registerRecordDeviceDriver.cpp
 
 _dbapi_LIBS += $(EPICS_BASE_IOC_LIBS)
+_dbapi_SYS_LIBS_WIN32 += ws2_32 Advapi32 Dbghelp
 
 PY += devsup/__init__.py
 PY += devsup/db.py

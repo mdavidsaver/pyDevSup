@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Db">
+      <UniqueIdentifier>{fef0bd38-19ac-4984-803b-3bf69909b6aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="O.Common">
+      <UniqueIdentifier>{9d42cf23-b80c-4588-adf4-92e1b0892282}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\dbapi.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbdset.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbfield.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbrec.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utest.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp">
+      <Filter>O.Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Makefile">
+      <Filter>src</Filter>
+    </None>
+    <None Include="Db\Makefile">
+      <Filter>Db</Filter>
+    </None>
+    <None Include="O.Common\pyDevSupCommon.dbd">
+      <Filter>O.Common</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\pydevsup.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -37,6 +37,7 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 
 # EPICS_BASE usually appears last so other apps can override stuff:
 #EPICS_BASE=/usr/lib/epics
+EPICS_BASE=\epics/base
 
 -include $(TOP)/configure/RELEASE.local
 -include $(TOP)/../RELEASE.local

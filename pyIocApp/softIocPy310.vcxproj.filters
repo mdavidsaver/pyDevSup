@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="O.Common">
+      <UniqueIdentifier>{04aeea59-1c62-4a91-8d52-15e8e9b8515e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="O.Common\softIocPy.dbd">
+      <Filter>O.Common</Filter>
+    </None>
+    <None Include="Makefile" />
+    <None Include="pyDevSup.dbd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="O.Common\softIocPy_registerRecordDeviceDriver.cpp">
+      <Filter>O.Common</Filter>
+    </ClCompile>
+    <ClCompile Include="devsupMain.cpp" />
+  </ItemGroup>
+</Project>

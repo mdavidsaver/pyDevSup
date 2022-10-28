@@ -45,14 +45,16 @@ from ._dbapi import (EPICS_VERSION_STRING,
 
 __all__ = []
 
+
 def _init(iocMain=False):
+    print ("iocMain", iocMain)
     if not iocMain:
         # we haven't read/register base.dbd
         _dbapi.dbReadDatabase(os.path.join(XEPICS_BASE, "dbd", "base.dbd"),
                               path=os.path.join(XEPICS_BASE, "dbd"))
         _dbapi._dbd_rrd_base()
 
-    with tempfile.NamedTemporaryFile() as F:
+    with tempfile.NamedTemporaryFile(delete=False) as F:
         F.write("""
 device(longin, INST_IO, pydevsupComIn, "Python Device")
 device(longout, INST_IO, pydevsupComOut, "Python Device")
@@ -76,9 +78,11 @@ device(waveform, INST_IO, pydevsupComIn, "Python Device")
 device(aai, INST_IO, pydevsupComIn, "Python Device")
 device(aao, INST_IO, pydevsupComOut, "Python Device")
 """.encode('ascii'))
-        F.flush()
+        F.close()
         _dbapi.dbReadDatabase(F.name)
+        os.unlink(F.name)
     _dbapi._dbd_setup()
+
 
 def _fini(iocMain=False):
     if iocMain:

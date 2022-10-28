@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import socket, time, urllib2
+import time
 
 from weakref import WeakValueDictionary
 
-from devsup.hooks import addHook
-from devsup.util import StoppableThread
-from devsup.db import IOScanListBlock
+from devsupApp.src.devsup.hooks import addHook
+from devsupApp.src.devsup.util import StoppableThread
+from devsupApp.src.devsup.db import IOScanListBlock
 
 try:
   import pymetar
@@ -114,7 +114,7 @@ class ReportScanner(StoppableThread):
     self.scan = IOScanListBlock() # I/O Intr scan for report data
     self.intscan = IOScanListBlock() # scan for internal info
 
-    super(ReportScanner,self).__init__()
+    super(ReportScanner, self).__init__()
 
     addHook('AfterIocRunning', self.start)
     addHook('AtIocExit', self.join)
@@ -157,3 +157,8 @@ class ReportScanner(StoppableThread):
       self.sleep(self.updatePeriod)
 
     print('Done')
+
+
+if __name__ == '__main__':
+    Scanner = ReportScanner("EGTK")  # Oxford airport station
+    Scanner.start()

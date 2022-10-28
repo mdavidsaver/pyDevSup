@@ -23,7 +23,7 @@ else:
 from distutils.sysconfig import get_config_var, get_python_inc
 
 incdirs = [get_python_inc()]
-libdirs = [get_config_var('LIBDIR')]
+libdirs = ['C:\\python310\\libs']
 
 have_np='NO'
 try:
@@ -33,8 +33,10 @@ try:
 except ImportError:
     pass
 
-print('TARGET_CFLAGS +=',get_config_var('BASECFLAGS'), file=out)
-print('TARGET_CXXFLAGS +=',get_config_var('BASECFLAGS'), file=out)
+basecflags=get_config_var('BASECFLAGS')
+if basecflags is not None:
+    print('TARGET_CFLAGS +=',basecflags, file=out)
+    print('TARGET_CXXFLAGS +=',basecflags, file=out)
 
 print('PY_VER :=',get_config_var('VERSION'), file=out)
 ldver = get_config_var('LDVERSION')
@@ -43,8 +45,8 @@ if ldver is None:
     if get_config_var('Py_DEBUG'):
         ldver = ldver+'_d'
 print('PY_LD_VER :=',ldver, file=out)
-print('PY_INCDIRS :=',' '.join(incdirs), file=out)
-print('PY_LIBDIRS :=',' '.join(libdirs), file=out)
+print('PY_INCDIRS := ',incdirs, file=out)
+print('PY_LIBDIRS := ',libdirs, file=out)
 print('HAVE_NUMPY :=',have_np, file=out)
 
 try:

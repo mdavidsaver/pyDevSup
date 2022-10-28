@@ -23,6 +23,10 @@
 #include <alarm.h>
 
 #include "pydevsup.h"
+#ifdef _WIN32
+#define PATH_MAX _MAX_PATH
+#include <direct.h>
+#endif
 
 static void cleanupPy(void *junk)
 {
@@ -135,7 +139,7 @@ static void pySetupReg(void)
     setupPyPath();
 
     if(PyRun_SimpleString("import devsup\n"
-                          "devsup._init(iocMain=True)\n"
+                          "devsup._init(iocMain=False)\n"
     )) {
         PyErr_Print();
         PyErr_Clear();

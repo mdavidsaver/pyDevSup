@@ -47,7 +47,6 @@ __all__ = []
 
 
 def _init(iocMain=False):
-    print ("iocMain", iocMain)
     if not iocMain:
         # we haven't read/register base.dbd
         _dbapi.dbReadDatabase(os.path.join(XEPICS_BASE, "dbd", "base.dbd"),

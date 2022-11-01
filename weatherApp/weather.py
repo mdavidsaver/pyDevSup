@@ -161,4 +161,4 @@ class ReportScanner(StoppableThread):
 
 if __name__ == '__main__':
     Scanner = ReportScanner("EGTK")  # Oxford airport station
-    Scanner.start()
+    Scanner.run()

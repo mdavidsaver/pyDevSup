@@ -278,7 +278,7 @@ static struct PyMethodDef dbapimethod[] = {
      "Execute IOC shell script or command"},
     {"dbReadDatabase", (PyCFunction)py_dbReadDatabase, METH_VARARGS|METH_KEYWORDS,
      "Load EPICS database file"},
-    {"iocInit", (PyCFunction)py_iocInit, METH_NOARGS,
+    {"iocInit", (PyCFunction)py_iocInit, METH_VARARGS|METH_KEYWORDS,
      "Initialize IOC"},
     {"_dbd_setup", (PyCFunction)pyDBD_setup, METH_NOARGS, ""},
     {"_dbd_rrd_base", (PyCFunction)py_pyDevSupCommon, METH_NOARGS, ""},

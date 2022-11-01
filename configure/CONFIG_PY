@@ -21,16 +21,7 @@ endif
 SHRLIB_DEPLIB_DIRS += $(PY_LIBDIRS)
 PROD_DEPLIB_DIRS += $(PY_LIBDIRS)
 
-$(info $$PY_INCDIRS is ${PY_INCDIRS})
-
-ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
-    INCLUDES += -IC:/Python310/lib/site-packages/numpy/core/include
-    INCLUDES += -IC:/Python310/include
-else
-    INCLUDES += $(PY_INCDIRS:%=-I%)
-endif
-
-$(info $$INCLUDES is ${INCLUDES})
+INCLUDES += $(PY_INCDIRS:%=-I%)
 
 ifeq ($(HAVE_NUMPY),YES)
 TARGET_CPPFLAGS += -DHAVE_NUMPY
@@ -42,7 +33,6 @@ endif
 #PROD_SYS_LIBS += python$(PY_LD_VER)
 
 PY_INSTALL_DIR = $(INSTALL_LOCATION)/python$(PY_LD_VER)/$(T_A)
-$(info $$PY_INSTALL_DIR is ${PY_INSTALL_DIR})
 
 ifneq ($(PYMODULE),NO)
 

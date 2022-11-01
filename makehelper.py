@@ -20,10 +20,10 @@ if len(sys.argv)<2:
 else:
     out = open(sys.argv[1], 'w')
 
-from distutils.sysconfig import get_config_var, get_python_inc
+from distutils.sysconfig import get_config_var, get_python_inc, get_python_lib
 
 incdirs = [get_python_inc()]
-libdirs = ['C:\\python310\\libs']
+libdirs = [get_python_lib()]
 
 have_np='NO'
 try:
@@ -45,8 +45,8 @@ if ldver is None:
     if get_config_var('Py_DEBUG'):
         ldver = ldver+'_d'
 print('PY_LD_VER :=',ldver, file=out)
-print('PY_INCDIRS := ',incdirs, file=out)
-print('PY_LIBDIRS := ',libdirs, file=out)
+print('PY_INCDIRS :=',' '.join(incdirs), file=out)
+print('PY_LIBDIRS :=',' '.join(libdirs), file=out)
 print('HAVE_NUMPY :=',have_np, file=out)
 
 try:

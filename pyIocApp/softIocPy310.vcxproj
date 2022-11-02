@@ -50,9 +50,6 @@
     <ProjectReference Include="..\..\..\base-7.0.6.1\modules\libcom\src\Com.vcxproj">
       <Project>{e9d99fc7-e592-472b-b2e2-c3b0d81d8169}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\devsupApp\_devsup.vcxproj">
-      <Project>{bae6ce99-140a-4018-8bcb-9d63f54d6f07}</Project>
-    </ProjectReference>
     <ProjectReference Include="pyDevSup310.vcxproj">
       <Project>{e0621b43-15e2-4080-b777-16c02e5b4611}</Project>
     </ProjectReference>

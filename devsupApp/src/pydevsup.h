@@ -5,7 +5,13 @@
 #include <epicsThread.h>
 #include <initHooks.h>
 
-#include <Python.h>
+#ifdef _DEBUG
+#undef _DEBUG
+#include <python.h>
+#define _DEBUG
+#else
+#include <python.h>
+#endif
 
 #ifndef VERSION_INT
 #  define VERSION_INT(V,R,M,P) ( ((V)<<24) | ((R)<<16) | ((M)<<8) | (P))

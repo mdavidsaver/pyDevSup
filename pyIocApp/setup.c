@@ -5,8 +5,13 @@
 #undef _POSIX_C_SOURCE
 #undef _XOPEN_SOURCE
 
-#include <Python.h>
-#ifdef HAVE_NUMPY
+#ifdef _DEBUG
+#undef _DEBUG
+#include <python.h>
+#include <numpy/ndarrayobject.h>
+#define _DEBUG
+#else
+#include <python.h>
 #include <numpy/ndarrayobject.h>
 #endif
 

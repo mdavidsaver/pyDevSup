@@ -72,59 +72,59 @@
     <SccProvider>SubversionScc</SccProvider>
     <SccAuxPath>Svn</SccAuxPath>
     <ProjectName>softIocPy310</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LIB|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LIB|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -186,13 +186,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";PYDIR="python310";XEPICS_ARCH="$(Configuration)";_DEBUG;EPICS_CALL_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python310\include;..\devsupApp\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python311\include;..\devsupApp\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Python311\libs</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent />
     <PostBuildEvent />
@@ -217,13 +217,13 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";PYDIR="python310";XEPICS_ARCH="$(Configuration)";_DEBUG;EPICS_CALL_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python310\include;..\devsupApp\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python311\include;..\devsupApp\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Python311\libs</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent />
     <PostBuildEvent />
@@ -248,14 +248,14 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";PYDIR="python310";XEPICS_ARCH="$(Configuration)";_DEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python310\include;..\devsupApp\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python311\include;..\devsupApp\src</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Python311\libs</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent />
     <PostBuildEvent />
@@ -280,14 +280,14 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";PYDIR="python310";XEPICS_ARCH="$(Configuration)";_DEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python310\include;..\devsupApp\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python311\include;..\devsupApp\src</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Python311\libs</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent />
     <PostBuildEvent />
@@ -314,7 +314,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";PYDIR="python310";XEPICS_ARCH="$(Configuration)";NDEBUG;EPICS_CALL_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python310\include;..\devsupApp\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python311\include;..\devsupApp\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -322,7 +322,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Python311\libs</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent />
     <PostBuildEvent />
@@ -349,7 +349,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";PYDIR="python310";XEPICS_ARCH="$(Configuration)";NDEBUG;EPICS_CALL_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python310\include;..\devsupApp\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python311\include;..\devsupApp\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -357,7 +357,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Python311\libs</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent />
     <PostBuildEvent />
@@ -384,7 +384,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";PYDIR="python310";XEPICS_ARCH="$(Configuration)";NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python310\include;..\devsupApp\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python311\include;..\devsupApp\src</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -393,7 +393,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Python311\libs</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent />
     <PostBuildEvent />
@@ -420,7 +420,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";PYDIR="python310";XEPICS_ARCH="$(Configuration)";NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python310\include;..\devsupApp\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;C:\Python311\include;..\devsupApp\src</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -429,7 +429,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl   -I$(SolutionDir)dbd  -o O.Com
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Python311\libs</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent />
     <PostBuildEvent />

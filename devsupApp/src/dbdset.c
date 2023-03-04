@@ -3,7 +3,13 @@
 #undef _POSIX_C_SOURCE
 #undef _XOPEN_SOURCE
 
-#include <Python.h>
+#ifdef _DEBUG
+#undef _DEBUG
+#include <python.h>
+#define _DEBUG
+#else
+#include <python.h>
+#endif
 
 #include <epicsVersion.h>
 #include <epicsThread.h>

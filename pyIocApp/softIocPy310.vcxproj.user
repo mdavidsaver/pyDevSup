@@ -21,9 +21,16 @@ PYTHONPATH=$(SolutionDir)devsupApp\src</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|x64'">
-    <LocalDebuggerEnvironment>PATH=%PATH%;C:\Python310
-PYTHONPATH=$(SolutionDir)devsupApp\src</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>HOSTNAME=localhost
+set
+IOCNAME=weatherbnl
+TOP=../../
+PATH=C:\Python310;C:\Windows
+PYTHONPATH=$(SolutionDir)devsupApp\src;$(SolutionDir)weatherApp
+ARCH="$(Configuration)"</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>..\iocBoot\iocweatherbnl</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments>st.cmd</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|x64'">
     <LocalDebuggerEnvironment>HOSTNAME=localhost

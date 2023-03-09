@@ -5,9 +5,9 @@ import time
 
 from weakref import WeakValueDictionary
 
-from devsupApp.src.devsup.hooks import addHook
-from devsupApp.src.devsup.util import StoppableThread
-from devsupApp.src.devsup.db import IOScanListBlock
+from devsup.hooks import addHook
+from devsup.util import StoppableThread
+from devsup.db import IOScanListBlock
 
 try:
   import pymetar

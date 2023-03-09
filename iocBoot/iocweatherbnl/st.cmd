@@ -4,7 +4,7 @@
 
 cd("$(TOP)")
 
-epicsEnvSet("http_proxy", "http://proxy:8888/")
+#epicsEnvSet("http_proxy", "http://proxy:8888/")
 
 epicsEnvSet("PYTHONPATH", "${TOP}/python/$(ARCH)")
 
@@ -18,4 +18,4 @@ dbl > weather.dbl
 system "cp weather.dbl /cf-update/${HOSTNAME}.${IOCNAME}.dbl"
 
 # Start Reference tracker
-py "from devsup import disect; disect.periodic(10)"
+#py "from devsup import disect; disect.periodic(10)"

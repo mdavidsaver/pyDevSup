@@ -38,13 +38,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\base-7.0.6.1\modules\database\src\ioc\dbCore.vcxproj">
+    <ProjectReference Include="..\..\..\base-7.0.7\modules\database\src\ioc\dbCore.vcxproj">
       <Project>{422a8c73-836c-48cb-86c8-0591e69c0ca1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\base-7.0.6.1\modules\database\src\std\dbRecStd.vcxproj">
+    <ProjectReference Include="..\..\..\base-7.0.7\modules\database\src\std\dbRecStd.vcxproj">
       <Project>{9cf8d9ab-e47d-4923-a251-80e40b4e7144}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\base-7.0.6.1\modules\libcom\src\Com.vcxproj">
+    <ProjectReference Include="..\..\..\base-7.0.7\modules\libcom\src\Com.vcxproj">
       <Project>{e9d99fc7-e592-472b-b2e2-c3b0d81d8169}</Project>
     </ProjectReference>
   </ItemGroup>
@@ -181,8 +181,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python311";XEPICS_ARCH="$(Configuration)";_DEBUG;EPICS_CALL_DLL;EPICS_BUILD_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python311\include;C:\Python311\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.7";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python310";XEPICS_ARCH="$(Configuration)";_DEBUG;EPICS_CALL_DLL;EPICS_BUILD_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python310\include;C:\Python310\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -210,8 +210,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python311";XEPICS_ARCH="$(Configuration)";_DEBUG;EPICS_CALL_DLL;EPICS_BUILD_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python311\include;C:\Python311\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.7";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python310";XEPICS_ARCH="$(Configuration)";_DEBUG;EPICS_CALL_DLL;EPICS_BUILD_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python310\include;C:\Python310\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -239,8 +239,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python311";XEPICS_ARCH="$(Configuration)";_DEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python311\include;C:\Python311\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.7";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python310";XEPICS_ARCH="$(Configuration)";_DEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python310\include;C:\Python310\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -267,8 +267,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python311";XEPICS_ARCH="$(Configuration)";_DEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python311\include;C:\Python311\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.7";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python310";XEPICS_ARCH="$(Configuration)";_DEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python310\include;C:\Python310\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -297,8 +297,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python311";XEPICS_ARCH="$(Configuration)";NDEBUG;EPICS_CALL_DLL;EPICS_BUILD_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python311\include;C:\Python311\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.7";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python310";XEPICS_ARCH="$(Configuration)";NDEBUG;EPICS_CALL_DLL;EPICS_BUILD_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python310\include;C:\Python310\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -330,8 +330,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python311";XEPICS_ARCH="$(Configuration)";NDEBUG;EPICS_CALL_DLL;EPICS_BUILD_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python311\include;C:\Python311\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.7";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python310";XEPICS_ARCH="$(Configuration)";NDEBUG;EPICS_CALL_DLL;EPICS_BUILD_DLL;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python310\include;C:\Python310\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4251</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -363,8 +363,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python311";XEPICS_ARCH="$(Configuration)";NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python311\include;C:\Python311\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.7";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python310";XEPICS_ARCH="$(Configuration)";NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python310\include;C:\Python310\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -395,8 +395,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.6.1";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python311";XEPICS_ARCH="$(Configuration)";NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python311\include;C:\Python311\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XEPICS_BASE="\\epics\\base-7.0.7";XPYDEV_BASE="$(SolutionDir.Replace('\', '/'))";HAVE_NUMPY;PYDIR="python310";XEPICS_ARCH="$(Configuration)";NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)include\os\win32;$(SolutionDir)include\compiler\msvc;..\devsupApp\src;C:\Python310\include;C:\Python310\Lib\site-packages\numpy\core\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>

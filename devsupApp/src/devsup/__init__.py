@@ -2,9 +2,9 @@ import os
 import atexit
 import tempfile
 
-from . import _dbapi
+import devsup._dbapi
 
-from ._dbapi import (EPICS_VERSION_STRING,
+from devsup._dbapi import (EPICS_VERSION_STRING,
                      EPICS_DEV_SNAPSHOT,
                      EPICS_SITE_VERSION,
                      EPICS_VERSION,
@@ -79,7 +79,7 @@ device(aao, INST_IO, pydevsupComOut, "Python Device")
 """.encode('ascii'))
         F.close()
         _dbapi.dbReadDatabase(F.name)
-        os.unlink(F.name)
+        #os.unlink(F.name)
     _dbapi._dbd_setup()
 
 

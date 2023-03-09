@@ -32,6 +32,22 @@
 
 #include "pydevsup.h"
 
+#ifdef INCdbAccessDefsh
+#pragma message("INCdbAccessDefsh")
+#endif
+
+#ifdef INCLdb_access_routinesh
+#pragma message("INCLdb_access_routinesh")
+#error
+#endif
+
+#ifdef INCLdb_converth
+#pragma message("INCLdb_converth")
+#error
+#endif
+
+
+
 initHookState pyInitLastState;
 
 extern int pyDevSupCommon_registerRecordDeviceDriver(DBBASE *pbase);

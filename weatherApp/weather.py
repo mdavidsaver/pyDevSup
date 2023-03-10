@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
-import socket, time, urllib2
+import time
 
 from weakref import WeakValueDictionary
 
@@ -150,6 +150,8 @@ class ReportScanner(StoppableThread):
       except Exception as e:
         print("download error for",self.station,":",e)
         self.updatePeriod = self.initPeriod
+        from traceback import print_exc
+        print_exc()
 
       self.intscan.interrupt()
 

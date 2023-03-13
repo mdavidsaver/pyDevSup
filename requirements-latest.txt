@@ -1,2 +1,2 @@
 numpy
-nose
+nose2

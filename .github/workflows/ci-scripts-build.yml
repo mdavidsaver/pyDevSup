@@ -15,34 +15,53 @@ jobs:
     runs-on: ${{ matrix.os }}
     # Set environment variables from matrix parameters
     env:
+      CMP: ${{ matrix.cmp }}
+      BCFG: ${{ matrix.configuration }}
       BASE: ${{ matrix.base }}
       PROF: ${{ matrix.profile }}
       EXTRA: ${{ matrix.extra }}
       TEST: ${{ matrix.test }}
+      VV: "1"
 
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
             base: "7.0"
             python: "3.7"
             profile: deb10
             test: yes
 
           - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
             base: "7.0"
             python: "3.8"
             profile: latest
             test: yes
 
           - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
             base: "7.0"
             python: "3.9"
             profile: latest
             test: yes
 
           - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
+            base: "7.0"
+            python: "3.10"
+            profile: latest
+            test: yes
+
+          - os: macos-latest
+            cmp: gcc
+            configuration: default
             base: "7.0"
             python: "3.10"
             profile: latest

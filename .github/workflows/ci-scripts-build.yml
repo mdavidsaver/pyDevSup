@@ -55,6 +55,12 @@ jobs:
             test: yes
 
           - os: ubuntu-latest
+            base: "7.0"
+            python: "3.10"
+            profile: latest
+            test: yes
+
+          - os: ubuntu-latest
             base: "3.15"
             python: "2.7"
             profile: deb8

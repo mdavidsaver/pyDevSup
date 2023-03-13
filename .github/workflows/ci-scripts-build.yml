@@ -60,6 +60,18 @@ jobs:
             profile: latest
             test: yes
 
+          - os: macos-latest
+            base: "7.0"
+            python: "3.10"
+            profile: latest
+            test: yes
+
+          - os: windows-latest
+            base: "7.0"
+            python: "3.10"
+            profile: latest
+            test: yes
+
           - os: ubuntu-latest
             base: "3.15"
             python: "2.7"
@@ -80,6 +92,7 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
     - name: More Setup Python
+      shell: bash
       run: |
         python --version
         python -m pip --version

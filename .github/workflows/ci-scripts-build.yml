@@ -24,65 +24,60 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             base: "7.0"
             python: "2.7"
             profile: deb8
             test: yes
 
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             base: "7.0"
             python: "2.7"
             profile: deb8
             test: yes
 
-          - os: ubuntu-20.04
-            base: "7.0"
-            python: "3.5"
-            profile: deb9
-            test: yes
-
-          - os: ubuntu-20.04
-            base: "7.0"
-            python: "3.6"
-            profile: deb9
-            test: yes
-
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             base: "7.0"
             python: "3.7"
             profile: deb10
             test: yes
 
-          - os: ubuntu-16.04
+          - os: ubuntu-latest
+            base: "7.0"
+            python: "3.8"
+            profile: latest
+            test: yes
+
+          - os: ubuntu-latest
+            base: "7.0"
+            python: "3.9"
+            profile: latest
+            test: yes
+
+          - os: ubuntu-latest
             base: "3.15"
             python: "2.7"
             profile: deb8
             test: yes
 
-          - os: ubuntu-16.04
+          - os: ubuntu-latest
             base: "3.14"
             python: "2.7"
             profile: deb8
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
-    - name: Cache EPICS Dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache
-        key: ${{ matrix.base }}/${{ matrix.os }}//${{ matrix.extra }}
     - name: Set up Python ${{ matrix.python }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python }}
     - name: More Setup Python
       run: |
         python --version
         python -m pip --version
-        python -m pip install -r requirements-${PROF}.txt
+        python -m pip install --only-binary :all: -r requirements-${PROF}.txt
         cat <<EOF > configure/CONFIG_SITE.local
         PYTHON=$(which python)
         EOF

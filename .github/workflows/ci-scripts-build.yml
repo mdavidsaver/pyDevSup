@@ -102,6 +102,13 @@ jobs:
         EOF
         echo === configure/CONFIG_SITE.local ===
         cat configure/CONFIG_SITE.local
+    - name: makehelper.py
+      run: python makehelper.py
+    - name: DSOs
+      shell: bash
+      run: find ${Python_ROOT_DIR} -name '*.dll' -o -name '*.so' -o -name '*.dylib'
+    - name: get_config_vars
+      run: python -c 'from sysconfig import get_config_vars; from pprint import pprint; pprint(get_config_vars())'
     - name: Prepare and compile dependencies
       run: python .ci/cue.py prepare
     - name: Build main module

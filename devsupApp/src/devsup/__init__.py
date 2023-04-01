@@ -79,7 +79,7 @@ device(aao, INST_IO, pydevsupComOut, "Python Device")
 """.encode('ascii'))
         F.close()
         _dbapi.dbReadDatabase(F.name)
-        #os.unlink(F.name)
+        os.unlink(F.name)
     _dbapi._dbd_setup()
 
 

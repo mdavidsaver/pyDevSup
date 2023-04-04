@@ -55,6 +55,7 @@
   <ItemGroup>
     <None Include="Db\Makefile" />
     <None Include="O.Common\pyDevSupCommon.dbd" />
+    <None Include="pyDevSup.dbd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E0621B43-15E2-4080-B777-16C02E5B4611}</ProjectGuid>
@@ -193,7 +194,8 @@
     </Link>
     <PreBuildEvent>
       <Command>if not exist O.Common md O.Common
-if not exist $(SolutionDir)DBD md $(SolutionDir)DBD
+if not exist $(SolutionDir)dbd md $(SolutionDir)dbd
+xcopy /Y /Q /D /R *.dbd  $(SolutionDir)dbd &gt; NUL
 SET PERL5LIB=$(SolutionDir)lib\perl
 perl -CSD $(OutDir)dbdExpand.pl   -I$(SolutionDir)dbd -o O.Common\pyDevSupCommon.dbd base.dbd
 perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp O.Common\pyDevSupCommon.dbd  pyDevSupCommon_registerRecordDeviceDriver  $(SolutionDir)
@@ -222,7 +224,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     </Link>
     <PreBuildEvent>
       <Command>if not exist O.Common md O.Common
-if not exist $(SolutionDir)DBD md $(SolutionDir)DBD
+if not exist $(SolutionDir)dbd md $(SolutionDir)dbd
+xcopy /Y /Q /D /R *.dbd  $(SolutionDir)dbd &gt; NUL
 SET PERL5LIB=$(SolutionDir)lib\perl
 perl -CSD $(OutDir)dbdExpand.pl   -I$(SolutionDir)dbd -o O.Common\pyDevSupCommon.dbd base.dbd
 perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp O.Common\pyDevSupCommon.dbd  pyDevSupCommon_registerRecordDeviceDriver  $(SolutionDir)
@@ -250,7 +253,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     </Link>
     <PreBuildEvent>
       <Command>if not exist O.Common md O.Common
-if not exist $(SolutionDir)DBD md $(SolutionDir)DBD
+if not exist $(SolutionDir)dbd md $(SolutionDir)dbd
+xcopy /Y /Q /D /R *.dbd  $(SolutionDir)dbd &gt; NUL
 SET PERL5LIB=$(SolutionDir)lib\perl
 perl -CSD $(OutDir)dbdExpand.pl   -I$(SolutionDir)dbd -o O.Common\pyDevSupCommon.dbd base.dbd
 perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp O.Common\pyDevSupCommon.dbd  pyDevSupCommon_registerRecordDeviceDriver  $(SolutionDir)
@@ -278,7 +282,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     </Link>
     <PreBuildEvent>
       <Command>if not exist O.Common md O.Common
-if not exist $(SolutionDir)DBD md $(SolutionDir)DBD
+if not exist $(SolutionDir)dbd md $(SolutionDir)dbd
+xcopy /Y /Q /D /R *.dbd  $(SolutionDir)dbd &gt; NUL
 SET PERL5LIB=$(SolutionDir)lib\perl
 perl -CSD $(OutDir)dbdExpand.pl   -I$(SolutionDir)dbd -o O.Common\pyDevSupCommon.dbd base.dbd
 perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp O.Common\pyDevSupCommon.dbd  pyDevSupCommon_registerRecordDeviceDriver  $(SolutionDir)
@@ -311,7 +316,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     </Link>
     <PreBuildEvent>
       <Command>if not exist O.Common md O.Common
-if not exist $(SolutionDir)DBD md $(SolutionDir)DBD
+if not exist $(SolutionDir)dbd md $(SolutionDir)dbd
+xcopy /Y /Q /D /R *.dbd  $(SolutionDir)dbd &gt; NUL
 SET PERL5LIB=$(SolutionDir)lib\perl
 perl -CSD $(OutDir)dbdExpand.pl   -I$(SolutionDir)dbd -o O.Common\pyDevSupCommon.dbd base.dbd
 perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp O.Common\pyDevSupCommon.dbd  pyDevSupCommon_registerRecordDeviceDriver  $(SolutionDir)
@@ -344,7 +350,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     </Link>
     <PreBuildEvent>
       <Command>if not exist O.Common md O.Common
-if not exist $(SolutionDir)DBD md $(SolutionDir)DBD
+if not exist $(SolutionDir)dbd md $(SolutionDir)dbd
+xcopy /Y /Q /D /R *.dbd  $(SolutionDir)dbd &gt; NUL
 SET PERL5LIB=$(SolutionDir)lib\perl
 perl -CSD $(OutDir)dbdExpand.pl   -I$(SolutionDir)dbd -o O.Common\pyDevSupCommon.dbd base.dbd
 perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp O.Common\pyDevSupCommon.dbd  pyDevSupCommon_registerRecordDeviceDriver  $(SolutionDir)
@@ -376,7 +383,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     </Link>
     <PreBuildEvent>
       <Command>if not exist O.Common md O.Common
-if not exist $(SolutionDir)DBD md $(SolutionDir)DBD
+if not exist $(SolutionDir)dbd md $(SolutionDir)dbd
+xcopy /Y /Q /D /R *.dbd  $(SolutionDir)dbd &gt; NUL
 SET PERL5LIB=$(SolutionDir)lib\perl
 perl -CSD $(OutDir)dbdExpand.pl   -I$(SolutionDir)dbd -o O.Common\pyDevSupCommon.dbd base.dbd
 perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp O.Common\pyDevSupCommon.dbd  pyDevSupCommon_registerRecordDeviceDriver  $(SolutionDir)
@@ -408,7 +416,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     </Link>
     <PreBuildEvent>
       <Command>if not exist O.Common md O.Common
-if not exist $(SolutionDir)DBD md $(SolutionDir)DBD
+if not exist $(SolutionDir)dbd md $(SolutionDir)dbd
+xcopy /Y /Q /D /R *.dbd  $(SolutionDir)dbd &gt; NUL
 SET PERL5LIB=$(SolutionDir)lib\perl
 perl -CSD $(OutDir)dbdExpand.pl   -I$(SolutionDir)dbd -o O.Common\pyDevSupCommon.dbd base.dbd
 perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp O.Common\pyDevSupCommon.dbd  pyDevSupCommon_registerRecordDeviceDriver  $(SolutionDir)

@@ -55,9 +55,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Makefile" />
     <None Include="O.Common\softIocPy.dbd" />
-    <None Include="pyDevSup.dbd" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="devsupMain.cpp" />

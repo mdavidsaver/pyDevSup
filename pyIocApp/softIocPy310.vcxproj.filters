@@ -9,8 +9,6 @@
     <None Include="O.Common\softIocPy.dbd">
       <Filter>O.Common</Filter>
     </None>
-    <None Include="Makefile" />
-    <None Include="pyDevSup.dbd" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="O.Common\softIocPy_registerRecordDeviceDriver.cpp">

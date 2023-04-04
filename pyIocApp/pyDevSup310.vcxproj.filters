@@ -16,6 +16,9 @@
     <Filter Include="Db">
       <UniqueIdentifier>{fef0bd38-19ac-4984-803b-3bf69909b6aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="pyIocApp">
+      <UniqueIdentifier>{69213f5f-2f8f-4dc1-a5ce-5d07e4a3055f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="O.Common\pyDevSupCommon_registerRecordDeviceDriver.cpp">
@@ -31,6 +34,9 @@
     </None>
     <None Include="O.Common\pyDevSupCommon.dbd">
       <Filter>O.Common</Filter>
+    </None>
+    <None Include="pyDevSup.dbd">
+      <Filter>pyIocApp</Filter>
     </None>
   </ItemGroup>
 </Project>

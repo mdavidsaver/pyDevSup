@@ -15,7 +15,7 @@ dbLoadRecords("db/weather.db","P=CF:Ext{UNNT},LOC=UNNT")
 iocInit()
 
 dbl > weather.dbl
-system "cp weather.dbl /cf-update/${HOSTNAME}.${IOCNAME}.dbl"
+#system "cp weather.dbl /cf-update/${HOSTNAME}.${IOCNAME}.dbl"
 
 # Start Reference tracker
 #py "from devsup import disect; disect.periodic(10)"

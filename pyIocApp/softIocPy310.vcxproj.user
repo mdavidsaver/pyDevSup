@@ -22,7 +22,6 @@ PYTHONPATH=$(SolutionDir)devsupApp\src</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|x64'">
     <LocalDebuggerEnvironment>HOSTNAME=localhost
-set
 IOCNAME=weatherbnl
 TOP=../../
 PATH=C:\Python310;C:\Windows
@@ -34,7 +33,6 @@ ARCH="$(Configuration)"</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|x64'">
     <LocalDebuggerEnvironment>HOSTNAME=localhost
-set
 IOCNAME=weatherbnl
 TOP=../../
 PATH=C:\Python310;C:\Windows

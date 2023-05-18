@@ -75,6 +75,15 @@ device(mbboDirect, INST_IO, pydevsupComOut, "Python Device")
 device(waveform, INST_IO, pydevsupComIn, "Python Device")
 device(aai, INST_IO, pydevsupComIn, "Python Device")
 device(aao, INST_IO, pydevsupComOut, "Python Device")
+
+device(calcout, INST_IO, pydevsupComOut, "Python Device")
+
+device(int64in, INST_IO, pydevsupComIn, "Python Device")
+device(int64out, INST_IO, pydevsupComOut, "Python Device")
+
+device(lsi, INST_IO, pydevsupComIn, "Python Device")
+device(lso, INST_IO, pydevsupComOut, "Python Device")
+
 """.encode('ascii'))
         F.flush()
         _dbapi.dbReadDatabase(F.name)

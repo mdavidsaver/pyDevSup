@@ -162,6 +162,7 @@ class _ParamInstance(object):
         self.table, self.scan, self._value = table, scan, None
         self.alarm, self.actions = 0, []
         self._groups = set()
+        self._sevr = None
     def _get_value(self):
         return self._value
     def _set_value(self, val):
@@ -260,6 +261,7 @@ class _ParamSupSet(_ParamSupGet):
         else:
             # sync record to table
             self.inst.table.log.debug('%s <- %s (%s)', self.inst.name, rec.NAME, rec.VAL)
+            self.inst._sevr = rec.field('SEVR')
             if self.vdata is None:
                 nval = self.vfld.getval()
             else:
@@ -273,6 +275,17 @@ class _ParamSupSet(_ParamSupGet):
                 self.inst._exec(oval)
                 for G in self.inst._groups:
                     G._exec()
+                    for param in G._params:
+                       if self.inst != param and param._sevr is not None:
+                           oldsevr = param._sevr.getval()
+                           if oldsevr != param.alarm:
+                               print('other alrm ' + param.name + " was " + str(oldsevr) + " now " + str(param.alarm))
+                               param._sevr.putval(param.alarm)
+                               #proc.putval(1)
+                oldsevr = self.inst._sevr.getval()
+                if oldsevr != self.inst.alarm:
+                    print('this alrm ' + rec.name() + " was " + str(oldsevr) + " now " + str(self.inst.alarm))
+                    rec.setSevr(self.inst.alarm)
 
 class TableBase(object):
     """Base class for all parameter tables.

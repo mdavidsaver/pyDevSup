@@ -4,11 +4,11 @@
 
 #ifdef _DEBUG
 #undef _DEBUG
-#include <python.h>
+#include <Python.h>
 #include <numpy/ndarrayobject.h>
 #define _DEBUG
 #else
-#include <python.h>
+#include <Python.h>
 #include <numpy/ndarrayobject.h>
 #endif
 #ifdef HAVE_NUMPY

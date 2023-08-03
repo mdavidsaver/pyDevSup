@@ -29,6 +29,8 @@ _dbapi_SRCS += utest.c
 _dbapi_SRCS += pyDevSupCommon_registerRecordDeviceDriver.cpp
 
 _dbapi_LIBS += $(EPICS_BASE_IOC_LIBS)
+_dbapi_SYS_LIBS_WIN32 += python$(PY_LD_VER)
+_dbapi_SYS_LIBS_WIN32 += ws2_32 Advapi32 Dbghelp
 
 PY += devsup/__init__.py
 PY += devsup/db.py
@@ -61,7 +63,7 @@ pyconfig:
 
 ifneq (,$(T_A))
 nose:
-	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(PYTHON) -m nose -P devsup $(NOSEFLAGS)
+	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(PYTHON) -m nose2 -v devsup $(NOSEFLAGS)
 
 # bounce back down to the sphinx generated Makefile
 # aren't Makefiles fun...

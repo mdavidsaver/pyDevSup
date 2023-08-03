@@ -14,7 +14,6 @@ PY_LIBDIRS := /path ...
 from __future__ import print_function
 
 import sys
-import errno
 import os
 
 if len(sys.argv)<2:
@@ -26,10 +25,18 @@ else:
         pass
     out = open(sys.argv[1], 'w')
 
-from distutils.sysconfig import get_config_var, get_python_inc
+from sysconfig import get_config_var
+try:
+    from distutils.sysconfig import get_python_inc
+except ImportError:
+    def get_python_inc():
+        return get_config_var('INCLUDEPY') or ''
 
 incdirs = [get_python_inc()]
-libdir = get_config_var('LIBDIR') or ''
+libdirs = [
+    get_config_var('LIBDIR') or get_config_var('LIBDEST') or '',
+    get_config_var('BINDIR') or '',
+]
 
 have_np='NO'
 try:
@@ -39,8 +46,8 @@ try:
 except ImportError:
     pass
 
-print('TARGET_CFLAGS +=',get_config_var('BASECFLAGS'), file=out)
-print('TARGET_CXXFLAGS +=',get_config_var('BASECFLAGS'), file=out)
+print('TARGET_CFLAGS +=',get_config_var('BASECFLAGS') or '', file=out)
+print('TARGET_CXXFLAGS +=',get_config_var('BASECFLAGS') or '', file=out)
 
 print('PY_VER :=',get_config_var('VERSION'), file=out)
 ldver = get_config_var('LDVERSION')
@@ -50,7 +57,8 @@ if ldver is None:
         ldver = ldver+'_d'
 print('PY_LD_VER :=',ldver, file=out)
 print('PY_INCDIRS :=',' '.join(incdirs), file=out)
-print('PY_LIBDIRS :=',libdir, file=out)
+print('PY_LIBDIRS :=',' '.join(libdirs), file=out)
+print('PY_LDLIBS :=', get_config_var('BLDLIBRARY') or '', file=out)
 print('HAVE_NUMPY :=',have_np, file=out)
 
 try:

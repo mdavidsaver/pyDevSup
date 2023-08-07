@@ -15,79 +15,123 @@ jobs:
     runs-on: ${{ matrix.os }}
     # Set environment variables from matrix parameters
     env:
+      CMP: ${{ matrix.cmp }}
+      BCFG: ${{ matrix.configuration }}
       BASE: ${{ matrix.base }}
       PROF: ${{ matrix.profile }}
       EXTRA: ${{ matrix.extra }}
       TEST: ${{ matrix.test }}
+      VV: "1"
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
             base: "7.0"
             python: "2.7"
             profile: deb8
             test: yes
 
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
             base: "7.0"
             python: "2.7"
             profile: deb8
             test: yes
 
-          - os: ubuntu-20.04
-            base: "7.0"
-            python: "3.5"
-            profile: deb9
-            test: yes
-
-          - os: ubuntu-20.04
-            base: "7.0"
-            python: "3.6"
-            profile: deb9
-            test: yes
-
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
             base: "7.0"
             python: "3.7"
             profile: deb10
             test: yes
 
-          - os: ubuntu-16.04
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
+            base: "7.0"
+            python: "3.8"
+            profile: latest
+            test: yes
+
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
+            base: "7.0"
+            python: "3.9"
+            profile: latest
+            test: yes
+
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
+            base: "7.0"
+            python: "3.10"
+            profile: latest
+            test: yes
+
+          - os: macos-latest
+            cmp: gcc
+            configuration: default
+            base: "7.0"
+            python: "3.10"
+            profile: latest
+            test: yes
+
+          - os: windows-latest
+            cmp: vs2019
+            configuration: debug
+            base: "7.0"
+            python: "3.10"
+            profile: latest
+            test: yes
+
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
             base: "3.15"
             python: "2.7"
             profile: deb8
             test: yes
 
-          - os: ubuntu-16.04
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
             base: "3.14"
             python: "2.7"
             profile: deb8
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
-    - name: Cache EPICS Dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.cache
-        key: ${{ matrix.base }}/${{ matrix.os }}//${{ matrix.extra }}
     - name: Set up Python ${{ matrix.python }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python }}
     - name: More Setup Python
+      shell: bash
       run: |
         python --version
         python -m pip --version
-        python -m pip install -r requirements-${PROF}.txt
+        python -m pip install --only-binary :all: -r requirements-${PROF}.txt
         cat <<EOF > configure/CONFIG_SITE.local
         PYTHON=$(which python)
         EOF
         echo === configure/CONFIG_SITE.local ===
         cat configure/CONFIG_SITE.local
+    - name: makehelper.py
+      run: python makehelper.py
+    - name: DSOs
+      shell: bash
+      run: find ${Python_ROOT_DIR} -name '*.dll' -o -name '*.so' -o -name '*.dylib'
+    - name: get_config_vars
+      run: python -c 'from sysconfig import get_config_vars; from pprint import pprint; pprint(get_config_vars())'
     - name: Prepare and compile dependencies
       run: python .ci/cue.py prepare
     - name: Build main module

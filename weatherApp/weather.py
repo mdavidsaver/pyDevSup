@@ -114,7 +114,7 @@ class ReportScanner(StoppableThread):
     self.scan = IOScanListBlock() # I/O Intr scan for report data
     self.intscan = IOScanListBlock() # scan for internal info
 
-    super(ReportScanner, self).__init__()
+    super(ReportScanner,self).__init__()
 
     addHook('AfterIocRunning', self.start)
     addHook('AtIocExit', self.join)
@@ -150,6 +150,8 @@ class ReportScanner(StoppableThread):
       except Exception as e:
         print("download error for",self.station,":",e)
         self.updatePeriod = self.initPeriod
+        from traceback import print_exc
+        print_exc()
 
       self.intscan.interrupt()
 
@@ -157,8 +159,3 @@ class ReportScanner(StoppableThread):
       self.sleep(self.updatePeriod)
 
     print('Done')
-
-
-if __name__ == '__main__':
-    Scanner = ReportScanner("EGTK")  # Oxford airport station
-    Scanner.run()

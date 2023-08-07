@@ -28,9 +28,9 @@
 #include <iocshRegisterCommon.h>
 #include <registryCommon.h>
 #include <aSubRecord.h>
-#include <shareLib.h>
 
 #include "pydevsup.h"
+#include <shareLib.h>
 
 static int inshutdown;
 
@@ -456,7 +456,8 @@ static long python_asub(aSubRecord* prec)
 }
 
 /* uglyness to detect aSubRecord */
-epicsShareExtern rset* pvar_rset_aSubRSET;
+epicsShareExtern
+rset* pvar_rset_aSubRSET;
 
 int isPyRecord(dbCommon *prec)
 {

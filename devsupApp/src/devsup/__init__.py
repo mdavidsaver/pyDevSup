@@ -2,9 +2,9 @@ import os
 import atexit
 import tempfile
 
-import devsup._dbapi
+from . import _dbapi
 
-from devsup._dbapi import (EPICS_VERSION_STRING,
+from ._dbapi import (EPICS_VERSION_STRING,
                      EPICS_DEV_SNAPSHOT,
                      EPICS_SITE_VERSION,
                      EPICS_VERSION,

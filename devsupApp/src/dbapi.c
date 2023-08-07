@@ -5,7 +5,9 @@
 #ifdef _DEBUG
 #undef _DEBUG
 #include <Python.h>
+#ifdef HAVE_NUMPY
 #include <numpy/ndarrayobject.h>
+#endif
 #define _DEBUG
 #else
 #include <Python.h>
@@ -32,19 +34,6 @@
 
 #include "pydevsup.h"
 
-#ifdef INCdbAccessDefsh
-#pragma message("INCdbAccessDefsh")
-#endif
-
-#ifdef INCLdb_access_routinesh
-#pragma message("INCLdb_access_routinesh")
-#error
-#endif
-
-#ifdef INCLdb_converth
-#pragma message("INCLdb_converth")
-#error
-#endif
 
 
 

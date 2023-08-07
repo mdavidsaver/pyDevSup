@@ -14,13 +14,23 @@ PY_LIBDIRS := /path ...
 from __future__ import print_function
 
 import sys
+import os
 
 if len(sys.argv)<2:
     out = sys.stdout
 else:
+    try:
+        os.makedirs(os.path.dirname(sys.argv[1]))
+    except OSError:
+        pass
     out = open(sys.argv[1], 'w')
 
-from distutils.sysconfig import get_config_var, get_python_inc, get_python_lib
+from sysconfig import get_config_var
+try:
+    from distutils.sysconfig import get_python_inc, get_python_lib
+except ImportError:
+    def get_python_inc():
+        return get_config_var('INCLUDEPY') or ''
 
 incdirs = [get_python_inc()]
 libdirs = [get_python_lib()]
@@ -33,10 +43,8 @@ try:
 except ImportError:
     pass
 
-basecflags=get_config_var('BASECFLAGS')
-if basecflags is not None:
-    print('TARGET_CFLAGS +=',basecflags, file=out)
-    print('TARGET_CXXFLAGS +=',basecflags, file=out)
+print('TARGET_CFLAGS +=',get_config_var('BASECFLAGS') or '', file=out)
+print('TARGET_CXXFLAGS +=',get_config_var('BASECFLAGS') or '', file=out)
 
 print('PY_VER :=',get_config_var('VERSION'), file=out)
 ldver = get_config_var('LDVERSION')
@@ -47,6 +55,7 @@ if ldver is None:
 print('PY_LD_VER :=',ldver, file=out)
 print('PY_INCDIRS :=',' '.join(incdirs), file=out)
 print('PY_LIBDIRS :=',' '.join(libdirs), file=out)
+print('PY_LDLIBS :=', get_config_var('BLDLIBRARY') or '', file=out)
 print('HAVE_NUMPY :=',have_np, file=out)
 
 try:

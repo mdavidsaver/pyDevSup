@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import time, sched, urllib, json
+import time, sched, urllib2, json
 from devsup.db import IOScanListBlock
 from devsup.hooks import initHook
 from devsup.util import StoppableThread
@@ -20,7 +20,7 @@ class BPLReport(object):
 
     def process(self):
         self.result = None
-        R = urllib.urlopen(self.url, timeout=3)
+        R = urllib2.urlopen(self.url, timeout=3)
         try:
             if R.getcode()!=200:
                 print 'Fail',R.getcode(), self.url

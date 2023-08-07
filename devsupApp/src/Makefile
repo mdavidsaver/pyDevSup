@@ -9,6 +9,9 @@ include $(TOP)/configure/CONFIG_PY
 INSTALL_SHRLIB = $(PY_INSTALL_DIR)/devsup
 
 LOADABLE_LIBRARY_HOST += _dbapi
+ifeq ($(OS),Windows_NT)
+    SHRLIB_SUFFIX_BASE = .pyd
+endif
 
 TARGETS += $(COMMON_DIR)/pyDevSupCommon.dbd
 DBDDEPENDS_FILES += pyDevSupCommon.dbd$(DEP)

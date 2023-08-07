@@ -163,6 +163,7 @@ class _ParamInstance(object):
         self.alarm, self.actions = 0, []
         self._groups = set()
         self._sevr = None
+        self._stat = None
     def _get_value(self):
         return self._value
     def _set_value(self, val):
@@ -262,6 +263,7 @@ class _ParamSupSet(_ParamSupGet):
             # sync record to table
             self.inst.table.log.debug('%s <- %s (%s)', self.inst.name, rec.NAME, rec.VAL)
             self.inst._sevr = rec.field('SEVR')
+            self.inst._stat = rec.field('STAT')
             if self.vdata is None:
                 nval = self.vfld.getval()
             else:
@@ -278,8 +280,12 @@ class _ParamSupSet(_ParamSupGet):
                     for param in G._params:
                        if self.inst != param and param._sevr is not None:
                            oldsevr = param._sevr.getval()
-                           if oldsevr != param.alarm:
-                               print('other alrm ' + param.name + " was " + str(oldsevr) + " now " + str(param.alarm))
+                           oldstat = param._stat.getval()
+                           newstat = oldstat
+                           if param.alarm == 0:
+                               newstat = 0
+                           if oldsevr != param.alarm or oldstat != newstat:
+                               print('other alrm ' + param.name + " was " + str(oldsevr) + ", "  +str(oldstat) + " now " + str(param.alarm))
                                param._sevr.putval(param.alarm)
                                #proc.putval(1)
                 oldsevr = self.inst._sevr.getval()

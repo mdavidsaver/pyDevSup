@@ -36,7 +36,7 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 ## Required Modules ##
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=\epics/base
+EPICS_BASE=C:/epics/base
 
 -include $(TOP)/configure/RELEASE.local
 -include $(TOP)/../RELEASE.local

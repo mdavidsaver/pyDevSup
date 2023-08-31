@@ -52,4 +52,9 @@
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\devsup\_dbapi.dbd">
+      <Filter>src</Filter>
+    </CustomBuild>
+  </ItemGroup>
 </Project>

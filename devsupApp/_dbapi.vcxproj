@@ -48,6 +48,25 @@
   <ItemGroup>
     <None Include="Db\Makefile" />
     <None Include="O.Common\pyDevSupCommon.dbd" />
+    <CustomBuild Include="src\devsup\_dbapi.dbd">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_DLL|Win32'">copy %filename% $(SolutionDir)python310\windows-x64</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_DLL|Win32'">$(SolutionDir)python310/windows-x64/%filename%</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_LIB|Win32'">copy %filename% $(SolutionDir)python310\windows-x64</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_LIB|Win32'">$(SolutionDir)python310/windows-x64/%filename%</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|Win32'">copy %filename% $(SolutionDir)python310\windows-x64</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|Win32'">$(SolutionDir)python310/windows-x64/%filename%</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|Win32'">copy %filename% $(SolutionDir)python310\windows-x64</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|Win32'">$(SolutionDir)python310/windows-x64/%filename%</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_DLL|x64'">copy %filename% $(SolutionDir)python310\windows-x64</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_DLL|x64'">$(SolutionDir)python310/windows-x64/%filename%</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_LIB|x64'">copy %filename% $(SolutionDir)python310\windows-x64</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_LIB|x64'">$(SolutionDir)python310/windows-x64/%filename%</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|x64'">copy %filename% $(SolutionDir)python310\windows-x64</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|x64'">$(SolutionDir)python310/windows-x64/%filename%</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|x64'">copy %filename% $(SolutionDir)python310\windows-x64</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|x64'">$(SolutionDir)python310/windows-x64/%filename%</Outputs>
+    </CustomBuild>
     <None Include="src\Makefile" />
   </ItemGroup>
   <ItemGroup>
@@ -162,12 +181,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_LIB|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -175,12 +197,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DLL|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LIB|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_LIB|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_DLL|Win32'">
     <ClCompile>
@@ -194,7 +219,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
     </Link>
@@ -202,7 +226,8 @@
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>xcopy /Y /Q  /D O.Common\*.dbd $(SolutionDir)dbd
-copy  $(OutDir)\_dbapi.pyd src\devsup\_dbapi.pyd
+copy  $(OutDir)_dbapi.pyd $(SolutionDir)devsupApp\src\devsup\_dbapi.pyd
+copy  $(OutDir)_dbapi.pdb $(SolutionDir)devsupApp\src\devsup\_dbapi.pdb
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -226,7 +251,6 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;dbghelp.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Python310\libs</AdditionalLibraryDirectories>
     </Link>
@@ -234,7 +258,8 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>xcopy /Y /Q  /D O.Common\*.dbd $(SolutionDir)dbd
-copy  $(OutDir)\_dbapi.dll src\devsup\_dbapi.pyd
+copy  $(OutDir)_dbapi.pyd $(ProjectDir)src\devsup\_dbapi.pyd
+copy  $(OutDir)_dbapi.pdb $(ProjectDir)src\devsup\_dbapi.pdb
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -266,7 +291,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>xcopy /Y /Q  /D O.Common\*.dbd $(SolutionDir)dbd
-copy  $(OutDir)\_dbapi.pyd src\devsup\_dbapi.pyd
+copy  $(OutDir)\_dbapi.pyd $(SolutionDir)python310\windows-x64\_dbapi.pyd
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -298,7 +323,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>xcopy /Y /Q  /D O.Common\*.dbd $(SolutionDir)dbd
-copy  $(OutDir)\_dbapi.dll src\devsup\_dbapi.pyd
+copy  $(OutDir)\_dbapi.pyd $(SolutionDir)python310\windows-x64\_dbapi.pyd
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -334,7 +359,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>xcopy /Y /Q  /D O.Common\*.dbd $(SolutionDir)dbd
-copy  $(OutDir)\_dbapi.pyd src\devsup\_dbapi.pyd
+copy  $(OutDir)\_dbapi.pyd $(SolutionDir)python310\windows-x64\_dbapi.pyd
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -370,7 +395,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>xcopy /Y /Q  /D O.Common\*.dbd $(SolutionDir)dbd
-copy  $(OutDir)\_dbapi.dll src\devsup\_dbapi.pyd
+copy  $(OutDir)\_dbapi.pyd $(SolutionDir)python310\windows-x64\_dbapi.pyd
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -406,7 +431,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>xcopy /Y /Q  /D O.Common\*.dbd $(SolutionDir)dbd
-copy  $(OutDir)\_dbapi.pyd src\devsup\_dbapi.pyd
+copy  $(OutDir)\_dbapi.pyd $(SolutionDir)python310\windows-x64\_dbapi.pyd
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -442,7 +467,7 @@ perl -CSD $(OutDir)registerRecordDeviceDriver.pl  -I$(SolutionDir)dbd  -o  O.Com
     <PostBuildEvent />
     <PostBuildEvent>
       <Command>xcopy /Y /Q  /D O.Common\*.dbd $(SolutionDir)dbd
-copy  $(OutDir)\_dbapi.dll src\devsup\_dbapi.pyd
+copy  $(OutDir)\_dbapi.pyd $(SolutionDir)python310\windows-x64\_dbapi.pyd
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>

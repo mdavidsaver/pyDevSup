@@ -52,34 +52,11 @@ def _init(iocMain=False):
         _dbapi.dbReadDatabase(os.path.join(XEPICS_BASE, "dbd", "base.dbd"),
                               path=os.path.join(XEPICS_BASE, "dbd"))
         _dbapi._dbd_rrd_base()
-
-    with tempfile.NamedTemporaryFile(delete=False) as F:
-        F.write("""
-device(longin, INST_IO, pydevsupComIn, "Python Device")
-device(longout, INST_IO, pydevsupComOut, "Python Device")
-
-device(ai, INST_IO, pydevsupComIn, "Python Device")
-device(ao, INST_IO, pydevsupComOut, "Python Device")
-
-device(stringin, INST_IO, pydevsupComIn, "Python Device")
-device(stringout, INST_IO, pydevsupComOut, "Python Device")
-
-device(bi, INST_IO, pydevsupComIn, "Python Device")
-device(bo, INST_IO, pydevsupComOut, "Python Device")
-
-device(mbbi, INST_IO, pydevsupComIn, "Python Device")
-device(mbbo, INST_IO, pydevsupComOut, "Python Device")
-
-device(mbbiDirect, INST_IO, pydevsupComIn, "Python Device")
-device(mbboDirect, INST_IO, pydevsupComOut, "Python Device")
-
-device(waveform, INST_IO, pydevsupComIn, "Python Device")
-device(aai, INST_IO, pydevsupComIn, "Python Device")
-device(aao, INST_IO, pydevsupComOut, "Python Device")
-""".encode('ascii'))
-        F.close()
-        _dbapi.dbReadDatabase(F.name)
-        os.unlink(F.name)
+        
+    dirname = os.path.dirname(__file__)
+    dbd_name = dirname + "/_dbapi.dbd"
+    print("opening database " + dbd_name)
+    _dbapi.dbReadDatabase(dbd_name)
     _dbapi._dbd_setup()
 
 

@@ -37,6 +37,8 @@ _dbapi_SYS_LIBS_WIN32 += ws2_32 Advapi32 Dbghelp
 
 PY += devsup/__init__.py
 PY += devsup/_dbapi.dbd
+PY += devsup/_int64.dbd
+PY += devsup/_lsilso.dbd
 PY += devsup/db.py
 PY += devsup/dset.py
 PY += devsup/hooks.py

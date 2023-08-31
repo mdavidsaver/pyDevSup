@@ -285,12 +285,9 @@ class _ParamSupSet(_ParamSupGet):
                            if param.alarm == 0:
                                newstat = 0
                            if oldsevr != param.alarm or oldstat != newstat:
-                               print('other alrm ' + param.name + " was " + str(oldsevr) + ", "  +str(oldstat) + " now " + str(param.alarm))
                                param._sevr.putval(param.alarm)
-                               #proc.putval(1)
                 oldsevr = self.inst._sevr.getval()
                 if oldsevr != self.inst.alarm:
-                    print('this alrm ' + rec.name() + " was " + str(oldsevr) + " now " + str(self.inst.alarm))
                     rec.setSevr(self.inst.alarm)
 
 class TableBase(object):

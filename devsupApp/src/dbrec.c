@@ -3,13 +3,8 @@
 #undef _POSIX_C_SOURCE
 #undef _XOPEN_SOURCE
 
-#ifdef _DEBUG
-#undef _DEBUG
 #include <Python.h>
-#define _DEBUG
-#else
-#include <Python.h>
-#endif
+
 #include <epicsVersion.h>
 #include <dbCommon.h>
 #include <dbAccess.h>

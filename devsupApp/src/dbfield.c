@@ -3,15 +3,8 @@
 #undef _POSIX_C_SOURCE
 #undef _XOPEN_SOURCE
 
-#ifdef _DEBUG
-#undef _DEBUG
 #include <Python.h>
 #ifdef HAVE_NUMPY
-#include <numpy/ndarrayobject.h>
-#endif
-#define _DEBUG
-#else
-#include <Python.h>
 #include <numpy/ndarrayobject.h>
 #endif
 

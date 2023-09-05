@@ -328,7 +328,7 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
         }
         if ((self->addr.special == SPC_MOD) || (self->addr.special == SPC_NOMOD))
             if (prset = dbGetRset(&self->addr))
-                prset->special(self->addr, 1);
+                prset->special(&self->addr, 1);
 #if PY_MAJOR_VERSION >= 3
         Py_DECREF(data);
 #endif

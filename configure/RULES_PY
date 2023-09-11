@@ -3,16 +3,13 @@ ifndef PY_VER
 $(error Must include CONFIG_PY)
 endif
 
+include $(CONFIG)/CONFIG_BASE
+
 PY_FILES += $(PY:%=$(PY_INSTALL_DIR)/%)
 
 $(PY_FILES) : $(PY_INSTALL_DIR)/%: ../%
-ifneq ($(OS),Windows_NT)
-	@[ -d $(dir $@) ] || install -d $(dir $@)
-	@echo "Install PY $@"
-	install -m 644 $< $@
-else
-	xcopy /S /Q /Y /F $(subst /,\,$<) $(subst /,\,$@)*
-endif
+	$(ECHO) "Install PY $@"
+	@$(INSTALL) -d -m $(INSTALL_PERMISSIONS) $< $(@D)
 
 build: $(PY_FILES)
 

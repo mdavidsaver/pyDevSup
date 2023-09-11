@@ -34,7 +34,6 @@ except ImportError:
     def get_python_lib():
         return get_config_var('LIBDIR') or get_config_var('LIBDEST') or '', \
                get_config_var('BINDIR') or '',
-    
 
 incdirs = [get_python_inc()]
 libdirs = [get_python_lib()]

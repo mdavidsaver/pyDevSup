@@ -99,6 +99,8 @@ jobs:
         EOF
         echo === configure/CONFIG_SITE.local ===
         cat configure/CONFIG_SITE.local
+    - name: Python sysconfig
+      run: python -m sysconfig
     - name: Prepare and compile dependencies
       run: python .ci/cue.py prepare
     - name: Build main module

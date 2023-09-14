@@ -58,7 +58,10 @@ if ldver is None:
 print('PY_LD_VER :=',ldver, file=out)
 print('PY_INCDIRS :=',' '.join(incdirs), file=out)
 print('PY_LIBDIRS :=',' '.join(libdirs), file=out)
-print('PY_LDLIBS :=', get_config_var('BLDLIBRARY') or '', file=out)
+if sys.platform == 'win32':
+    print('PY_LDLIBS :=', os.path.join(sys.prefix, 'libs') + '\python'+ldver+'.lib', file=out)
+else:
+    print('PY_LDLIBS :=', get_config_var('BLDLIBRARY') or '', file=out)
 print('HAVE_NUMPY :=',have_np, file=out)
 
 try:

@@ -85,9 +85,9 @@ jobs:
 
           - os: windows-latest
             cmp: vs2022
-            configuration: debug
+            configuration: default
             base: "7.0"
-            python: "3.10"
+            python: "3.11"
             profile: latest
             test: yes
 

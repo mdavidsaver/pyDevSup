@@ -66,7 +66,11 @@ pyconfig:
 
 ifneq (,$(T_A))
 nose:
+ifeq ($(OS),Windows_NT)
+	@set PYTHONPATH=$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH) && set XEPICS_BASE=$(EPICS_BASE) && $(PYTHON) -m nose2 -v devsup $(NOSEFLAGS)
+else
 	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(PYTHON) -m nose2 -v devsup $(NOSEFLAGS)
+endif
 
 # bounce back down to the sphinx generated Makefile
 # aren't Makefiles fun...

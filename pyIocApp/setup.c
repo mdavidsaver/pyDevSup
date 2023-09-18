@@ -139,7 +139,7 @@ static void pySetupReg(void)
     setupPyPath();
 
     if(PyRun_SimpleString("import devsup\n"
-                          "devsup._init(iocMain=False)\n"
+                          "devsup._init(iocMain=True)\n"
     )) {
         PyErr_Print();
         PyErr_Clear();

@@ -18,6 +18,7 @@ SHRLIB_VERSION = 0
 
 DBD += pyDevSup.dbd
 
+pyDevSup$(PY_LD_VER)_SYS_LIBS += python$(PY_LD_VER)
 pyDevSup$(PY_LD_VER)_LDFLAGS += $(PY_LDLIBS)
 
 pyDevSup$(PY_LD_VER)_LIBS += $(EPICS_BASE_IOC_LIBS)
@@ -42,6 +43,7 @@ softIocPy_DBD += pyDevSup.dbd
 softIocPy_DBD += system.dbd
 
 softIocPy$(PY_VER)_LIBS += pyDevSup$(PY_LD_VER)
+softIocPy$(PY_VER)_SYS_LIBS += python$(PY_LD_VER)
 softIocPy$(PY_VER)_LDFLAGS += $(PY_LDLIBS)
 
 # softIocPy_registerRecordDeviceDriver.cpp derives from softIocPy.dbd

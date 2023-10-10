@@ -27,16 +27,16 @@ else:
 
 from sysconfig import get_config_var
 try:
-    from distutils.sysconfig import get_python_inc, get_python_lib
+    from distutils.sysconfig import get_python_inc
 except ImportError:
     def get_python_inc():
         return get_config_var('INCLUDEPY') or ''
-    def get_python_lib():
-        return get_config_var('LIBDIR') or get_config_var('LIBDEST') or '', \
-               get_config_var('BINDIR') or '',
 
 incdirs = [get_python_inc()]
-libdirs = [get_python_lib()]
+libdirs = [
+    get_config_var('LIBDIR') or get_config_var('LIBDEST') or '',
+    get_config_var('BINDIR') or '',
+]
 
 have_np='NO'
 try:

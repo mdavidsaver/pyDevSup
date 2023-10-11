@@ -32,6 +32,7 @@ _dbapi_LIBS += $(EPICS_BASE_IOC_LIBS)
 _dbapi_LDFLAGS_WIN32 += $(PY_LDLIBS)
 _dbapi_SYS_LIBS_WIN32 += ws2_32 Advapi32 Dbghelp
 
+PY += __init__.py
 PY += devsup/__init__.py
 PY += devsup/_dbapi.dbd
 PY += devsup/_int64.dbd

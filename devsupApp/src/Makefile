@@ -32,7 +32,6 @@ _dbapi_LIBS += $(EPICS_BASE_IOC_LIBS)
 _dbapi_LDFLAGS_WIN32 += $(PY_LDLIBS)
 _dbapi_SYS_LIBS_WIN32 += ws2_32 Advapi32 Dbghelp
 
-PY += __init__.py
 PY += devsup/__init__.py
 PY += devsup/_dbapi.dbd
 PY += devsup/_int64.dbd
@@ -68,7 +67,7 @@ pyconfig:
 ifneq (,$(T_A))
 nose:
 ifeq ($(OS),Windows_NT)
-	@set PYTHONPATH=$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH) && set XEPICS_BASE=$(EPICS_BASE) && $(PYTHON) -m nose2 -v devsup $(NOSEFLAGS)
+	set PYTHONPATH=$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH) && set XEPICS_BASE=$(EPICS_BASE) && $(PYTHON) -m nose2 -v devsup $(NOSEFLAGS)
 else
 	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(PYTHON) -m nose2 -v devsup $(NOSEFLAGS)
 endif

@@ -69,7 +69,7 @@ nose:
 ifeq ($(OS),Windows_NT)
 	dir "$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)"
 	dir "$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)/devsup"
-	set PYTHONPATH=${PYTHONPATH};$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH) && set XEPICS_BASE=$(EPICS_BASE) && $(PYTHON) -m nose2 -v devsup $(NOSEFLAGS)
+	set PYTHONPATH=%PYTHONPATH%;$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH) && set XEPICS_BASE=$(EPICS_BASE) && $(PYTHON) -m nose2 -v devsup $(NOSEFLAGS)
 else
 	PYTHONPATH="${PYTHONPATH}:$(abspath $(TOP))/python$(PY_LD_VER)/$(EPICS_HOST_ARCH)" $(PYTHON) -m nose2 -v devsup $(NOSEFLAGS)
 endif

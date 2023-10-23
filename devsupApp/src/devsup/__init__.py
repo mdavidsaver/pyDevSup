@@ -9,10 +9,8 @@ if sys.platform == 'win32':
     # not when running as an IOC, since the IOC will already have loaded EPICS base DLLs.
     xepics_base = None
     xepics_base = os.getenv('XEPICS_BASE')
-    print("xepics_base = " + str(xepics_base))
     epics_host_arch = None
     epics_host_arch = os.getenv('EPICS_HOST_ARCH')
-    print("epics_host_arch = " + str(epics_host_arch))
     if xepics_base is not None and epics_host_arch is not None:
         os.add_dll_directory(xepics_base.strip() + "/bin/" + epics_host_arch)
 

@@ -26,18 +26,6 @@ jobs:
         include:
           - os: ubuntu-latest
             base: "7.0"
-            python: "2.7"
-            profile: deb8
-            test: yes
-
-          - os: ubuntu-latest
-            base: "7.0"
-            python: "2.7"
-            profile: deb8
-            test: yes
-
-          - os: ubuntu-latest
-            base: "7.0"
             python: "3.7"
             profile: deb10
             test: yes
@@ -59,17 +47,6 @@ jobs:
             python: "3.10"
             profile: latest
             test: yes
-
-          - os: ubuntu-latest
-            base: "3.15"
-            python: "2.7"
-            profile: deb8
-            test: yes
-
-          - os: ubuntu-latest
-            base: "3.14"
-            python: "2.7"
-            profile: deb8
 
     steps:
     - uses: actions/checkout@v3

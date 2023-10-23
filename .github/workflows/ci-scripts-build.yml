@@ -67,6 +67,20 @@ jobs:
             profile: latest
             test: yes
 
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
+            base: "3.15"
+            python: "3.7"
+            profile: deb10
+            test: yes
+
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
+            base: "3.14"
+            python: "3.7"
+            profile: deb10
     steps:
     - uses: actions/checkout@v3
       with:

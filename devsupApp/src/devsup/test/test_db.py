@@ -2,6 +2,7 @@
 import os
 import unittest
 import tempfile
+import time
 
 import numpy
 from numpy.testing import assert_array_almost_equal, assert_array_equal
@@ -129,6 +130,74 @@ class TestField(IOCHelper):
             assert_array_equal(rec.VAL,
                                 numpy.asarray(["zero", "", "one", "This is a really long string which shoul", "", "last"], dtype='S40'))
 
+class TestLongStringField(IOCHelper):
+    db = """
+        record(lsi, "rec:lsi") {
+            field(SIZV,  128)
+            field(SCAN,  "I/O Intr")
+        }
+        record(lso, "rec:lso") {
+            field(SIZV,  128)
+            field(DOL,   "rec:lsi.VAL$")
+            field(OMSL,  "closed_loop")
+        }
+    """
+
+    def test_lsilso(self):
+        lsi = getRecord("rec:lsi")
+        lso = getRecord("rec:lso")
+
+        with lsi:
+            self.assertEqual(lsi.VAL, "")
+
+            lsi.VAL = "test"
+            self.assertEqual(lsi.VAL, "test")
+
+            lsi.VAL = ""
+            self.assertEqual(lsi.VAL, "")
+
+            # does not truncate
+            lsi.VAL = "This is a really long string which should NOT be truncated"
+            self.assertEqual(lsi.VAL, "This is a really long string which should NOT be truncated")
+        
+        lso.scan()
+        time.sleep(0.01) # The linked value needs a small amount of time to update.
+
+        with lso:
+            self.assertEqual(lso.VAL, lsi.VAL)
+            
+class TestInt64Field(IOCHelper):
+    db = """
+        record(int64in, "rec:in64") {
+            field(SCAN,  "I/O Intr")
+        }
+        record(int64out, "rec:out64") {
+            field(DOL,   "rec:in64.VAL")
+            field(OMSL,  "closed_loop")
+        }
+    """
+
+    def testint64(self):
+        in64 = getRecord("rec:in64")
+        out64 = getRecord("rec:out64")
+
+        with in64:
+            self.assertEqual(in64.VAL, 0)
+
+            in64.VAL = 42
+            self.assertEqual(in64.VAL, 42)
+
+            in64.VAL = 0x7FFFFFFFFFFFFFFE
+            self.assertEqual(in64.VAL, 0x7FFFFFFFFFFFFFFE)
+
+            in64.VAL = 0x7FFFFFFFFFFFFFFF
+            self.assertEqual(in64.VAL, 0x7FFFFFFFFFFFFFFF)
+        
+        out64.scan()
+        time.sleep(0.01) # The linked value needs a small amount of time to update.
+
+        with out64:
+            self.assertEqual(out64.VAL, in64.VAL)
 
 class TestDset(IOCHelper):
     db = """

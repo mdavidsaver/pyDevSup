@@ -296,8 +296,8 @@ static PyObject* pyField_putval(pyField *self, PyObject* args)
     OP(LONG,  epicsInt32,  PyInt_AsLong);
     OP(ULONG, epicsUInt32, PyInt_AsLong);
 #ifdef HAVE_INT64
-    OP(INT64,  epicsInt32,  PyLong_AsLongLong);
-    OP(UINT64, epicsUInt32, PyLong_AsLongLong);
+    OP(INT64,  epicsInt64,  PyLong_AsLongLong);
+    OP(UINT64, epicsUInt64, PyLong_AsLongLong);
 #endif
     OP(FLOAT, epicsFloat32,PyFloat_AsDouble);
     OP(DOUBLE,epicsFloat64,PyFloat_AsDouble);

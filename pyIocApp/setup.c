@@ -23,6 +23,10 @@
 #include <alarm.h>
 
 #include "pydevsup.h"
+#ifdef _WIN32
+#include <stdlib.h>
+#define PATH_MAX _MAX_PATH
+#endif
 
 static void cleanupPy(void *junk)
 {

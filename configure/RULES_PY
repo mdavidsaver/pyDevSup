@@ -1,15 +1,15 @@
 ifneq ($(T_A),)
-
 ifndef PY_VER
 $(error Must include CONFIG_PY)
 endif
 
+include $(CONFIG)/CONFIG_BASE
+
 PY_FILES += $(PY:%=$(PY_INSTALL_DIR)/%)
 
 $(PY_FILES) : $(PY_INSTALL_DIR)/%: ../%
-	@[ -d $(dir $@) ] || install -d $(dir $@)
-	@echo "Install PY $@"
-	install -m 644 $< $@
+	$(ECHO) "Install PY $@"
+	@$(INSTALL) -d -m $(INSTALL_PERMISSIONS) $< $(@D)
 
 build: $(PY_FILES)
 

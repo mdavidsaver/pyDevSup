@@ -34,6 +34,7 @@ except ImportError:
 
 incdirs = [get_python_inc()]
 libdirs = [
+    # distutils.sysconfig.get_python_lib does not appear to work correctly on Ubuntu with Python versions < 3.10
     get_config_var('LIBDIR') or get_config_var('LIBDEST') or '',
     get_config_var('BINDIR') or '',
 ]
@@ -58,7 +59,10 @@ if ldver is None:
 print('PY_LD_VER :=',ldver, file=out)
 print('PY_INCDIRS :=',' '.join(incdirs), file=out)
 print('PY_LIBDIRS :=',' '.join(libdirs), file=out)
-print('PY_LDLIBS :=', get_config_var('BLDLIBRARY') or '', file=out)
+if sys.platform == 'win32':
+    print('PY_LDLIBS :=', '/LIBPATH:' + os.path.join(sys.prefix, 'libs'), file=out)
+else:
+    print('PY_LDLIBS :=', get_config_var('BLDLIBRARY') or '', file=out)
 print('HAVE_NUMPY :=',have_np, file=out)
 
 try:

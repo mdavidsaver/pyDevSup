@@ -1,0 +1,2 @@
+device(lsi, INST_IO, pydevsupComIn, "Python Device")
+device(lso, INST_IO, pydevsupComOut, "Python Device")

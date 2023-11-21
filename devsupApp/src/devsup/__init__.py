@@ -1,6 +1,18 @@
 import os
+import sys
 import atexit
 import tempfile
+
+if sys.platform == 'win32':
+    # See https://stackoverflow.com/questions/72858093/how-to-specify-pyd-dll-dependencies-search-paths-at-runtime-with-python
+    # This is required for use of e.g. nose testing, but
+    # not when running as an IOC, since the IOC will already have loaded EPICS base DLLs.
+    epics_base = os.getenv('EPICS_BASE')
+    epics_host_arch = os.getenv('EPICS_HOST_ARCH')
+    if epics_base is not None and epics_host_arch is not None:
+        epics_base = epics_base.replace("/",'\\')
+        dll_path = epics_base + "\\bin\\" + epics_host_arch
+        os.add_dll_directory(dll_path)
 
 from . import _dbapi
 
@@ -45,40 +57,26 @@ from ._dbapi import (EPICS_VERSION_STRING,
 
 __all__ = []
 
+
 def _init(iocMain=False):
     if not iocMain:
         # we haven't read/register base.dbd
         _dbapi.dbReadDatabase(os.path.join(XEPICS_BASE, "dbd", "base.dbd"),
                               path=os.path.join(XEPICS_BASE, "dbd"))
         _dbapi._dbd_rrd_base()
-
-    with tempfile.NamedTemporaryFile() as F:
-        F.write("""
-device(longin, INST_IO, pydevsupComIn, "Python Device")
-device(longout, INST_IO, pydevsupComOut, "Python Device")
-
-device(ai, INST_IO, pydevsupComIn, "Python Device")
-device(ao, INST_IO, pydevsupComOut, "Python Device")
-
-device(stringin, INST_IO, pydevsupComIn, "Python Device")
-device(stringout, INST_IO, pydevsupComOut, "Python Device")
-
-device(bi, INST_IO, pydevsupComIn, "Python Device")
-device(bo, INST_IO, pydevsupComOut, "Python Device")
-
-device(mbbi, INST_IO, pydevsupComIn, "Python Device")
-device(mbbo, INST_IO, pydevsupComOut, "Python Device")
-
-device(mbbiDirect, INST_IO, pydevsupComIn, "Python Device")
-device(mbboDirect, INST_IO, pydevsupComOut, "Python Device")
-
-device(waveform, INST_IO, pydevsupComIn, "Python Device")
-device(aai, INST_IO, pydevsupComIn, "Python Device")
-device(aao, INST_IO, pydevsupComOut, "Python Device")
-""".encode('ascii'))
-        F.flush()
-        _dbapi.dbReadDatabase(F.name)
+        
+    dirname = os.path.dirname(__file__)
+    dbd_name = dirname + "/_dbapi.dbd"
+    _dbapi.dbReadDatabase(dbd_name)
+    epics_version_int = (EPICS_VERSION, EPICS_REVISION, EPICS_MODIFICATION, EPICS_PATCH_LEVEL)
+    if epics_version_int >= (3, 15, 0, 2):
+        dbd_name = dirname + "/_lsilso.dbd"
+        _dbapi.dbReadDatabase(dbd_name)
+    if epics_version_int >= (3, 16, 1, 0):
+        dbd_name = dirname + "/_int64.dbd"
+        _dbapi.dbReadDatabase(dbd_name)
     _dbapi._dbd_setup()
+
 
 def _fini(iocMain=False):
     if iocMain:

@@ -24,7 +24,7 @@ The :py:meth:`process <DeviceSupport.process>` method increments the *VAL* field
 
 Start this IOC with. ::
 
-  $ ./bin/linux-x86_64/softIocPy2.7 -d cntrec.db
+  $ ./bin/linux-x86_64/softIocPy3.10 -d cntrec.db
   Starting iocInit
   ...
   iocRun: All initialization complete

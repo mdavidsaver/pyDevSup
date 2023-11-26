@@ -4,7 +4,7 @@ Runtime Environment
 The pyDevSup module initializes the interpreter during the registration
 phase of IOC startup with the *pySetupReg* registrar function. ::
 
-  #!../../bin/linux-x86_64/softIocPy2.7
+  #!../../bin/linux-x86_64/softIocPy3.10
   # Interpreter not started
   dbLoadDatabase("../../dbd/softIocPy.dbd",0,0)
   softIocPy_registerRecordDeviceDriver(pdbbase)
@@ -51,7 +51,7 @@ file. ::
 
 The default or preferred Python version can be specificed in *configure/CONFIG_SITE* ::
 
-  PY_VER ?= 2.7
+  PY_VER ?= 3.10
 
 The following should be added to individual EPICS Makefiles. ::
 
@@ -64,7 +64,7 @@ The following should be added to individual EPICS Makefiles. ::
 
 This will add or amend several make variables.  The ``USR_*FLAGS`` variables
 may be extended with appropriate flags for building python modules.  The ``PY_VER``
-variable is defined with the Python version number found in install directories (eg "2.7").
+variable is defined with the Python version number found in install directories (eg "3.10").
 The ``PY_LD_VER`` variable is defined with the python library version number (eg "3.2mu"),
 which may be the same as ``PY_VER``.
 
@@ -113,11 +113,9 @@ Installing for several Python versions
 The recipe for building and installing the pyDevSup module
 for several python version side by side is ::
 
-  make PY_VER=2.6
+  make PY_VER=3.9
   make clean
-  make PY_VER=2.7
-  make clean
-  make PY_VER=3.2
+  make PY_VER=3.10
   make clean
 
 The ``PYTHON`` make variable can be specified if the interpreter executable

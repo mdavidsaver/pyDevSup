@@ -6,11 +6,9 @@ Build-Depends: debhelper (>= 9), dh-python, epics-debhelper (>= 8.13~),
                epics-dev,
                epics-synapps-dev | epics-autosave-dev,
                epics-synapps-dev | epics-iocstats-dev,
-               python-all-dev,  python-numpy,
                python3-all-dev, python3-numpy,
 Standards-Version: 3.9.6
-XS-Python-Version: >= 2.7
-XS-Python3-Version: >= 3.4
+XS-Python3-Version: >= 3.6
 Homepage: http://mdavidsaver.github.io/pyDevSup/
 Vcs-Git: https://github.com/mdavidsaver/pyDevSup.git
 Vcs-Browser: https://github.com/mdavidsaver/pyDevSup

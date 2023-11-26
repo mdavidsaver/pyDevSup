@@ -23,9 +23,6 @@ override_dh_auto_build:
 override_dh_auto_test:
 
 override_dh_auto_install:
-	dh_auto_build -- PY_VER=2.7 $(EXTRA)
-	dh_auto_install -- PY_VER=2.7 $(EXTRA)
-	dh_auto_clean -- PY_VER=2.7 $(EXTRA)
 	$(foreach PY3_VER,$(shell py3versions -vs),\
 		dh_auto_build -- PY_VER=$(PY3_VER) $(EXTRA);\
 		dh_auto_install -- PY_VER=$(PY3_VER) $(EXTRA);\

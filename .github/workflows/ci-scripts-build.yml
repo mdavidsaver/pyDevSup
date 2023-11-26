@@ -27,22 +27,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #- os: ubuntu-latest
-          #  cmp: gcc
-          #  configuration: default
-          #  base: "7.0"
-          #  python: "2.7"
-          #  profile: deb8
-          #  test: yes
-
-          #- os: ubuntu-latest
-          #  cmp: gcc
-          #  configuration: default
-          #  base: "7.0"
-          #  python: "2.7"
-          #  profile: deb8
-          #  test: yes
-
           - os: ubuntu-latest
             cmp: gcc
             configuration: default
@@ -98,21 +82,6 @@ jobs:
             python: "3.10"
             profile: latest
             test: yes
-
-          #- os: ubuntu-latest
-          #  cmp: gcc
-          #  configuration: default
-          #  base: "3.15"
-          #  python: "2.7"
-          #  profile: deb8
-          #  test: yes
-
-          #- os: ubuntu-latest
-          #  cmp: gcc
-          #  configuration: default
-          #  base: "3.14"
-          #  python: "2.7"
-          #  profile: deb8
 
     steps:
     - uses: actions/checkout@v3

@@ -48,6 +48,10 @@ LOADABLE_SHRLIB_LDFLAGS = -bundle -flat_namespace -undefined dynamic_lookup
 LOADABLE_SHRLIB_SUFFIX = .so
 endif
 
+ifeq ($(OS_CLASS),WIN32)
+SHRLIB_SUFFIX_BASE = .pyd
+endif
+
 endif
 
 endif

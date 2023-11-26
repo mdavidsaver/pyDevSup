@@ -32,12 +32,13 @@ CHECK_RELEASE = YES
 #   take effect.
 #IOCS_APPL_TOP = </IOC/path/to/application/top>
 
-# Default python version.
-PY_VER=2.7
-
 # Module will be build against this version of the
 # Python interpreter
 PYTHON ?= python$(PY_VER)
+
+# Default python version.
+# Legacy setting.  Prefer PYTHON
+PY_VER ?= 3.9
 
 USR_CPPFLAGS += -DUSE_TYPED_RSET
 

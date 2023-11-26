@@ -1,0 +1,22 @@
+
+device(longin, INST_IO, pydevsupComIn, "Python Device")
+device(longout, INST_IO, pydevsupComOut, "Python Device")
+
+device(ai, INST_IO, pydevsupComIn, "Python Device")
+device(ao, INST_IO, pydevsupComOut, "Python Device")
+
+device(stringin, INST_IO, pydevsupComIn, "Python Device")
+device(stringout, INST_IO, pydevsupComOut, "Python Device")
+
+device(bi, INST_IO, pydevsupComIn, "Python Device")
+device(bo, INST_IO, pydevsupComOut, "Python Device")
+
+device(mbbi, INST_IO, pydevsupComIn, "Python Device")
+device(mbbo, INST_IO, pydevsupComOut, "Python Device")
+
+device(mbbiDirect, INST_IO, pydevsupComIn, "Python Device")
+device(mbboDirect, INST_IO, pydevsupComOut, "Python Device")
+
+device(waveform, INST_IO, pydevsupComIn, "Python Device")
+device(aai, INST_IO, pydevsupComIn, "Python Device")
+device(aao, INST_IO, pydevsupComOut, "Python Device")

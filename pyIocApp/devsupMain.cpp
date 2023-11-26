@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
 	iocsh(NULL);
     } else {
 	if (loadedDb) {
-	    epicsThreadExitMain();
+	    //epicsThreadExitMain();
 	} else {
 	    printf("%s: Nothing to do!\n", arg0);
 	    usage(EXIT_FAILURE);

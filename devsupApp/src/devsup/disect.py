@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import sys, gc, inspect, time
 try:
+    InstanceType = None
     from types import InstanceType
 except ImportError:
     pass # py3

@@ -2,6 +2,8 @@ TOP=..
 
 include $(TOP)/configure/CONFIG
 
+CAT ?= cat
+
 PYTHON ?= python$(PY_VER)
 
 TARGETS = $(CONFIG_TARGETS)
@@ -15,7 +17,8 @@ CONFIGS += $(subst ../,,$(wildcard $(CONFIG_INSTALLS)))
 include $(TOP)/configure/RULES
 
 os/CONFIG_PY.Common.$(T_A): $(TOP)/makehelper.py
-	$(PYTHON) $< $@
+	$(PYTHON) $< $@ "$(CMPLR_CLASS)"
+	$(CAT) $@
 
 ifdef BASE_3_15
 realclean: py_clean

@@ -102,8 +102,6 @@ jobs:
         EOF
         echo === configure/CONFIG_SITE.local ===
         cat configure/CONFIG_SITE.local
-    - name: makehelper.py
-      run: python makehelper.py
     - name: DSOs
       shell: bash
       run: find ${Python_ROOT_DIR} -name '*.dll' -o -name '*.so' -o -name '*.dylib'

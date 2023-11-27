@@ -16,16 +16,30 @@ from __future__ import print_function
 import sys
 import os
 
-if len(sys.argv)<2:
-    out = sys.stdout
-else:
-    try:
-        os.makedirs(os.path.dirname(sys.argv[1]))
-    except OSError:
-        pass
-    out = open(sys.argv[1], 'w')
+def getargs():
+    from argparse import ArgumentParser, FileType as _FileType
+    class FileType(_FileType):
+        def __call__(self, string):
+            if string!='-':
+                os.makedirs(os.path.dirname(string), exist_ok=True)
+            return super(FileType, self).__call__(string)
+    P = ArgumentParser()
+    P.add_argument('output',
+                   type=FileType('w'),
+                   help='Output Makefile fragment')
+    P.add_argument('cmplr',
+                   help='EPICS CMPLR_CLASS name')
+    return P
+
+args = getargs().parse_args()
+out = args.output
 
 from sysconfig import get_config_var
+try:
+    # try to let setuptools patch in bundled distutils
+    import setuptools
+except ImportError:
+    pass
 try:
     from distutils.sysconfig import get_python_inc
 except ImportError:
@@ -59,7 +73,7 @@ if ldver is None:
 print('PY_LD_VER :=',ldver, file=out)
 print('PY_INCDIRS :=',' '.join(incdirs), file=out)
 print('PY_LIBDIRS :=',' '.join(libdirs), file=out)
-if sys.platform == 'win32':
+if args.cmplr=='msvc':
     print('PY_LDLIBS :=', '/LIBPATH:' + os.path.join(sys.prefix, 'libs'), file=out)
 else:
     print('PY_LDLIBS :=', get_config_var('BLDLIBRARY') or '', file=out)
